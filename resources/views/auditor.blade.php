@@ -47,7 +47,7 @@
                 <header class="panel-head">
                     <span class="panel-title">Logic Auditor</span>
                     @auth
-                        <button class="repo-select" id="repo-select" type="button">Select repo</button>
+                        <button class="repo-select" id="repo-select" type="button" data-repos-url="{{ route('github.repos') }}">Select repo</button>
                     @endauth
                     @guest
                         <a class="repo-connect" href="{{ route('github.redirect') }}">Connect GitHub</a>
@@ -101,86 +101,6 @@
 @include('partials.repo-import')
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.min.js"></script>
-<script>
-    require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs' } });
-    require(['vs/editor/editor.main'], function () {
-        const defaultCode = '<' + '?php\n\n// Paste logic here to audit...\n\nclass LogicAuditor {\n    public function check() {\n        return true;\n    }\n}';
-
-        window.editor = monaco.editor.create(document.getElementById('monaco-editor'), {
-            value: defaultCode,
-            language: 'php',
-            theme: 'vs-dark',
-            automaticLayout: true,
-            fontSize: 15,
-            lineHeight: 24,
-            roundedSelection: true,
-            scrollBeyondLastLine: false,
-            readOnly: false,
-            minimap: { enabled: false }
-        });
-    });
-
-    const repoSelect = document.getElementById('repo-select');
-    const repoModal = document.getElementById('repo-modal');
-    const repoSelectModal = document.getElementById('repo-import-select');
-    const repoModalClose = document.querySelectorAll('[data-close="repo-modal"]');
-    let reposLoaded = false;
-
-    async function loadRepos() {
-        if (reposLoaded || !repoSelectModal) return;
-        try {
-            const res = await fetch('{{ route('github.repos') }}');
-            if (!res.ok) throw new Error('Failed to load repos');
-            const data = await res.json();
-            repoSelectModal.innerHTML = '';
-            if (!data.repos || data.repos.length === 0) {
-                const opt = document.createElement('option');
-                opt.textContent = 'No repositories found';
-                opt.disabled = true;
-                opt.selected = true;
-                repoSelectModal.appendChild(opt);
-                return;
-            }
-            data.repos.forEach((repo) => {
-                const opt = document.createElement('option');
-                opt.value = repo.full_name;
-                opt.textContent = repo.full_name || repo.name;
-                repoSelectModal.appendChild(opt);
-            });
-            reposLoaded = true;
-        } catch (e) {
-            repoSelectModal.innerHTML = '<option selected disabled>Failed to load repos</option>';
-        }
-    }
-
-    function openRepoModal() {
-        if (!repoModal) return;
-        repoModal.classList.add('is-open');
-        repoModal.setAttribute('aria-hidden', 'false');
-        loadRepos();
-    }
-
-    function closeRepoModal() {
-        if (!repoModal) return;
-        repoModal.classList.remove('is-open');
-        repoModal.setAttribute('aria-hidden', 'true');
-    }
-
-    if (repoSelect) {
-        repoSelect.addEventListener('click', function (event) {
-            event.preventDefault();
-            openRepoModal();
-        });
-    }
-
-    repoModalClose.forEach((btn) => {
-        btn.addEventListener('click', closeRepoModal);
-    });
-
-    document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape') closeRepoModal();
-    });
-</script>
 
 </body>
 </html>

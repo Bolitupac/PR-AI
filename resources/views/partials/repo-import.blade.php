@@ -1,7 +1,7 @@
 <div class="repo-modal" id="repo-modal" aria-hidden="true">
     <div class="repo-modal-backdrop" data-close="repo-modal"></div>
     <div class="repo-modal-card" role="dialog" aria-label="Import from GitHub">
-        <button class="repo-modal-close" type="button" aria-label="Close" data-close="repo-modal">×</button>
+        <button class="repo-modal-close" type="button" aria-label="Close" data-close="repo-modal">&times;</button>
 
         <div class="repo-import-head">
             <div class="repo-import-title">Import from GitHub</div>
