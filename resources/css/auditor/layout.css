@@ -1,0 +1,68 @@
+.app-shell {
+    min-height: 100vh;
+}
+
+.hero-view {
+    min-height: 100vh;
+    display: flex;
+}
+
+.main-workspace {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    gap: 18px;
+    padding: 16px;
+    background: var(--workspace-bg);
+}
+
+.codebox-outer,
+.ai-panel,
+.diff-wrap {
+    min-height: 0;
+    border-radius: 26px;
+    border: 2px solid var(--panel-stroke);
+    background: var(--panel-bg);
+    box-shadow: var(--panel-shadow);
+}
+
+.codebox-outer {
+    flex: 1.75;
+    min-width: 0;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#monaco-editor {
+    flex: 1;
+    min-height: 300px;
+    width: 100%;
+    border-radius: 18px;
+    border: 2px solid #2d364f;
+    overflow: hidden;
+    background: #1e1e1e;
+}
+
+.ai-panel {
+    flex: 1;
+    max-width: 420px;
+    min-width: 320px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.ai-content {
+    flex: 1;
+    min-height: 0;
+    padding: 16px 18px;
+    overflow-y: auto;
+}
+
+.line-sep {
+    border: 0;
+    border-top: 1px solid #d7deeb;
+    margin: 10px 0 14px;
+}

@@ -1,0 +1,169 @@
+.repo-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+}
+
+.repo-modal.is-open {
+    display: flex;
+}
+
+.repo-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 16, 28, 0.55);
+}
+
+.repo-modal-card {
+    position: relative;
+    width: min(520px, 92vw);
+    border: 1.5px solid #c9d5ea;
+    border-radius: 18px;
+    background: #ffffff;
+    padding: 18px;
+    box-shadow: 0 18px 40px rgba(36, 52, 84, 0.2);
+    z-index: 1;
+}
+
+.repo-modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #c9d5ea;
+    background: #f7f9ff;
+    color: #2a3956;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.repo-import-head {
+    margin-bottom: 12px;
+}
+
+.repo-import-title {
+    font-weight: 700;
+    font-size: 14px;
+    color: #1f2d45;
+}
+
+.repo-import-sub {
+    font-size: 12px;
+    color: #5d6a84;
+    margin-top: 4px;
+}
+
+.repo-import-label {
+    display: block;
+    font-size: 12px;
+    color: #5d6a84;
+    margin-bottom: 6px;
+}
+
+.repo-import-select {
+    width: 100%;
+    border: 1.5px solid #c9d5ea;
+    border-radius: 12px;
+    padding: 8px 10px;
+    font-size: 13px;
+    color: #1f2d45;
+    background: #f7f9ff;
+    margin-bottom: 12px;
+}
+
+.repo-import-action {
+    width: 100%;
+    border: 1.5px solid #6d88c5;
+    background: #4969af;
+    color: #ffffff;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.repo-pr-box {
+    margin: 2px 0 12px;
+    border: 1.5px solid #d6deed;
+    border-radius: 12px;
+    background: #f8faff;
+    padding: 10px;
+}
+
+.repo-pr-state {
+    font-size: 12px;
+    color: #5d6a84;
+    margin-bottom: 8px;
+    background: #eef3fb;
+    border-radius: 8px;
+    padding: 6px 8px;
+    font-weight: 600;
+}
+
+.repo-pr-state.is-info {
+    color: #415777;
+    background: #eef3fb;
+}
+
+.repo-pr-state.is-loading {
+    color: #6f4a10;
+    background: #fff6e6;
+}
+
+.repo-pr-state.is-success {
+    color: #1f5f34;
+    background: #e9f8ee;
+}
+
+.repo-pr-state.is-empty {
+    color: #7a4d18;
+    background: #fff4e5;
+}
+
+.repo-pr-state.is-error {
+    color: #8c2435;
+    background: #ffecef;
+}
+
+.repo-pr-list {
+    max-height: 170px;
+    overflow-y: auto;
+    display: grid;
+    gap: 8px;
+}
+
+.repo-pr-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    border: 1px solid #d6deed;
+    border-radius: 10px;
+    background: #ffffff;
+    padding: 8px 10px;
+    cursor: pointer;
+}
+
+.repo-pr-item.is-selected {
+    border-color: #6d88c5;
+    background: #edf3ff;
+}
+
+.repo-pr-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1f2d45;
+    line-height: 1.35;
+}
+
+.repo-pr-meta {
+    font-size: 11px;
+    color: #66748f;
+    margin-top: 3px;
+}

@@ -1,0 +1,45 @@
+@media (max-width: 1080px) {
+    .hero-view {
+        flex-direction: column;
+    }
+
+    .sidebar-bg {
+        width: 100%;
+        height: 70px;
+        flex-direction: row;
+        justify-content: space-between;
+        border-right: 0;
+        border-bottom: 2px solid #d3ddef;
+    }
+
+    .sidebar-bottom {
+        margin-top: 0;
+        flex-direction: row;
+        padding-bottom: 0;
+    }
+
+    .signin-anchor {
+        position: static;
+    }
+
+    .signin-popover {
+        left: auto;
+        right: 12px;
+        bottom: 12px;
+        top: auto;
+    }
+
+    .main-workspace {
+        flex-direction: column;
+    }
+
+    .ai-panel {
+        max-width: none;
+        min-width: 0;
+        height: 45vh;
+    }
+
+    .diff-section {
+        padding: 12px;
+    }
+}

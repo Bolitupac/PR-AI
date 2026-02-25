@@ -1,0 +1,25 @@
+:root {
+    --sidebar-width: 64px;
+    --workspace-bg: #eef2f7;
+    --panel-bg: #f8fafc;
+    --panel-stroke: #c7d2e2;
+    --panel-shadow: 0 10px 30px rgba(38, 54, 88, 0.12);
+    --brand: #4f6fb8;
+    --text-main: #1d2738;
+    --text-muted: #5d6780;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-main);
+    background: radial-gradient(circle at 20% 10%, #f7f9ff 0%, #e8edf7 55%, #dfe6f3 100%);
+}
