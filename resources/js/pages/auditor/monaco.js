@@ -2,6 +2,7 @@ export function initMonacoEditor() {
     const editorEl = document.getElementById('monaco-editor');
     if (!editorEl) return;
 
+    // Loader script is still provided by the Blade template.
     if (typeof window.require !== 'function') return;
 
     const defaultCode =
@@ -16,6 +17,7 @@ export function initMonacoEditor() {
 
     window.require(['vs/editor/editor.main'], function () {
         if (!window.monaco) return;
+        // Keep a global ref for other ui actions
         window.editor = window.monaco.editor.create(editorEl, {
             value: defaultCode,
             language: 'php',

@@ -16,3 +16,6 @@ Route::get('/auth/github/callback', [GitHubAuthController::class, 'callback'])->
 Route::get('/api/github/repos', [GitHubAuthController::class, 'repos'])
     ->middleware('auth')
     ->name('github.repos');
+Route::get('/api/github/pulls', [GitHubAuthController::class, 'pullRequests'])
+    ->middleware('auth')
+    ->name('github.pulls');

@@ -75,4 +75,43 @@ class GitHubAuthController extends Controller
 
         return response()->json(['repos' => $repos]);
     }
+
+    public function pullRequests(): JsonResponse
+    {
+        $user = Auth::user();
+        $repo = request()->query('repo');
+
+        if (!$user || !$user->github_access_token) {
+            return response()->json(['pulls' => []], 401);
+        }
+
+        if (!$repo || !str_contains($repo, '/')) {
+            return response()->json(['pulls' => []], 422);
+        }
+
+        $token = Crypt::decryptString($user->github_access_token);
+        $response = Http::withToken($token)->get("https://api.github.com/repos/{$repo}/pulls", [
+            'state' => 'open',
+            'per_page' => 100,
+            'sort' => 'updated',
+            'direction' => 'desc',
+        ]);
+
+        if ($response->failed()) {
+            return response()->json(['pulls' => []], $response->status());
+        }
+
+        $pulls = collect($response->json())
+            ->map(fn ($pr) => [
+                'number' => $pr['number'] ?? null,
+                'title' => $pr['title'] ?? '',
+                'state' => $pr['state'] ?? '',
+                'html_url' => $pr['html_url'] ?? '',
+                'updated_at' => $pr['updated_at'] ?? null,
+                'author' => $pr['user']['login'] ?? '',
+            ])
+            ->values();
+
+        return response()->json(['pulls' => $pulls]);
+    }
 }

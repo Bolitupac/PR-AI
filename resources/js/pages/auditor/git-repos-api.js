@@ -1,4 +1,5 @@
 export async function fetchGitRepos(reposUrl) {
+    // Repo list for the modal selector.
     const res = await fetch(reposUrl, {
         headers: { Accept: 'application/json' },
     });

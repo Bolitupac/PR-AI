@@ -47,7 +47,15 @@
                 <header class="panel-head">
                     <span class="panel-title">Logic Auditor</span>
                     @auth
-                        <button class="repo-select" id="repo-select" type="button" data-repos-url="{{ route('github.repos') }}">Select repo</button>
+                        <button
+                            class="repo-select"
+                            id="repo-select"
+                            type="button"
+                            data-repos-url="{{ route('github.repos') }}"
+                            data-pulls-url="{{ route('github.pulls') }}"
+                        >
+                            Select repo
+                        </button>
                     @endauth
                     @guest
                         <a class="repo-connect" href="{{ route('github.redirect') }}">Connect GitHub</a>

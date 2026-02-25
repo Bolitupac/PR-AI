@@ -248,6 +248,12 @@ body {
     box-shadow: 0 0 0 3px rgba(107, 137, 196, 0.22);
 }
 
+.repo-select:disabled,
+.repo-select.is-loading {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
 .repo-connect {
     border: 1.5px solid #9cb2dd;
     background: #eff4ff;
@@ -353,6 +359,91 @@ body {
     font-size: 12px;
     font-weight: 700;
     cursor: pointer;
+}
+
+.repo-pr-box {
+    margin: 2px 0 12px;
+    border: 1.5px solid #d6deed;
+    border-radius: 12px;
+    background: #f8faff;
+    padding: 10px;
+}
+
+.repo-pr-state {
+    font-size: 12px;
+    color: #5d6a84;
+    margin-bottom: 8px;
+    border: 1px solid #d6deed;
+    background: #eef3fb;
+    border-radius: 8px;
+    padding: 6px 8px;
+    font-weight: 600;
+}
+
+.repo-pr-state.is-info {
+    color: #415777;
+    background: #eef3fb;
+    border-color: #d2ddee;
+}
+
+.repo-pr-state.is-loading {
+    color: #6f4a10;
+    background: #fff6e6;
+    border-color: #f3d79a;
+}
+
+.repo-pr-state.is-success {
+    color: #1f5f34;
+    background: #e9f8ee;
+    border-color: #b9e6c7;
+}
+
+.repo-pr-state.is-empty {
+    color: #7a4d18;
+    background: #fff4e5;
+    border-color: #f2d0a6;
+}
+
+.repo-pr-state.is-error {
+    color: #8c2435;
+    background: #ffecef;
+    border-color: #efbcc5;
+}
+
+.repo-pr-list {
+    max-height: 170px;
+    overflow-y: auto;
+    display: grid;
+    gap: 8px;
+}
+
+.repo-pr-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    border: 1px solid #d6deed;
+    border-radius: 10px;
+    background: #ffffff;
+    padding: 8px 10px;
+    cursor: pointer;
+}
+
+.repo-pr-item.is-selected {
+    border-color: #6d88c5;
+    background: #edf3ff;
+}
+
+.repo-pr-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1f2d45;
+    line-height: 1.35;
+}
+
+.repo-pr-meta {
+    font-size: 11px;
+    color: #66748f;
+    margin-top: 3px;
 }
 
 #monaco-editor {

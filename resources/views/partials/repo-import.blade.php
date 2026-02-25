@@ -13,6 +13,11 @@
             <option selected disabled>Loading repositories...</option>
         </select>
 
+        <div class="repo-pr-box" id="repo-pr-box">
+            <div class="repo-pr-state" id="repo-pr-state">Select a repository to view pull requests.</div>
+            <div class="repo-pr-list" id="repo-pr-list"></div>
+        </div>
+
         <button class="repo-import-action" type="button">Load repo</button>
     </div>
 </div>
