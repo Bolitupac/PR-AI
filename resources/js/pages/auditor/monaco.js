@@ -20,7 +20,7 @@ export function initMonacoEditor() {
         // Keep a global ref for other ui actions
         window.editor = window.monaco.editor.create(editorEl, {
             value: defaultCode,
-            language: 'php',
+            language: '',
             theme: 'vs-dark',
             automaticLayout: true,
             fontSize: 15,

@@ -1,4 +1,5 @@
 // Counts changed lines to drive the differences badge.
+// Counts changed lines to drive the differences badge.
 function countDifferences(diffText) {
     if (!diffText) return 0;
     return diffText.split('\n').reduce((count, line) => {
@@ -9,7 +10,7 @@ function countDifferences(diffText) {
 }
 
 // Renders diff text with diff2html or an empty placeholder.
-function drawDiff(container, diffText) {
+function drawDiff(container, diffText, outputFormat) {
     container.innerHTML = '';
 
     if (!diffText || !diffText.trim()) {
@@ -19,7 +20,8 @@ function drawDiff(container, diffText) {
 
     const diffUi = new window.Diff2HtmlUI(container, diffText, {
         drawFileList: true,
-        outputFormat: 'side-by-side',
+        fileListStartVisible: true,
+        outputFormat,
         matching: 'none',
         synchronisedScroll: true,
         highlight: true,
@@ -38,14 +40,27 @@ function drawDiff(container, diffText) {
 export function initDiffViewer() {
     const container = document.getElementById('diff2html-container');
     const badge = document.getElementById('diff-count-badge');
-    if (!container || !badge) return;
+    const formatSelect = document.getElementById('diff-format-select');
+    if (!container || !badge || !formatSelect) return;
 
-    drawDiff(container, '');
+    let currentDiffText = '';
+    let currentOutputFormat = formatSelect.value || 'side-by-side';
+
+    const renderCurrentDiff = () => {
+        drawDiff(container, currentDiffText, currentOutputFormat);
+    };
+
+    renderCurrentDiff();
+
+    formatSelect.addEventListener('change', function () {
+        currentOutputFormat = formatSelect.value || 'side-by-side';
+        renderCurrentDiff();
+    });
 
     document.addEventListener('auditor:diff-selected', function (event) {
-        const diffText = event?.detail?.diffText || '';
-        const diffCount = countDifferences(diffText);
+        currentDiffText = event?.detail?.diffText || '';
+        const diffCount = countDifferences(currentDiffText);
         badge.textContent = `${diffCount} Differences`;
-        drawDiff(container, diffText);
+        renderCurrentDiff();
     });
 }

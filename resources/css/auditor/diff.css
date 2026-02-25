@@ -20,6 +20,23 @@
     font-size: 20px;
 }
 
+.diff-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.diff-format-select {
+    border: 1.5px solid #9cb2dd;
+    background: #eff4ff;
+    color: #35579f;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    outline: none;
+}
+
 .badge-total {
     background: #ffe6ea;
     color: #9b1b30;

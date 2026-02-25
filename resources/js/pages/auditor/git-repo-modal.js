@@ -17,8 +17,10 @@ export function initGitRepoModal() {
     const pullsUrl = repoSelectTrigger.dataset.pullsUrl;
     const pullDiffUrl = repoSelectTrigger.dataset.pullDiffUrl;
     const closeButtons = document.querySelectorAll('[data-close="repo-modal"]');
+    const diffSection = document.getElementById('diff-section');
     let reposLoaded = false;
     let selectedPullNumber = null;
+    let loadingTicker = null;
 
     const setSingleOption = (text) => {
         repoSelectModal.innerHTML = '';
@@ -30,9 +32,28 @@ export function initGitRepoModal() {
     };
 
     const setPrState = (text, tone = 'info') => {
+        if (tone !== 'loading' && loadingTicker) {
+            clearInterval(loadingTicker);
+            loadingTicker = null;
+        }
         repoPrState.textContent = text;
         repoPrState.classList.remove('is-info', 'is-loading', 'is-success', 'is-empty', 'is-error');
         repoPrState.classList.add(`is-${tone}`);
+    };
+
+    // Shows a simple dot-loop while async requests run.
+    const startLoadingTicker = (baseText) => {
+        if (loadingTicker) {
+            clearInterval(loadingTicker);
+            loadingTicker = null;
+        }
+        const dots = ['.', '..', '...'];
+        let index = 0;
+        setPrState(`${baseText}${dots[index]}`, 'loading');
+        loadingTicker = setInterval(() => {
+            index = (index + 1) % dots.length;
+            setPrState(`${baseText}${dots[index]}`, 'loading');
+        }, 420);
     };
 
     const clearPrList = () => {
@@ -155,7 +176,7 @@ export function initGitRepoModal() {
         selectedPullNumber = null;
         repoModal.dataset.selectedPrNumber = '';
         setLoadButtonEnabled(false);
-        setPrState('Loading pull requests...', 'loading');
+        startLoadingTicker('Loading pull requests');
 
         if (!pullsUrl) {
             setPrState('Pull request URL is missing.', 'error');
@@ -178,7 +199,7 @@ export function initGitRepoModal() {
             return;
         }
 
-        setPrState('Loading selected pull request diff...', 'loading');
+        startLoadingTicker('Loading selected pull request diff');
         setLoadButtonEnabled(false);
 
         try {
@@ -191,7 +212,11 @@ export function initGitRepoModal() {
                     diffText,
                 },
             }));
+            setPrState(`Loaded PR #${selectedPullNumber}`, 'success');
             closeModal();
+            setTimeout(() => {
+                diffSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 80);
         } catch (error) {
             setPrState('Failed to load pull request diff.', 'error');
         } finally {
