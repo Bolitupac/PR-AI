@@ -14,6 +14,12 @@
     letter-spacing: 0.1px;
 }
 
+.panel-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .import-btn {
     border: 1.5px solid #9cb2dd;
     background: #eff4ff;
@@ -26,7 +32,8 @@
     cursor: pointer;
 }
 
-.repo-select {
+.repo-select,
+.repo-upload-btn {
     border: 1.5px solid #9cb2dd;
     background: #eff4ff;
     color: #35579f;
@@ -39,12 +46,14 @@
     outline: none;
 }
 
-.repo-select:focus {
+.repo-select:focus,
+.repo-upload-btn:focus {
     border-color: #6d88c5;
     box-shadow: 0 0 0 3px rgba(107, 137, 196, 0.22);
 }
 
 .repo-select:disabled,
+.repo-upload-btn:disabled,
 .repo-select.is-loading {
     opacity: 0.65;
     cursor: not-allowed;

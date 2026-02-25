@@ -18,6 +18,6 @@
             <div class="repo-pr-list" id="repo-pr-list"></div>
         </div>
 
-        <button class="repo-import-action" type="button">Load repo</button>
+        <button class="repo-import-action" id="load-repo-btn" type="button" disabled>Load repo</button>
     </div>
 </div>

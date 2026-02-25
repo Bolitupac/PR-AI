@@ -7,8 +7,9 @@ export function initGitRepoModal() {
     const repoSelectModal = document.getElementById('repo-import-select');
     const repoPrState = document.getElementById('repo-pr-state');
     const repoPrList = document.getElementById('repo-pr-list');
+    const loadRepoButton = document.getElementById('load-repo-btn');
 
-    if (!repoSelectTrigger || !repoModal || !repoSelectModal || !repoPrState || !repoPrList) return;
+    if (!repoSelectTrigger || !repoModal || !repoSelectModal || !repoPrState || !repoPrList || !loadRepoButton) return;
 
     const reposUrl = repoSelectTrigger.dataset.reposUrl;
     const pullsUrl = repoSelectTrigger.dataset.pullsUrl;
@@ -33,6 +34,10 @@ export function initGitRepoModal() {
 
     const clearPrList = () => {
         repoPrList.innerHTML = '';
+    };
+
+    const setLoadButtonEnabled = (enabled) => {
+        loadRepoButton.disabled = !enabled;
     };
 
     // Match GitHub-style relative timestamps.
@@ -67,6 +72,7 @@ export function initGitRepoModal() {
         item.classList.add('is-selected');
         selectedPullNumber = pull.number ?? null;
         repoModal.dataset.selectedPrNumber = selectedPullNumber ? String(selectedPullNumber) : '';
+        setLoadButtonEnabled(Boolean(selectedPullNumber));
         setPrState(`Selected PR #${pull.number ?? ''}`, 'success');
     };
 
@@ -74,6 +80,7 @@ export function initGitRepoModal() {
         clearPrList();
         selectedPullNumber = null;
         repoModal.dataset.selectedPrNumber = '';
+        setLoadButtonEnabled(false);
 
         if (!pulls.length) {
             setPrState('No pull requests found for this repository.', 'empty');
@@ -101,11 +108,13 @@ export function initGitRepoModal() {
         if (reposLoaded) return;
         if (!reposUrl) {
             setSingleOption('Repo URL is missing');
+            setLoadButtonEnabled(false);
             return;
         }
 
         repoSelectTrigger.disabled = true;
         repoSelectTrigger.classList.add('is-loading');
+        setLoadButtonEnabled(false);
 
         try {
             const repos = await fetchGitRepos(reposUrl);
@@ -120,6 +129,7 @@ export function initGitRepoModal() {
 
             if (!repos.length) {
                 setSingleOption('No repositories found');
+                setLoadButtonEnabled(false);
                 return;
             }
 
@@ -132,6 +142,7 @@ export function initGitRepoModal() {
             reposLoaded = true;
         } catch (error) {
             setSingleOption('Failed to load repos');
+            setLoadButtonEnabled(false);
         } finally {
             repoSelectTrigger.disabled = false;
             repoSelectTrigger.classList.remove('is-loading');
@@ -142,6 +153,7 @@ export function initGitRepoModal() {
         clearPrList();
         selectedPullNumber = null;
         repoModal.dataset.selectedPrNumber = '';
+        setLoadButtonEnabled(false);
         setPrState('Loading pull requests...', 'loading');
 
         if (!pullsUrl) {
@@ -181,6 +193,8 @@ export function initGitRepoModal() {
         if (!repoSelectModal.value) return;
         loadPullRequests(repoSelectModal.value);
     });
+
+    setLoadButtonEnabled(false);
 
     document.addEventListener('keydown', function (event) {
         if (event.key === 'Escape') closeModal();

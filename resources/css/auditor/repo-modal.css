@@ -89,6 +89,13 @@
     cursor: pointer;
 }
 
+.repo-import-action:disabled {
+    border-color: #cbd6ea;
+    background: #e8edf8;
+    color: #8a95ab;
+    cursor: not-allowed;
+}
+
 .repo-pr-box {
     margin: 2px 0 12px;
     border: 1.5px solid #d6deed;
@@ -101,35 +108,27 @@
     font-size: 12px;
     color: #5d6a84;
     margin-bottom: 8px;
-    background: #eef3fb;
-    border-radius: 8px;
-    padding: 6px 8px;
     font-weight: 600;
 }
 
 .repo-pr-state.is-info {
-    color: #415777;
-    background: #eef3fb;
+    color: #2454e6;
 }
 
 .repo-pr-state.is-loading {
-    color: #6f4a10;
-    background: #fff6e6;
+    color: #d97706;
 }
 
 .repo-pr-state.is-success {
-    color: #1f5f34;
-    background: #e9f8ee;
+    color: #15803d;
 }
 
 .repo-pr-state.is-empty {
-    color: #7a4d18;
-    background: #fff4e5;
+    color: #ca8a04;
 }
 
 .repo-pr-state.is-error {
-    color: #8c2435;
-    background: #ffecef;
+    color: #dc2626;
 }
 
 .repo-pr-list {
