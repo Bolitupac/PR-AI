@@ -54,6 +54,7 @@
                                 type="button"
                                 data-repos-url="{{ route('github.repos') }}"
                                 data-pulls-url="{{ route('github.pulls') }}"
+                                data-pull-diff-url="{{ route('github.pull-diff') }}"
                             >
                                 Select git repo
                             </button>
@@ -98,15 +99,7 @@
         </main>
     </section>
 
-    <section class="diff-section" id="diff-section">
-        <div class="diff-wrap">
-            <div class="diff-head">
-                <h2>Pull Request Diff Summary</h2>
-                <span class="badge-total">0 Errors</span>
-            </div>
-            <div id="diff2html-container"></div>
-        </div>
-    </section>
+    @include('partials.diff-viewer')
 </div>
 
 @include('partials.repo-import')

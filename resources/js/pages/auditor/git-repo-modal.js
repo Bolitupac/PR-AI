@@ -1,6 +1,8 @@
 import { fetchGitRepos } from './git-repos-api';
 import { fetchGitPullRequests } from './git-pulls-api';
+import { fetchGitPullDiff } from './git-diff-api';
 
+// Controls repo modal open/close, PR selection, and loading diff from GitHub.
 export function initGitRepoModal() {
     const repoSelectTrigger = document.getElementById('repo-select');
     const repoModal = document.getElementById('repo-modal');
@@ -13,6 +15,7 @@ export function initGitRepoModal() {
 
     const reposUrl = repoSelectTrigger.dataset.reposUrl;
     const pullsUrl = repoSelectTrigger.dataset.pullsUrl;
+    const pullDiffUrl = repoSelectTrigger.dataset.pullDiffUrl;
     const closeButtons = document.querySelectorAll('[data-close="repo-modal"]');
     let reposLoaded = false;
     let selectedPullNumber = null;
@@ -40,7 +43,6 @@ export function initGitRepoModal() {
         loadRepoButton.disabled = !enabled;
     };
 
-    // Match GitHub-style relative timestamps.
     const formatRelativeTime = (isoDate) => {
         if (!isoDate) return 'time unknown';
         const then = new Date(isoDate).getTime();
@@ -64,7 +66,6 @@ export function initGitRepoModal() {
         return days === 1 ? '1 day ago' : `${days} days ago`;
     };
 
-    // Keep one selected PR at a time.
     const selectPullItem = (item, pull) => {
         repoPrList.querySelectorAll('.repo-pr-item').forEach((node) => {
             node.classList.remove('is-selected');
@@ -169,6 +170,35 @@ export function initGitRepoModal() {
         }
     };
 
+    const loadSelectedPullDiff = async () => {
+        const repoFullName = repoSelectModal.value;
+        if (!repoFullName || !selectedPullNumber) return;
+        if (!pullDiffUrl) {
+            setPrState('Pull diff URL is missing.', 'error');
+            return;
+        }
+
+        setPrState('Loading selected pull request diff...', 'loading');
+        setLoadButtonEnabled(false);
+
+        try {
+            const diffText = await fetchGitPullDiff(pullDiffUrl, repoFullName, selectedPullNumber);
+            document.dispatchEvent(new CustomEvent('auditor:diff-selected', {
+                detail: {
+                    source: 'github',
+                    repo: repoFullName,
+                    prNumber: selectedPullNumber,
+                    diffText,
+                },
+            }));
+            closeModal();
+        } catch (error) {
+            setPrState('Failed to load pull request diff.', 'error');
+        } finally {
+            setLoadButtonEnabled(Boolean(selectedPullNumber));
+        }
+    };
+
     const openModal = () => {
         repoModal.classList.add('is-open');
         repoModal.setAttribute('aria-hidden', 'false');
@@ -195,6 +225,10 @@ export function initGitRepoModal() {
     });
 
     setLoadButtonEnabled(false);
+
+    loadRepoButton.addEventListener('click', function () {
+        loadSelectedPullDiff();
+    });
 
     document.addEventListener('keydown', function (event) {
         if (event.key === 'Escape') closeModal();

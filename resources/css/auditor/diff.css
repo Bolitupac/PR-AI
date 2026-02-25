@@ -34,32 +34,8 @@
     margin-top: 12px;
 }
 
-.d2h-wrapper {
-    text-align: left;
-}
-
-.d2h-file-header {
-    background: #eff3fb;
-    border-color: #d4deef;
-}
-
-.d2h-file-stats {
-    color: #465675;
-}
-
-.d2h-file-diff .d2h-del {
-    background-color: #ffe7eb;
-}
-
-.d2h-file-diff .d2h-ins {
-    background-color: #e7f6ec;
-}
-
-.d2h-file-list-wrapper {
-    border-color: #d4deef;
-    border-radius: 12px;
-}
-
-.d2h-file-list-header {
-    background: #eef3fb;
+.diff-empty {
+    font-size: 13px;
+    color: #5d6a84;
+    padding: 10px 6px;
 }
