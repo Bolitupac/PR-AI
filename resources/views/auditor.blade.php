@@ -110,6 +110,7 @@
 </div>
 
 @include('partials.repo-import')
+@include('partials.diff-upload')
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.min.js"></script>
 

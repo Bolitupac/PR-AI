@@ -1,0 +1,142 @@
+.diff-upload-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 220;
+}
+
+.diff-upload-modal.is-open {
+    display: flex;
+}
+
+.diff-upload-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 16, 28, 0.58);
+}
+
+.diff-upload-card {
+    position: relative;
+    width: min(520px, 92vw);
+    border: 1.5px solid #c9d5ea;
+    border-radius: 18px;
+    background: #ffffff;
+    padding: 18px;
+    box-shadow: 0 18px 40px rgba(36, 52, 84, 0.24);
+    z-index: 1;
+}
+
+.diff-upload-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #c9d5ea;
+    background: #f7f9ff;
+    color: #2a3956;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.diff-upload-head {
+    margin-bottom: 12px;
+}
+
+.diff-upload-title {
+    font-weight: 700;
+    font-size: 14px;
+    color: #1f2d45;
+}
+
+.diff-upload-sub {
+    font-size: 12px;
+    color: #5d6a84;
+    margin-top: 4px;
+}
+
+.diff-dropzone {
+    position: relative;
+    border: 1.5px dashed #9fb2d6;
+    border-radius: 12px;
+    background: #f7f9ff;
+    padding: 20px 12px;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.diff-dropzone.is-dragging {
+    border-color: #5d7fc4;
+    background: #edf2ff;
+}
+
+.diff-file-input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.diff-dropzone-main {
+    font-size: 13px;
+    font-weight: 700;
+    color: #2b3d5f;
+}
+
+.diff-dropzone-sub {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #5d6a84;
+}
+
+.diff-file-name {
+    font-size: 12px;
+    color: #495671;
+    margin-bottom: 6px;
+}
+
+.diff-upload-state {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.diff-upload-state.is-info {
+    color: #2454e6;
+}
+
+.diff-upload-state.is-loading {
+    color: #d97706;
+}
+
+.diff-upload-state.is-success {
+    color: #15803d;
+}
+
+.diff-upload-state.is-error {
+    color: #dc2626;
+}
+
+.diff-upload-action {
+    width: 100%;
+    border: 1.5px solid #6d88c5;
+    background: #4969af;
+    color: #ffffff;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.diff-upload-action:disabled {
+    border-color: #cbd6ea;
+    background: #e8edf8;
+    color: #8a95ab;
+    cursor: not-allowed;
+}
