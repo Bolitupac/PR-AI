@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Git PULL Assistant | Auditor</title>
     @vite(['resources/css/auditor-ui.css', 'resources/js/app.js'])
 </head>
@@ -73,19 +74,22 @@
                 <div id="monaco-editor" aria-label="Code Editor"></div>
             </section>
 
-            <section class="ai-panel">
+            <section
+                class="ai-panel"
+                id="ai-panel"
+                data-authenticated="{{ auth()->check() ? '1' : '0' }}"
+                data-ai-audit-url="{{ route('ai.audit-pr') }}"
+                data-ai-chat-url="{{ route('ai.chat-pr') }}"
+            >
                 <div class="ai-content">
                     <header class="panel-head ai-head">
                         <h3>PR ai</h3>
+                        <button class="repo-upload-btn" id="run-ai-audit-btn" type="button">Run AI Audit</button>
                     </header>
                     <hr class="line-sep">
 
                     <div id="ai-response-area" class="chat-demo-list">
-                        <div class="msg user">Can you summarize the most risky changes in this pull request?</div>
-                        <div class="msg ai">I found 2 high-risk logic changes in payment validation and role checks.</div>
-                        <div class="msg user">Show me one critical issue quickly.</div>
-                        <div class="msg ai">In <code>CheckoutService.php</code>, discount can go negative after stacked promos. Add a floor at zero.</div>
-                        <div class="msg ai">Scroll down to review the diff and all detected issues.</div>
+                        <div class="msg ai">Load or paste a diff, then click Run AI Audit.</div>
                     </div>
                 </div>
 
@@ -94,7 +98,7 @@
                         <img src="{{ asset('images/mic.png') }}" alt="Mic" class="action-icon">
                     </button>
 
-                    <input type="text" class="chat-input" id="user-prompt" placeholder="Ask Gemini...">
+                    <input type="text" class="chat-input" id="user-prompt" placeholder="Ask Gemini about this diff...">
 
                     <button class="action-btn" id="send-btn" type="button" aria-label="Send">
                         <img src="{{ asset('images/send.png') }}" alt="Send" class="action-icon">

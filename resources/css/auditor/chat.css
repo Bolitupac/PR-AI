@@ -26,6 +26,43 @@
     padding: 2px 0;
 }
 
+.msg.ai.ai-status {
+    font-weight: 600;
+}
+
+.msg.ai.ai-status.is-loading {
+    color: #2454e6;
+}
+
+.msg.ai.ai-status.is-error,
+.ai-error-text {
+    color: #dc2626;
+}
+
+.msg.ai.ai-status.is-success {
+    color: #15803d;
+}
+
+.ai-finding {
+    margin-top: 6px;
+}
+
+.ai-finding code,
+.msg.ai code {
+    background: #edf2ff;
+    border-radius: 6px;
+    padding: 1px 6px;
+}
+
+.msg.ai ul {
+    margin: 6px 0 6px 18px;
+    padding: 0;
+}
+
+.msg.ai p {
+    margin: 0 0 6px;
+}
+
 .chat-container {
     border-top: 2px solid #d3ddef;
     background: #e8eef8;

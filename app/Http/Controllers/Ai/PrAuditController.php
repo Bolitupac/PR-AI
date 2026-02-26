@@ -40,6 +40,10 @@ class PrAuditController extends Controller
 
         $raw = $this->geminiAuditService->runAudit($context);
         $normalized = $this->validator->normalize($raw, 'audit');
+        if ($this->hasInvalidJsonError($normalized)) {
+            $raw = $this->geminiAuditService->runAudit($context);
+            $normalized = $this->validator->normalize($raw, 'audit');
+        }
 
         return response()->json([
             'context' => [
@@ -73,6 +77,10 @@ class PrAuditController extends Controller
 
         $raw = $this->geminiAuditService->runChat($context, $question);
         $normalized = $this->validator->normalize($raw, 'chat');
+        if ($this->hasInvalidJsonError($normalized)) {
+            $raw = $this->geminiAuditService->runChat($context, $question);
+            $normalized = $this->validator->normalize($raw, 'chat');
+        }
 
         return response()->json([
             'context' => [
@@ -92,5 +100,15 @@ class PrAuditController extends Controller
 
         return $this->contextBuilder->buildFromRawDiff(is_string($diffText) ? $diffText : null);
     }
-}
 
+    // Checks if the response failed schema parsing.
+    private function hasInvalidJsonError(array $normalized): bool
+    {
+        $errors = $normalized['errors'] ?? [];
+        if (!is_array($errors) || !count($errors)) {
+            return false;
+        }
+
+        return in_array('Model returned invalid JSON.', $errors, true);
+    }
+}
