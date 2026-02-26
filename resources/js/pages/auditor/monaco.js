@@ -6,8 +6,12 @@ export function initMonacoEditor() {
     if (typeof window.require !== 'function') return;
 
     const defaultCode =
-        "<" +
-        "?php\n\n// Paste logic here to audit...\n\nclass LogicAuditor {\n    public function check() {\n        return true;\n    }\n}";
+        "# Paste git diff code here...\n" +
+        "# Example:\n" +
+        "# diff --git a/file.js b/file.js\n" +
+        "# @@ -1,2 +1,2 @@\n" +
+        "# -old line\n" +
+        "# +new line";
 
     window.require.config({
         paths: {
@@ -20,7 +24,7 @@ export function initMonacoEditor() {
         // Keep a global ref for other ui actions
         window.editor = window.monaco.editor.create(editorEl, {
             value: defaultCode,
-            language: '',
+            language: 'diff',
             theme: 'vs-dark',
             automaticLayout: true,
             fontSize: 15,

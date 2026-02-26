@@ -59,12 +59,17 @@
                                 Select git repo
                             </button>
                             <button class="repo-upload-btn" id="upload-diff-btn" type="button">Upload diff file</button>
+                            <button class="repo-upload-btn" id="render-diff-btn" type="button">Render Diff</button>
                         </div>
                     @endauth
                     @guest
-                        <a class="repo-connect" href="{{ route('github.redirect') }}">Connect GitHub</a>
+                        <div class="panel-actions">
+                            <a class="repo-connect" href="{{ route('github.redirect') }}">Connect GitHub</a>
+                            <button class="repo-upload-btn" id="render-diff-btn" type="button">Render Diff</button>
+                        </div>
                     @endguest
                 </header>
+                <div class="editor-status is-info" id="editor-diff-status">Paste unified git diff, then click Render Diff.</div>
                 <div id="monaco-editor" aria-label="Code Editor"></div>
             </section>
 

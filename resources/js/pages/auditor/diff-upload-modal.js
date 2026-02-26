@@ -103,5 +103,8 @@ export function initDiffUploadModal() {
             },
         }));
         closeModal();
+        setTimeout(() => {
+            document.getElementById('diff-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 80);
     });
 }

@@ -70,3 +70,21 @@
     letter-spacing: 0.4px;
     text-decoration: none;
 }
+
+.editor-status {
+    margin: 0 4px 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.editor-status.is-info {
+    color: #2454e6;
+}
+
+.editor-status.is-success {
+    color: #15803d;
+}
+
+.editor-status.is-error {
+    color: #dc2626;
+}
