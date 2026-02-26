@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GitHubOAuthController;
 use App\Http\Controllers\GitHubRepositoryController;
+use App\Http\Controllers\Ai\PrAuditController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -23,3 +24,9 @@ Route::get('/api/github/pulls', [GitHubRepositoryController::class, 'pullRequest
 Route::get('/api/github/pull-diff', [GitHubRepositoryController::class, 'pullDiff'])
     ->middleware('auth')
     ->name('github.pull-diff');
+Route::post('/api/ai/audit-pr', [PrAuditController::class, 'audit'])
+    ->middleware('auth')
+    ->name('ai.audit-pr');
+Route::post('/api/ai/chat-pr', [PrAuditController::class, 'chat'])
+    ->middleware('auth')
+    ->name('ai.chat-pr');

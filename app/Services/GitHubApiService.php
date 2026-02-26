@@ -7,11 +7,19 @@ use Illuminate\Support\Facades\Http;
 
 class GitHubApiService
 {
+    // Creates an authenticated GitHub API client from encrypted token.
+    private function client(string $encryptedToken)
+    {
+        $token = Crypt::decryptString($encryptedToken);
+
+        return Http::withToken($token)
+            ->withHeaders(['Accept' => 'application/vnd.github+json']);
+    }
+
     // Fetches current user's repositories from GitHub.
     public function getRepos(string $encryptedToken): array
     {
-        $token = Crypt::decryptString($encryptedToken);
-        $response = Http::withToken($token)->get('https://api.github.com/user/repos', [
+        $response = $this->client($encryptedToken)->get('https://api.github.com/user/repos', [
             'per_page' => 100,
             'sort' => 'updated',
         ]);
@@ -34,8 +42,7 @@ class GitHubApiService
     // Fetches open pull requests for a selected repository.
     public function getPullRequests(string $encryptedToken, string $repo): array
     {
-        $token = Crypt::decryptString($encryptedToken);
-        $response = Http::withToken($token)->get("https://api.github.com/repos/{$repo}/pulls", [
+        $response = $this->client($encryptedToken)->get("https://api.github.com/repos/{$repo}/pulls", [
             'state' => 'open',
             'per_page' => 100,
             'sort' => 'updated',
@@ -74,5 +81,87 @@ class GitHubApiService
         }
 
         return ['ok' => true, 'status' => 200, 'data' => $response->body()];
+    }
+
+    // Fetches pull request details used for AI context.
+    public function getPullDetails(string $encryptedToken, string $repo, string $prNumber): array
+    {
+        $response = $this->client($encryptedToken)->get("https://api.github.com/repos/{$repo}/pulls/{$prNumber}");
+
+        if ($response->failed()) {
+            return ['ok' => false, 'status' => $response->status(), 'data' => []];
+        }
+
+        $data = $response->json();
+
+        return [
+            'ok' => true,
+            'status' => 200,
+            'data' => [
+                'number' => $data['number'] ?? null,
+                'title' => $data['title'] ?? '',
+                'body' => $data['body'] ?? '',
+                'state' => $data['state'] ?? '',
+                'author' => $data['user']['login'] ?? '',
+                'changed_files' => $data['changed_files'] ?? 0,
+                'additions' => $data['additions'] ?? 0,
+                'deletions' => $data['deletions'] ?? 0,
+                'comments' => $data['comments'] ?? 0,
+                'review_comments' => $data['review_comments'] ?? 0,
+                'updated_at' => $data['updated_at'] ?? null,
+            ],
+        ];
+    }
+
+    // Fetches issue comments for a pull request.
+    public function getPullIssueComments(string $encryptedToken, string $repo, string $prNumber): array
+    {
+        $response = $this->client($encryptedToken)->get("https://api.github.com/repos/{$repo}/issues/{$prNumber}/comments", [
+            'per_page' => 100,
+            'sort' => 'updated',
+            'direction' => 'desc',
+        ]);
+
+        if ($response->failed()) {
+            return ['ok' => false, 'status' => $response->status(), 'data' => []];
+        }
+
+        $comments = collect($response->json())
+            ->map(fn ($comment) => [
+                'author' => $comment['user']['login'] ?? '',
+                'body' => $comment['body'] ?? '',
+                'updated_at' => $comment['updated_at'] ?? null,
+            ])
+            ->values()
+            ->all();
+
+        return ['ok' => true, 'status' => 200, 'data' => $comments];
+    }
+
+    // Fetches code review comments for a pull request.
+    public function getPullReviewComments(string $encryptedToken, string $repo, string $prNumber): array
+    {
+        $response = $this->client($encryptedToken)->get("https://api.github.com/repos/{$repo}/pulls/{$prNumber}/comments", [
+            'per_page' => 100,
+            'sort' => 'updated',
+            'direction' => 'desc',
+        ]);
+
+        if ($response->failed()) {
+            return ['ok' => false, 'status' => $response->status(), 'data' => []];
+        }
+
+        $comments = collect($response->json())
+            ->map(fn ($comment) => [
+                'author' => $comment['user']['login'] ?? '',
+                'path' => $comment['path'] ?? '',
+                'line' => $comment['line'] ?? null,
+                'body' => $comment['body'] ?? '',
+                'updated_at' => $comment['updated_at'] ?? null,
+            ])
+            ->values()
+            ->all();
+
+        return ['ok' => true, 'status' => 200, 'data' => $comments];
     }
 }

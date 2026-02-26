@@ -36,4 +36,13 @@ return [
     */
 
     'request_timeout' => env('GEMINI_REQUEST_TIMEOUT', 30),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Gemini Model
+    |--------------------------------------------------------------------------
+    |
+    | Default model used for PR audit and chat responses.
+    */
+    'model' => env('GEMINI_MODEL', 'gemini-1.5-flash'),
 ];
