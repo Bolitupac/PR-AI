@@ -26,6 +26,43 @@
     padding: 2px 0;
 }
 
+.msg.ai.ai-status {
+    font-weight: 600;
+}
+
+.msg.ai.ai-status.is-loading {
+    color: #2454e6;
+}
+
+.msg.ai.ai-status.is-error,
+.ai-error-text {
+    color: #dc2626;
+}
+
+.msg.ai.ai-status.is-success {
+    color: #15803d;
+}
+
+.ai-finding {
+    margin-top: 6px;
+}
+
+.ai-finding code,
+.msg.ai code {
+    background: #edf2ff;
+    border-radius: 6px;
+    padding: 1px 6px;
+}
+
+.msg.ai ul {
+    margin: 6px 0 6px 18px;
+    padding: 0;
+}
+
+.msg.ai p {
+    margin: 0 0 6px;
+}
+
 .chat-container {
     border-top: 2px solid #d3ddef;
     background: #e8eef8;
@@ -50,6 +87,18 @@
 .chat-input:focus {
     border-color: #8aa1d0;
     box-shadow: 0 0 0 3px rgba(107, 137, 196, 0.22);
+}
+
+.provider-toggle {
+    height: 40px;
+    border-radius: 11px;
+    border: 1.5px solid #9cb2dd;
+    background: #eff4ff;
+    color: #35579f;
+    padding: 0 12px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
 }
 
 .action-btn {
