@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Git PULL Assistant | Auditor</title>
     @vite(['resources/css/auditor-ui.css', 'resources/js/app.js'])
 </head>
@@ -80,13 +81,7 @@
                     </header>
                     <hr class="line-sep">
 
-                    <div id="ai-response-area" class="chat-demo-list">
-                        <div class="msg user">Can you summarize the most risky changes in this pull request?</div>
-                        <div class="msg ai">I found 2 high-risk logic changes in payment validation and role checks.</div>
-                        <div class="msg user">Show me one critical issue quickly.</div>
-                        <div class="msg ai">In <code>CheckoutService.php</code>, discount can go negative after stacked promos. Add a floor at zero.</div>
-                        <div class="msg ai">Scroll down to review the diff and all detected issues.</div>
-                    </div>
+                    <div id="ai-response-area" class="chat-demo-list"></div>
                 </div>
 
                 <div class="chat-container">
@@ -96,7 +91,7 @@
 
                     <input type="text" class="chat-input" id="user-prompt" placeholder="Ask Gemini...">
 
-                    <button class="action-btn" id="send-btn" type="button" aria-label="Send">
+                    <button class="action-btn" id="send-btn" type="button" aria-label="Send" data-chat-url="{{ route('ai.chat') }}">
                         <img src="{{ asset('images/send.png') }}" alt="Send" class="action-icon">
                     </button>
                 </div>

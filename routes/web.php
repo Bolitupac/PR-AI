@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GitHubOAuthController;
 use App\Http\Controllers\GitHubRepositoryController;
+use App\Http\Controllers\Ai\SimpleChatController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -23,3 +24,4 @@ Route::get('/api/github/pulls', [GitHubRepositoryController::class, 'pullRequest
 Route::get('/api/github/pull-diff', [GitHubRepositoryController::class, 'pullDiff'])
     ->middleware('auth')
     ->name('github.pull-diff');
+Route::post('/api/ai/chat', [SimpleChatController::class, 'chat'])->name('ai.chat');

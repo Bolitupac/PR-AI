@@ -36,4 +36,7 @@ return [
     */
 
     'request_timeout' => env('GEMINI_REQUEST_TIMEOUT', 30),
+
+    // Primary model used by simple chat.
+    'model' => env('GEMINI_MODEL', 'gemini-3-flash-preview'),
 ];
