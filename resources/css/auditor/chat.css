@@ -63,6 +63,31 @@
     margin: 0 0 6px;
 }
 
+.chat-status-line {
+    align-self: flex-start;
+    font-size: 12px;
+    line-height: 1.35;
+    margin: -4px 0 2px;
+    opacity: 0.96;
+    transition: opacity 0.22s ease;
+}
+
+.chat-status-line.is-info {
+    color: #2454e6;
+}
+
+.chat-status-line.is-success {
+    color: #15803d;
+}
+
+.chat-status-line.is-error {
+    color: #dc2626;
+}
+
+.chat-status-line.is-fading {
+    opacity: 0;
+}
+
 .chat-container {
     border-top: 2px solid #d3ddef;
     background: #e8eef8;

@@ -1,3 +1,5 @@
+import { createChatStatus } from './chat-status';
+
 // Pushes user input into the chat area as a new message.
 export function initChatInput() {
     const responseArea = document.getElementById('ai-response-area');
@@ -12,18 +14,35 @@ export function initChatInput() {
         message.textContent = text;
         responseArea.appendChild(message);
         responseArea.scrollTop = responseArea.scrollHeight;
+        return message;
     };
 
     const sendMessage = async () => {
-        const text = promptInput.value.trim();
-        if (!text) return;
-        appendMessage(text, 'user');
+        const rawText = promptInput.value;
+        const text = rawText.trim();
+        if (!text) {
+            const status = createChatStatus({ container: responseArea, anchorNode: null });
+            status.set('Validating message...');
+            status.markError('Message is empty.');
+            return;
+        }
+
+        const previewAnchor = appendMessage(text, 'user');
+        const status = createChatStatus({ container: responseArea, anchorNode: previewAnchor });
+        status.set('Validating message...');
+        status.set('Message validated.');
+        status.set('Preparing request...');
 
         promptInput.value = '';
-        sendButton.disabled = true;
 
         const chatUrl = sendButton.dataset.chatUrl || '/api/ai/chat';
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        status.startDots('Sending request to backend');
+        let switchedToAwaiting = false;
+        const awaitingTimer = setTimeout(() => {
+            switchedToAwaiting = true;
+            status.startDots('Awaiting backend response');
+        }, 550);
 
         try {
             const res = await fetch(chatUrl, {
@@ -35,18 +54,28 @@ export function initChatInput() {
                 },
                 body: JSON.stringify({ message: text }),
             });
+            clearTimeout(awaitingTimer);
+            if (!switchedToAwaiting) {
+                status.stopDots();
+            }
+            status.set('Backend responded.');
 
             const data = await res.json().catch(() => ({}));
             if (!res.ok) {
+                status.markError('Request failed.');
                 appendMessage(data?.message || 'Chat request failed.', 'ai');
                 return;
             }
 
+            status.set('Rendering AI response...');
             appendMessage(data?.reply || 'No response from AI.', 'ai');
+            status.markSuccess('Request sent.');
+            status.remove(450);
         } catch (error) {
+            clearTimeout(awaitingTimer);
+            status.markError('Request failed.');
             appendMessage('Could not reach AI service.', 'ai');
         } finally {
-            sendButton.disabled = false;
             promptInput.focus();
         }
     };

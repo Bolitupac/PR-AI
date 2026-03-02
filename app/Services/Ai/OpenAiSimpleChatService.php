@@ -7,6 +7,10 @@ use Throwable;
 
 class OpenAiSimpleChatService
 {
+    private const SYSTEM_PROMPT = 'You are PR-AI, a concise pull request audit assistant. '
+        .'Give practical, direct answers. Use short bullet points when useful. '
+        .'If unsure, say what information is missing.';
+
     // Sends one user message to OpenAI and returns plain text.
     public function reply(string $message): string
     {
@@ -28,6 +32,10 @@ class OpenAiSimpleChatService
                 ->post($url, [
                     'model' => $model,
                     'messages' => [
+                        [
+                            'role' => 'system',
+                            'content' => self::SYSTEM_PROMPT,
+                        ],
                         [
                             'role' => 'user',
                             'content' => $message,
@@ -58,4 +66,3 @@ class OpenAiSimpleChatService
         }
     }
 }
-
