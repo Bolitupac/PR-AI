@@ -1,6 +1,7 @@
 import { fetchGitRepos } from './git-repos-api';
 import { fetchGitPullRequests } from './git-pulls-api';
 import { fetchGitPullDiff } from './git-diff-api';
+import { saveAuditSnapshot } from './audit-snapshot-api';
 
 // Controls repo modal open/close, PR selection, and loading diff from GitHub.
 export function initGitRepoModal() {
@@ -16,6 +17,7 @@ export function initGitRepoModal() {
     const reposUrl = repoSelectTrigger.dataset.reposUrl;
     const pullsUrl = repoSelectTrigger.dataset.pullsUrl;
     const pullDiffUrl = repoSelectTrigger.dataset.pullDiffUrl;
+    const snapshotUrl = repoSelectTrigger.dataset.snapshotUrl;
     const closeButtons = document.querySelectorAll('[data-close="repo-modal"]');
     const diffSection = document.getElementById('diff-section');
     let reposLoaded = false;
@@ -212,11 +214,28 @@ export function initGitRepoModal() {
                     diffText,
                 },
             }));
-            setPrState(`Loaded PR #${selectedPullNumber}`, 'success');
-            closeModal();
+
+            if (snapshotUrl) {
+                startLoadingTicker('Saving snapshot file');
+                try {
+                    const snapshot = await saveAuditSnapshot(snapshotUrl, {
+                        source: 'github',
+                        repo: repoFullName,
+                        pr_number: selectedPullNumber,
+                        diff_text: diffText,
+                    });
+                    setPrState(`Loaded PR #${selectedPullNumber}. Saved to ${snapshot.path}`, 'success');
+                } catch (error) {
+                    setPrState(`Loaded PR #${selectedPullNumber}. Snapshot save failed.`, 'error');
+                }
+            } else {
+                setPrState(`Loaded PR #${selectedPullNumber}`, 'success');
+            }
+
             setTimeout(() => {
+                closeModal();
                 diffSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 80);
+            }, 520);
         } catch (error) {
             setPrState('Failed to load pull request diff.', 'error');
         } finally {

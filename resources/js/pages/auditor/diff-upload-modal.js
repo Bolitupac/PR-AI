@@ -1,4 +1,5 @@
 import { readDiffFile } from './diff-file-reader';
+import { saveAuditSnapshot } from './audit-snapshot-api';
 
 // Controls the diff upload modal and emits selected diff content.
 export function initDiffUploadModal() {
@@ -10,6 +11,7 @@ export function initDiffUploadModal() {
     const fileName = document.getElementById('diff-file-name');
     const state = document.getElementById('diff-upload-state');
     const actionBtn = document.getElementById('diff-upload-action');
+    const snapshotUrl = openBtn.dataset.snapshotUrl;
 
     if (!openBtn || !modal || !dropzone || !fileInput || !fileName || !state || !actionBtn) return;
 
@@ -94,17 +96,35 @@ export function initDiffUploadModal() {
 
     actionBtn.addEventListener('click', function () {
         if (!selectedDiff) return;
-        setState(`Using ${selectedDiff.name}`, 'success');
-        document.dispatchEvent(new CustomEvent('auditor:diff-selected', {
-            detail: {
-                source: 'upload',
-                name: selectedDiff.name,
-                diffText: selectedDiff.content,
-            },
-        }));
-        closeModal();
-        setTimeout(() => {
-            document.getElementById('diff-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 80);
+        const run = async () => {
+            setState(`Using ${selectedDiff.name}`, 'success');
+            document.dispatchEvent(new CustomEvent('auditor:diff-selected', {
+                detail: {
+                    source: 'upload',
+                    name: selectedDiff.name,
+                    diffText: selectedDiff.content,
+                },
+            }));
+
+            if (snapshotUrl) {
+                setState('Saving snapshot file...', 'loading');
+                try {
+                    const snapshot = await saveAuditSnapshot(snapshotUrl, {
+                        source: 'upload',
+                        file_name: selectedDiff.name,
+                        diff_text: selectedDiff.content,
+                    });
+                    setState(`Snapshot saved: ${snapshot.path}`, 'success');
+                } catch (error) {
+                    setState('Snapshot save failed.', 'error');
+                }
+            }
+
+            setTimeout(() => {
+                closeModal();
+                document.getElementById('diff-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 520);
+        };
+        run();
     });
 }

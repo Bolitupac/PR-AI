@@ -57,17 +57,21 @@
                                 <button class="repo-select" id="repo-select" type="button"
                                     data-repos-url="{{ route('github.repos') }}"
                                     data-pulls-url="{{ route('github.pulls') }}"
-                                    data-pull-diff-url="{{ route('github.pull-diff') }}">
+                                    data-pull-diff-url="{{ route('github.pull-diff') }}"
+                                    data-snapshot-url="{{ route('audit.snapshot') }}">
                                     Select git repo
                                 </button>
-                                <button class="repo-upload-btn" id="upload-diff-btn" type="button">Upload diff file</button>
-                                <button class="repo-upload-btn" id="render-diff-btn" type="button">Render Diff</button>
+                                <button class="repo-upload-btn" id="upload-diff-btn" type="button"
+                                    data-snapshot-url="{{ route('audit.snapshot') }}">Upload diff file</button>
+                                <button class="repo-upload-btn" id="render-diff-btn" type="button"
+                                    data-snapshot-url="{{ route('audit.snapshot') }}">Render Diff</button>
                             </div>
                         @endauth
                         @guest
                             <div class="panel-actions">
                                 <a class="repo-connect" href="{{ route('github.redirect') }}">Connect GitHub</a>
-                                <button class="repo-upload-btn" id="render-diff-btn" type="button">Render Diff</button>
+                                <button class="repo-upload-btn" id="render-diff-btn" type="button"
+                                    data-snapshot-url="{{ route('audit.snapshot') }}">Render Diff</button>
                             </div>
                         @endguest
                     </header>
