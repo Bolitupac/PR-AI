@@ -14,8 +14,8 @@
     min-height: 0;
     min-width: 0;
     display: flex;
-    gap: 18px;
-    padding: 16px;
+    gap: 14px;
+    padding: 14px;
     background: var(--workspace-bg);
 }
 
@@ -23,16 +23,16 @@
 .ai-panel,
 .diff-wrap {
     min-height: 0;
-    border-radius: 26px;
-    border: 2px solid var(--panel-stroke);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--panel-stroke);
     background: var(--panel-bg);
     box-shadow: var(--panel-shadow);
 }
 
 .codebox-outer {
-    flex: 1.75;
+    flex: 1;
     min-width: 0;
-    padding: 14px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -42,17 +42,17 @@
     flex: 1;
     min-height: 300px;
     width: 100%;
-    border-radius: 18px;
-    border: 2px solid #2d364f;
+    border-radius: var(--radius-lg);
+    border: 1px solid #2b3550;
     overflow: hidden;
     background: #1e1e1e;
 }
 
 .ai-panel {
     flex: 1;
-    max-width: 420px;
-    min-width: 320px;
-    max-height: calc(100vh - 32px);
+    max-width: none;
+    min-width: 0;
+    max-height: calc(100vh - 28px);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -61,7 +61,7 @@
 .ai-content {
     flex: 1;
     min-height: 0;
-    padding: 16px 18px;
+    padding: 14px 16px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -69,6 +69,6 @@
 
 .line-sep {
     border: 0;
-    border-top: 1px solid #d7deeb;
-    margin: 10px 0 14px;
+    border-top: 1px solid #e0e4ee;
+    margin: 8px 0 12px;
 }

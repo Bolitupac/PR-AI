@@ -9,9 +9,10 @@
 .panel-title,
 .ai-head h3 {
     margin: 0;
-    font-size: 16px;
-    font-weight: 700;
+    font-size: 17px;
+    font-weight: 650;
     letter-spacing: 0.1px;
+    color: var(--text-main);
 }
 
 .panel-actions {
@@ -21,9 +22,9 @@
 }
 
 .import-btn {
-    border: 1.5px solid #9cb2dd;
-    background: #eff4ff;
-    color: #35579f;
+    border: 1px solid #cdd5e7;
+    background: #f6f8fd;
+    color: #233150;
     border-radius: 999px;
     padding: 8px 14px;
     font-size: 12px;
@@ -34,9 +35,9 @@
 
 .repo-select,
 .repo-upload-btn {
-    border: 1.5px solid #9cb2dd;
-    background: #eff4ff;
-    color: #35579f;
+    border: 1px solid #cdd5e7;
+    background: #f6f8fd;
+    color: #233150;
     border-radius: 999px;
     padding: 8px 14px;
     font-size: 12px;
@@ -48,8 +49,8 @@
 
 .repo-select:focus,
 .repo-upload-btn:focus {
-    border-color: #6d88c5;
-    box-shadow: 0 0 0 3px rgba(107, 137, 196, 0.22);
+    border-color: #8aa4da;
+    box-shadow: 0 0 0 3px rgba(0, 133, 255, 0.16);
 }
 
 .repo-select:disabled,
@@ -60,9 +61,9 @@
 }
 
 .repo-connect {
-    border: 1.5px solid #9cb2dd;
-    background: #eff4ff;
-    color: #35579f;
+    border: 1px solid #cdd5e7;
+    background: #f6f8fd;
+    color: #233150;
     border-radius: 999px;
     padding: 8px 14px;
     font-size: 12px;
@@ -74,7 +75,7 @@
 .editor-status {
     margin: 0 4px 6px;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .editor-status.is-info {

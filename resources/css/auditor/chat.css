@@ -17,16 +17,16 @@
 
 .msg.user {
     align-self: flex-end;
-    border: 1.5px solid #a8badf;
-    background: #f3f7ff;
-    color: #1d335f;
-    border-radius: 14px;
+    border: 1px solid #cad5ec;
+    background: #f5f8ff;
+    color: #1f345e;
+    border-radius: var(--radius-md);
     padding: 9px 12px;
 }
 
 .msg.ai {
     align-self: flex-start;
-    color: #49556f;
+    color: #49516a;
     padding: 2px 0;
 }
 
@@ -185,10 +185,10 @@
     flex: 1;
     min-height: 46px;
     max-height: 180px;
-    border-radius: 14px;
-    border: 1.5px solid rgba(199, 210, 226, 0.9);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(201, 208, 222, 0.92);
     padding: 12px 14px;
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(249, 250, 253, 0.72);
     font-size: 14px;
     color: var(--text-main);
     outline: none;
@@ -199,24 +199,24 @@
 }
 
 .chat-input:focus {
-    border-color: #8aa1d0;
-    box-shadow: 0 0 0 3px rgba(107, 137, 196, 0.22);
+    border-color: #8fb2ef;
+    box-shadow: 0 0 0 3px rgba(0, 133, 255, 0.14);
 }
 
 .action-btn {
     width: 44px;
     height: 44px;
-    border-radius: 12px;
-    border: 1.5px solid rgba(73, 105, 175, 0.72);
-    background: rgba(79, 111, 184, 0.2);
+    border-radius: var(--radius-sm);
+    border: 1px solid #0b78ff;
+    background: linear-gradient(135deg, #009eff, #0085ff);
     display: grid;
     place-items: center;
     cursor: pointer;
 }
 
 .action-btn.ghost {
-    border-color: rgba(196, 209, 233, 0.82);
-    background: rgba(255, 255, 255, 0.14);
+    border-color: #0b78ff;
+    background: linear-gradient(135deg, #009eff, #0085ff);
 }
 
 .action-btn.is-stop {
@@ -232,4 +232,5 @@
     height: 18px;
     object-fit: contain;
     display: block;
+    filter: brightness(0) invert(1);
 }

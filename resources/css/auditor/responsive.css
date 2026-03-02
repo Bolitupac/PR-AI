@@ -9,7 +9,7 @@
         flex-direction: row;
         justify-content: space-between;
         border-right: 0;
-        border-bottom: 2px solid #d3ddef;
+        border-bottom: 1px solid var(--panel-stroke);
     }
 
     .sidebar-bottom {

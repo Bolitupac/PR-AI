@@ -1,10 +1,10 @@
 .diff-section {
-    padding: 18px 16px 28px calc(var(--sidebar-width) + 16px);
+    padding: 16px 14px 24px calc(var(--sidebar-width) + 14px);
     background: transparent;
 }
 
 .diff-wrap {
-    padding: 18px;
+    padding: 16px;
 }
 
 .diff-head {
@@ -17,7 +17,8 @@
 
 .diff-head h2 {
     margin: 0;
-    font-size: 20px;
+    font-size: 19px;
+    color: var(--text-main);
 }
 
 .diff-controls {
@@ -27,9 +28,9 @@
 }
 
 .diff-format-select {
-    border: 1.5px solid #9cb2dd;
-    background: #eff4ff;
-    color: #35579f;
+    border: 1px solid #cdd5e7;
+    background: #f6f8fd;
+    color: #233150;
     border-radius: 999px;
     padding: 6px 12px;
     font-size: 12px;
@@ -38,9 +39,9 @@
 }
 
 .badge-total {
-    background: #ffe6ea;
-    color: #9b1b30;
-    border: 1px solid #f0b8c3;
+    background: #edf5ff;
+    color: #1e4f96;
+    border: 1px solid #cde1ff;
     border-radius: 999px;
     padding: 6px 12px;
     font-size: 12px;
@@ -53,6 +54,6 @@
 
 .diff-empty {
     font-size: 13px;
-    color: #5d6a84;
+    color: var(--text-soft);
     padding: 10px 6px;
 }

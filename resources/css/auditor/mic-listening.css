@@ -1,0 +1,120 @@
+.mic-listening-modal {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: rgba(9, 11, 30, 0.52);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease;
+    z-index: 1200;
+}
+
+.mic-listening-modal.is-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.mic-listening-card {
+    width: min(520px, calc(100vw - 36px));
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: rgba(250, 252, 255, 0.95);
+    box-shadow: 0 28px 60px rgba(15, 35, 89, 0.34);
+    overflow: hidden;
+}
+
+.mic-listening-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px 0;
+}
+
+.mic-listening-title {
+    margin: 0;
+    color: #0f1f46;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.mic-listening-close {
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    border: 1px solid rgba(24, 72, 160, 0.25);
+    background: #ffffff;
+    color: #204a9e;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.mic-listening-body {
+    padding: 12px 16px 18px;
+}
+
+.mic-wave {
+    position: relative;
+    height: 172px;
+    border-radius: 16px;
+    background: linear-gradient(130deg, #009eff, #0085ff, #9360ff, #009eff);
+    background-size: 230% 230%;
+    animation: mic-gradient 4s ease infinite;
+    overflow: hidden;
+}
+
+.mic-wave::before,
+.mic-wave::after {
+    content: '';
+    position: absolute;
+    left: -22%;
+    right: -22%;
+    height: 58%;
+    border-radius: 44% 56% 53% 47% / 56% 40% 60% 44%;
+    background: rgba(255, 255, 255, 0.28);
+    animation: mic-wave-float 4.4s ease-in-out infinite;
+}
+
+.mic-wave::before {
+    bottom: -25%;
+}
+
+.mic-wave::after {
+    bottom: -34%;
+    opacity: 0.58;
+    animation-delay: -2.1s;
+}
+
+.mic-listening-text {
+    margin: 10px 2px 0;
+    color: #223966;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+@keyframes mic-gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes mic-wave-float {
+    0%,
+    100% {
+        transform: translateX(-2%) translateY(0) scale(1);
+    }
+
+    50% {
+        transform: translateX(2%) translateY(-10px) scale(1.04);
+    }
+}

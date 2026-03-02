@@ -6,5 +6,6 @@
 @import './auditor/repo-modal.css';
 @import './auditor/diff-upload-modal.css';
 @import './auditor/chat.css';
+@import './auditor/mic-listening.css';
 @import './auditor/diff.css';
 @import './auditor/responsive.css';

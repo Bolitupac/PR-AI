@@ -14,17 +14,17 @@
 .diff-upload-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(10, 16, 28, 0.58);
+    background: rgba(17, 24, 39, 0.32);
 }
 
 .diff-upload-card {
     position: relative;
     width: min(520px, 92vw);
-    border: 1.5px solid #c9d5ea;
-    border-radius: 18px;
-    background: #ffffff;
+    border: 1px solid #d7dce8;
+    border-radius: var(--radius-lg);
+    background: #fbfcfe;
     padding: 18px;
-    box-shadow: 0 18px 40px rgba(36, 52, 84, 0.24);
+    box-shadow: 0 24px 50px rgba(22, 31, 51, 0.14);
     z-index: 1;
 }
 
@@ -35,9 +35,9 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    border: 1px solid #c9d5ea;
-    background: #f7f9ff;
-    color: #2a3956;
+    border: 1px solid #d8ddea;
+    background: #f8f9fc;
+    color: #2d3b58;
     font-size: 18px;
     line-height: 1;
     cursor: pointer;
@@ -50,20 +50,20 @@
 .diff-upload-title {
     font-weight: 700;
     font-size: 14px;
-    color: #1f2d45;
+    color: var(--text-main);
 }
 
 .diff-upload-sub {
     font-size: 12px;
-    color: #5d6a84;
+    color: var(--text-soft);
     margin-top: 4px;
 }
 
 .diff-dropzone {
     position: relative;
-    border: 1.5px dashed #9fb2d6;
-    border-radius: 12px;
-    background: #f7f9ff;
+    border: 1px dashed #bdcbe6;
+    border-radius: var(--radius-sm);
+    background: #f7f9fc;
     padding: 20px 12px;
     text-align: center;
     cursor: pointer;
@@ -71,8 +71,8 @@
 }
 
 .diff-dropzone.is-dragging {
-    border-color: #5d7fc4;
-    background: #edf2ff;
+    border-color: #88ace7;
+    background: #edf5ff;
 }
 
 .diff-file-input {
@@ -85,18 +85,18 @@
 .diff-dropzone-main {
     font-size: 13px;
     font-weight: 700;
-    color: #2b3d5f;
+    color: var(--text-main);
 }
 
 .diff-dropzone-sub {
     margin-top: 4px;
     font-size: 12px;
-    color: #5d6a84;
+    color: var(--text-soft);
 }
 
 .diff-file-name {
     font-size: 12px;
-    color: #495671;
+    color: var(--text-soft);
     margin-bottom: 6px;
 }
 
@@ -124,10 +124,10 @@
 
 .diff-upload-action {
     width: 100%;
-    border: 1.5px solid #6d88c5;
-    background: #4969af;
+    border: 1px solid #0085ff;
+    background: #0085ff;
     color: #ffffff;
-    border-radius: 12px;
+    border-radius: var(--radius-sm);
     padding: 10px 12px;
     font-size: 12px;
     font-weight: 700;

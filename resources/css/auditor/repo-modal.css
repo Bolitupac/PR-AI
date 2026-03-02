@@ -14,17 +14,17 @@
 .repo-modal-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(10, 16, 28, 0.55);
+    background: rgba(17, 24, 39, 0.32);
 }
 
 .repo-modal-card {
     position: relative;
     width: min(520px, 92vw);
-    border: 1.5px solid #c9d5ea;
-    border-radius: 18px;
-    background: #ffffff;
+    border: 1px solid #d7dce8;
+    border-radius: var(--radius-lg);
+    background: #fbfcfe;
     padding: 18px;
-    box-shadow: 0 18px 40px rgba(36, 52, 84, 0.2);
+    box-shadow: 0 24px 50px rgba(22, 31, 51, 0.14);
     z-index: 1;
 }
 
@@ -35,9 +35,9 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    border: 1px solid #c9d5ea;
-    background: #f7f9ff;
-    color: #2a3956;
+    border: 1px solid #d8ddea;
+    background: #f8f9fc;
+    color: #2d3b58;
     font-size: 18px;
     line-height: 1;
     cursor: pointer;
@@ -50,39 +50,39 @@
 .repo-import-title {
     font-weight: 700;
     font-size: 14px;
-    color: #1f2d45;
+    color: var(--text-main);
 }
 
 .repo-import-sub {
     font-size: 12px;
-    color: #5d6a84;
+    color: var(--text-soft);
     margin-top: 4px;
 }
 
 .repo-import-label {
     display: block;
     font-size: 12px;
-    color: #5d6a84;
+    color: var(--text-soft);
     margin-bottom: 6px;
 }
 
 .repo-import-select {
     width: 100%;
-    border: 1.5px solid #c9d5ea;
-    border-radius: 12px;
+    border: 1px solid #d4d9e7;
+    border-radius: var(--radius-sm);
     padding: 8px 10px;
     font-size: 13px;
-    color: #1f2d45;
-    background: #f7f9ff;
+    color: var(--text-main);
+    background: #f7f9fc;
     margin-bottom: 12px;
 }
 
 .repo-import-action {
     width: 100%;
-    border: 1.5px solid #6d88c5;
-    background: #4969af;
+    border: 1px solid #0085ff;
+    background: #0085ff;
     color: #ffffff;
-    border-radius: 12px;
+    border-radius: var(--radius-sm);
     padding: 10px 12px;
     font-size: 12px;
     font-weight: 700;
@@ -98,9 +98,9 @@
 
 .repo-pr-box {
     margin: 2px 0 12px;
-    border: 1.5px solid #d6deed;
-    border-radius: 12px;
-    background: #f8faff;
+    border: 1px solid #dbe1ee;
+    border-radius: var(--radius-sm);
+    background: #f8fafd;
     padding: 10px;
 }
 
@@ -142,27 +142,27 @@
     display: block;
     width: 100%;
     text-align: left;
-    border: 1px solid #d6deed;
-    border-radius: 10px;
+    border: 1px solid #dde3ef;
+    border-radius: var(--radius-sm);
     background: #ffffff;
     padding: 8px 10px;
     cursor: pointer;
 }
 
 .repo-pr-item.is-selected {
-    border-color: #6d88c5;
-    background: #edf3ff;
+    border-color: #99bdf4;
+    background: #edf5ff;
 }
 
 .repo-pr-title {
     font-size: 13px;
     font-weight: 700;
-    color: #1f2d45;
+    color: var(--text-main);
     line-height: 1.35;
 }
 
 .repo-pr-meta {
     font-size: 11px;
-    color: #66748f;
+    color: var(--text-soft);
     margin-top: 3px;
 }

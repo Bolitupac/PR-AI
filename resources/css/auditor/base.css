@@ -1,12 +1,21 @@
 :root {
     --sidebar-width: 64px;
-    --workspace-bg: #eef2f7;
-    --panel-bg: #f8fafc;
-    --panel-stroke: #c7d2e2;
-    --panel-shadow: 0 10px 30px rgba(38, 54, 88, 0.12);
-    --brand: #4f6fb8;
-    --text-main: #1d2738;
-    --text-muted: #5d6780;
+    --workspace-bg: #eceff6;
+    --panel-bg: #f9fafc;
+    --panel-bg-soft: #f4f6fb;
+    --panel-stroke: #d8dce7;
+    --panel-stroke-strong: #c9cfdd;
+    --panel-shadow: 0 12px 28px rgba(26, 36, 60, 0.08);
+    --panel-shadow-soft: 0 6px 16px rgba(27, 37, 63, 0.06);
+    --brand: #0085ff;
+    --brand-soft: #e7f2ff;
+    --text-main: #090b1e;
+    --text-muted: #5d6475;
+    --text-soft: #7b8398;
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 18px;
+    --radius-xl: 22px;
 }
 
 * {
@@ -19,7 +28,29 @@ body {
     padding: 0;
     width: 100%;
     height: 100%;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     color: var(--text-main);
-    background: radial-gradient(circle at 20% 10%, #f7f9ff 0%, #e8edf7 55%, #dfe6f3 100%);
+    background:
+        linear-gradient(90deg, transparent 0 16%, rgba(193, 199, 214, 0.16) 16% 16.15%, transparent 16.15% 49.8%, rgba(193, 199, 214, 0.16) 49.8% 49.95%, transparent 49.95% 83.7%, rgba(193, 199, 214, 0.16) 83.7% 83.85%, transparent 83.85% 100%),
+        #e8ebf3;
+}
+
+*::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+    background: rgba(20, 29, 54, 0.05);
+    border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: rgba(38, 56, 102, 0.32);
+    border-radius: 999px;
+    border: 2px solid rgba(255, 255, 255, 0.55);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: rgba(32, 48, 87, 0.48);
 }

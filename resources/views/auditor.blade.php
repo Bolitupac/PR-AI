@@ -108,6 +108,19 @@
     @include('partials.repo-import')
     @include('partials.diff-upload')
 
+    <div class="mic-listening-modal" id="mic-listening-modal" aria-hidden="true">
+        <div class="mic-listening-card" role="dialog" aria-modal="true" aria-label="Voice Listening">
+            <div class="mic-listening-top">
+                <h4 class="mic-listening-title">Listening...</h4>
+                <button class="mic-listening-close" id="mic-listening-close" type="button" aria-label="Close">&times;</button>
+            </div>
+            <div class="mic-listening-body">
+                <div class="mic-wave"></div>
+                <p class="mic-listening-text">Speak now. Your voice input will appear in chat.</p>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.min.js"></script>
 
 </body>
