@@ -1,7 +1,8 @@
 <div class="diff-upload-modal" id="diff-upload-modal" aria-hidden="true">
     <div class="diff-upload-backdrop" data-close="diff-upload-modal"></div>
     <div class="diff-upload-card" role="dialog" aria-label="Upload diff file">
-        <button class="diff-upload-close" type="button" aria-label="Close" data-close="diff-upload-modal">&times;</button>
+        <button class="diff-upload-close" type="button" aria-label="Close"
+            data-close="diff-upload-modal">&times;</button>
 
         <div class="diff-upload-head">
             <div class="diff-upload-title">Upload diff file</div>
