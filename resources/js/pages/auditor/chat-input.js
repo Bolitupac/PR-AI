@@ -3,10 +3,8 @@ export function initChatInput() {
     const responseArea = document.getElementById('ai-response-area');
     const promptInput = document.getElementById('user-prompt');
     const sendButton = document.getElementById('send-btn');
-    const providerToggle = document.getElementById('ai-provider-toggle');
 
     if (!responseArea || !promptInput || !sendButton) return;
-    let provider = providerToggle?.dataset.provider || 'gemini';
 
     const appendMessage = (text, role) => {
         const message = document.createElement('div');
@@ -35,7 +33,7 @@ export function initChatInput() {
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': csrfToken,
                 },
-                body: JSON.stringify({ message: text, provider }),
+                body: JSON.stringify({ message: text }),
             });
 
             const data = await res.json().catch(() => ({}));
@@ -58,11 +56,5 @@ export function initChatInput() {
         if (event.key !== 'Enter') return;
         event.preventDefault();
         sendMessage();
-    });
-
-    providerToggle?.addEventListener('click', function () {
-        provider = provider === 'gemini' ? 'openai' : 'gemini';
-        providerToggle.dataset.provider = provider;
-        providerToggle.textContent = provider === 'gemini' ? 'Gemini' : 'OpenAI';
     });
 }

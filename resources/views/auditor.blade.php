@@ -89,8 +89,6 @@
                         <img src="{{ asset('images/mic.png') }}" alt="Mic" class="action-icon">
                     </button>
 
-                    <button class="provider-toggle" id="ai-provider-toggle" type="button" data-provider="gemini">Gemini</button>
-
                     <input type="text" class="chat-input" id="user-prompt" placeholder="Ask AI...">
 
                     <button class="action-btn" id="send-btn" type="button" aria-label="Send" data-chat-url="{{ route('ai.chat') }}">
