@@ -6,10 +6,16 @@ export function initChatInput() {
     const responseArea = document.getElementById('ai-response-area');
     const promptInput = document.getElementById('user-prompt');
     const sendButton = document.getElementById('send-btn');
+    const emptyState = document.getElementById('chat-empty-state');
 
     if (!responseArea || !promptInput || !sendButton) return;
     const sendButtonDefaultHtml = sendButton.innerHTML;
     let activeRequest = null;
+
+    const hideEmptyState = () => {
+        if (!emptyState) return;
+        emptyState.classList.add('is-hidden');
+    };
 
     const resizeInput = () => {
         promptInput.style.height = 'auto';
@@ -42,6 +48,7 @@ export function initChatInput() {
             return;
         }
 
+        hideEmptyState();
         const previewAnchor = appendMessage(text, 'user');
         const status = createChatStatus({ container: responseArea, anchorNode: previewAnchor });
         status.set('Validating message...');

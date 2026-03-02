@@ -11,6 +11,42 @@
     color: var(--text-muted);
 }
 
+.chat-empty-state {
+    margin: auto;
+    width: min(460px, 94%);
+    text-align: center;
+    padding: 24px 12px;
+}
+
+.chat-empty-state.is-hidden {
+    display: none;
+}
+
+.chat-empty-title {
+    margin: 0 0 8px;
+    font-size: 30px;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #0f1e44;
+}
+
+.chat-empty-name {
+    background: linear-gradient(130deg, #009eff 0%, #2f86ff 34%, #5d74ff 60%, #9360ff 100%);
+    background-size: 180% 180%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 8px 24px rgba(0, 133, 255, 0.22);
+    animation: chat-welcome-shift 5s ease-in-out infinite;
+}
+
+.chat-empty-subtitle {
+    margin: 0;
+    font-size: 14px;
+    color: #516189;
+}
+
 .msg {
     max-width: 90%;
 }
@@ -203,12 +239,37 @@
     box-shadow: 0 0 0 3px rgba(0, 133, 255, 0.14);
 }
 
+.action-btn,
+.repo-import-action,
+.diff-upload-action,
+.signin-action {
+    background: linear-gradient(130deg, #009eff 0%, #2f86ff 34%, #5d74ff 60%, #9360ff 100%);
+    background-size: 180% 180%;
+    border-color: rgba(11, 120, 255, 0.84);
+    color: #ffffff;
+    animation: btn-gradient-shift 5.2s ease-in-out infinite;
+}
+
+.action-btn:hover,
+.repo-import-action:hover,
+.diff-upload-action:hover,
+.signin-action:hover {
+    filter: saturate(1.08) brightness(1.02);
+}
+
+.action-btn:focus-visible,
+.repo-import-action:focus-visible,
+.diff-upload-action:focus-visible,
+.signin-action:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 133, 255, 0.2);
+}
+
 .action-btn {
     width: 44px;
     height: 44px;
     border-radius: var(--radius-sm);
     border: 1px solid #0b78ff;
-    background: linear-gradient(135deg, #009eff, #0085ff);
     display: grid;
     place-items: center;
     cursor: pointer;
@@ -216,7 +277,6 @@
 
 .action-btn.ghost {
     border-color: #0b78ff;
-    background: linear-gradient(135deg, #009eff, #0085ff);
 }
 
 .action-btn.is-stop {
@@ -233,4 +293,32 @@
     object-fit: contain;
     display: block;
     filter: brightness(0) invert(1);
+}
+
+@keyframes chat-welcome-shift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes btn-gradient-shift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }

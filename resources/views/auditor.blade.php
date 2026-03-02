@@ -83,7 +83,15 @@
                         </header>
                         <hr class="line-sep">
 
-                        <div id="ai-response-area" class="chat-demo-list"></div>
+                        <div id="ai-response-area" class="chat-demo-list">
+                            <div class="chat-empty-state" id="chat-empty-state">
+                                <h4 class="chat-empty-title">
+                                    Hi,
+                                    <span class="chat-empty-name">{{ auth()->user()->github_username ?? auth()->user()->name ?? 'there' }}</span>
+                                </h4>
+                                <p class="chat-empty-subtitle">Import a repo or diff, or paste code to start auditing.</p>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="chat-container">
