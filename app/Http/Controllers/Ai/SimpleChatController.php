@@ -22,12 +22,16 @@ class SimpleChatController extends Controller
         $payload = $request->validate([
             'message' => ['required', 'string', 'max:5000'],
             'model' => ['nullable', 'string', Rule::in($allowedModels)],
+            'history' => ['nullable', 'array', 'max:20'],
+            'history.*.role' => ['required_with:history', 'string', Rule::in(['user', 'assistant'])],
+            'history.*.content' => ['required_with:history', 'string', 'max:8000'],
         ]);
 
         $message = (string) $payload['message'];
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
+        $history = isset($payload['history']) && is_array($payload['history']) ? $payload['history'] : [];
 
-        $reply = $this->openAiSimpleChatService->reply($message, $selectedModel);
+        $reply = $this->openAiSimpleChatService->replyWithHistory($message, $history, $selectedModel);
 
         return response()->json([
             'provider' => 'openai',

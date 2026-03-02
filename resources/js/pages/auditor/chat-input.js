@@ -1,5 +1,6 @@
 import { createChatStatus } from './chat-status';
 import { renderChatMarkdown } from './chat-markdown';
+import { chatContextStore } from './chat-context-store';
 
 // Pushes user input into the chat area as a new message.
 export function initChatInput() {
@@ -52,6 +53,8 @@ export function initChatInput() {
 
         hideEmptyState();
         const previewAnchor = appendMessage(text, 'user');
+        const historyBefore = chatContextStore.list();
+        chatContextStore.push('user', text);
         const status = createChatStatus({ container: responseArea, anchorNode: previewAnchor });
         status.set('Validating message...');
         status.set('Message validated.');
@@ -83,7 +86,11 @@ export function initChatInput() {
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': csrfToken,
                 },
-                body: JSON.stringify({ message: text, model: selectedModel || undefined }),
+                body: JSON.stringify({
+                    message: text,
+                    model: selectedModel || undefined,
+                    history: historyBefore,
+                }),
                 signal: abortController.signal,
             });
             if (requestState.stopped) {
@@ -115,6 +122,7 @@ export function initChatInput() {
                 return;
             }
             requestState.replyNode = appendMessage(data?.reply || 'No response from AI.', 'ai');
+            chatContextStore.push('assistant', data?.reply || 'No response from AI.');
             status.markSuccess('Request sent.');
             status.remove(450);
         } catch (error) {

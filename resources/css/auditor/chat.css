@@ -64,6 +64,7 @@
     align-self: flex-start;
     color: #49516a;
     padding: 2px 0;
+    margin-left: 8px;
 }
 
 .msg.ai.ai-status {
@@ -166,6 +167,48 @@
     color: #4f6288;
 }
 
+.msg.ai .msg-hr {
+    border: 0;
+    border-top: 1px solid rgba(154, 169, 198, 0.5);
+    margin: 8px 0;
+}
+
+.msg.ai .file-line-ref {
+    font-size: 12px;
+    font-weight: 700;
+    color: #3a2f4d;
+}
+
+.msg.ai .severity-tag {
+    display: inline-block;
+    border-radius: 7px;
+    padding: 1px 7px;
+    margin-right: 5px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+
+.msg.ai .severity-tag.is-low {
+    color: #166534;
+    background: rgba(34, 197, 94, 0.14);
+}
+
+.msg.ai .severity-tag.is-medium {
+    color: #854d0e;
+    background: rgba(234, 179, 8, 0.16);
+}
+
+.msg.ai .severity-tag.is-high {
+    color: #991b1b;
+    background: rgba(239, 68, 68, 0.16);
+}
+
+.msg.ai .severity-tag.is-critical {
+    color: #7f1d1d;
+    background: rgba(127, 29, 29, 0.18);
+}
+
 .msg.ai pre {
     margin: 6px 0 8px;
     padding: 10px 12px;
@@ -215,6 +258,124 @@
     align-items: flex-end;
     min-height: 66px;
     gap: 10px;
+}
+
+.meta-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.meta-pill.is-upgrade {
+    color: #166534;
+    background: #dcfce7;
+    border-color: #86efac;
+}
+
+.meta-pill.is-downgrade {
+    color: #991b1b;
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
+
+.meta-pill.is-neutral {
+    color: #1d4ed8;
+    background: #dbeafe;
+    border-color: #93c5fd;
+}
+
+.meta-pill.is-risk {
+    color: #1f2b44;
+    background: #eef2ff;
+    border-color: #c7d2fe;
+}
+
+.meta-pill.is-risk-low {
+    color: #14532d;
+    background: #dcfce7;
+    border-color: #86efac;
+}
+
+.meta-pill.is-risk-medium {
+    color: #854d0e;
+    background: #fef9c3;
+    border-color: #fde047;
+}
+
+.meta-pill.is-risk-high {
+    color: #991b1b;
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
+
+.meta-pill.is-risk-critical {
+    color: #ffffff;
+    background: #5f0f17;
+    border-color: #7f1d1d;
+}
+
+.meta-pill.is-suggestion {
+    color: #1e3a8a;
+    background: #e0e7ff;
+    border-color: #a5b4fc;
+}
+
+.audit-scorecard {
+    width: min(92%, 560px);
+    margin-top: -4px;
+    padding: 11px 13px;
+    border-radius: 12px;
+    border: 1px solid rgba(216, 225, 240, 0.65);
+    background: rgba(248, 251, 255, 0.62);
+    backdrop-filter: blur(2px);
+}
+
+.audit-scorecard-top {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 8px;
+}
+
+.audit-score-track {
+    width: 100%;
+    height: 8px;
+    border-radius: 999px;
+    background: #e4ebf8;
+    overflow: hidden;
+}
+
+.audit-score-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.35s ease;
+}
+
+.audit-score-fill.is-risk-low {
+    background: #22c55e;
+}
+
+.audit-score-fill.is-risk-medium {
+    background: #facc15;
+}
+
+.audit-score-fill.is-risk-high {
+    background: #ef4444;
+}
+
+.audit-score-fill.is-risk-critical {
+    background: #7f1d1d;
+}
+
+.audit-score-caption {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #445575;
+    font-weight: 600;
 }
 
 .chat-input {

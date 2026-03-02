@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GitHubOAuthController;
 use App\Http\Controllers\GitHubRepositoryController;
 use App\Http\Controllers\Ai\SimpleChatController;
+use App\Http\Controllers\Ai\AuditDiffController;
 use App\Http\Controllers\AuditSnapshotController;
 
 Route::get('/', function () {
@@ -26,4 +27,5 @@ Route::get('/api/github/pull-diff', [GitHubRepositoryController::class, 'pullDif
     ->middleware('auth')
     ->name('github.pull-diff');
 Route::post('/api/ai/chat', [SimpleChatController::class, 'chat'])->name('ai.chat');
+Route::post('/api/ai/audit-diff', [AuditDiffController::class, 'audit'])->name('ai.audit-diff');
 Route::post('/api/audit/snapshot', [AuditSnapshotController::class, 'store'])->name('audit.snapshot');

@@ -79,6 +79,18 @@ class AuditSnapshotWriter
         }
 
         $lines[] = '';
+        $lines[] = '--- SYSTEM PROMPT ---';
+        $lines[] = (string) ($payload['prompt_system'] ?? 'N/A');
+
+        $lines[] = '';
+        $lines[] = '--- USER PROMPT ---';
+        $lines[] = (string) ($payload['prompt_user'] ?? 'N/A');
+
+        $lines[] = '';
+        $lines[] = '--- AI RESPONSE ---';
+        $lines[] = (string) ($payload['ai_response'] ?? 'N/A');
+
+        $lines[] = '';
         $lines[] = '--- RAW DIFF ---';
         $lines[] = (string) ($payload['diff_text'] ?? '');
         $lines[] = '';

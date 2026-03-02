@@ -8,12 +8,65 @@ use Throwable;
 class OpenAiSimpleChatService
 {
     //prompt here
-    private const SYSTEM_PROMPT = 'You are PR-AI, a concise pull request audit assistant. '
-        .'Give practical, direct answers. Use short bullet points when useful. '
-        .'If unsure, say what information is missing.';
+    private const SYSTEM_PROMPT = 'You are a helpful assistant inside a PR review app. '
+        .'Give clear, practical answers. Use prior chat context when available. '
+        .'You can discuss both audit context and general questions.';
 
     // Sends one user message to OpenAI and returns plain text.
     public function reply(string $message, ?string $selectedModel = null): string
+    {
+        return $this->replyWithPrompt(self::SYSTEM_PROMPT, $message, $selectedModel);
+    }
+
+    // Sends one user message plus short chat history to preserve context.
+    public function replyWithHistory(string $message, array $history = [], ?string $selectedModel = null): string
+    {
+        $systemPrompt = (string) config('openai.chat_system_prompt', self::SYSTEM_PROMPT);
+
+        $messages = [
+            [
+                'role' => 'system',
+                'content' => $systemPrompt,
+            ],
+        ];
+
+        foreach (array_slice($history, -20) as $item) {
+            $role = (string) ($item['role'] ?? '');
+            $content = trim((string) ($item['content'] ?? ''));
+            if (!in_array($role, ['user', 'assistant'], true) || $content === '') {
+                continue;
+            }
+            $messages[] = [
+                'role' => $role,
+                'content' => $content,
+            ];
+        }
+
+        $messages[] = [
+            'role' => 'user',
+            'content' => $message,
+        ];
+
+        return $this->sendMessages($messages, $selectedModel);
+    }
+
+    // Sends one prompt pair (system + user) and returns plain text.
+    public function replyWithPrompt(string $systemPrompt, string $userPrompt, ?string $selectedModel = null): string
+    {
+        return $this->sendMessages([
+            [
+                'role' => 'system',
+                'content' => $systemPrompt,
+            ],
+            [
+                'role' => 'user',
+                'content' => $userPrompt,
+            ],
+        ], $selectedModel);
+    }
+
+    // Sends prepared messages array to OpenAI and returns plain text.
+    private function sendMessages(array $messages, ?string $selectedModel = null): string
     {
         $apiKey = (string) config('openai.api_key');
         $baseUrl = (string) config('openai.base_url', 'https://api.openai.com/v1');
@@ -34,16 +87,7 @@ class OpenAiSimpleChatService
                 ->withToken($apiKey)
                 ->post($url, [
                     'model' => $model,
-                    'messages' => [
-                        [
-                            'role' => 'system',
-                            'content' => self::SYSTEM_PROMPT,
-                        ],
-                        [
-                            'role' => 'user',
-                            'content' => $message,
-                        ],
-                    ],
+                    'messages' => $messages,
                     'temperature' => $temperature,
                 ]);
 
