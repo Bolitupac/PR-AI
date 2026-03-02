@@ -99,7 +99,18 @@
                             <img src="{{ asset('images/mic.png') }}" alt="Mic" class="action-icon">
                         </button>
 
-                        <textarea class="chat-input" id="user-prompt" rows="1" placeholder="Ask AI..."></textarea>
+                        @php
+                            $chatModels = config('openai.chat_models', [config('openai.model', 'gpt-4o-mini')]);
+                            $defaultChatModel = config('openai.model', 'gpt-4o-mini');
+                        @endphp
+                        <div class="chat-input-wrap">
+                            <textarea class="chat-input" id="user-prompt" rows="1" placeholder="Ask AI..."></textarea>
+                            <select class="chat-model-select" id="chat-model-select" aria-label="Select model">
+                                @foreach ($chatModels as $chatModel)
+                                    <option value="{{ $chatModel }}" @selected($chatModel === $defaultChatModel)>{{ $chatModel }}</option>
+                                @endforeach
+                            </select>
+                        </div>
 
                         <button class="action-btn" id="send-btn" type="button" aria-label="Send"
                             data-chat-url="{{ route('ai.chat') }}">

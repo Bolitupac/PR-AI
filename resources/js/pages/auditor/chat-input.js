@@ -6,11 +6,13 @@ export function initChatInput() {
     const responseArea = document.getElementById('ai-response-area');
     const promptInput = document.getElementById('user-prompt');
     const sendButton = document.getElementById('send-btn');
+    const modelSelect = document.getElementById('chat-model-select');
     const emptyState = document.getElementById('chat-empty-state');
 
     if (!responseArea || !promptInput || !sendButton) return;
     const sendButtonDefaultHtml = sendButton.innerHTML;
     let activeRequest = null;
+    let selectedModel = modelSelect?.value || '';
 
     const hideEmptyState = () => {
         if (!emptyState) return;
@@ -81,7 +83,7 @@ export function initChatInput() {
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': csrfToken,
                 },
-                body: JSON.stringify({ message: text }),
+                body: JSON.stringify({ message: text, model: selectedModel || undefined }),
                 signal: abortController.signal,
             });
             if (requestState.stopped) {
@@ -144,6 +146,12 @@ export function initChatInput() {
         sendMessage();
     });
     promptInput.addEventListener('input', resizeInput);
+    modelSelect?.addEventListener('change', function () {
+        selectedModel = modelSelect.value;
+        const status = createChatStatus({ container: responseArea, anchorNode: null });
+        status.markSuccess(`Switched to ${selectedModel}.`);
+        status.remove(700);
+    });
     promptInput.addEventListener('keydown', function (event) {
         if (event.key !== 'Enter') return;
         if (activeRequest) return;

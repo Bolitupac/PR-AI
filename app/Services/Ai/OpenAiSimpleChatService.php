@@ -13,11 +13,13 @@ class OpenAiSimpleChatService
         .'If unsure, say what information is missing.';
 
     // Sends one user message to OpenAI and returns plain text.
-    public function reply(string $message): string
+    public function reply(string $message, ?string $selectedModel = null): string
     {
         $apiKey = (string) config('openai.api_key');
         $baseUrl = (string) config('openai.base_url', 'https://api.openai.com/v1');
-        $model = (string) config('openai.model', 'gpt-4o-mini');
+        $defaultModel = (string) config('openai.model', 'gpt-4o-mini');
+        $allowedModels = (array) config('openai.chat_models', [$defaultModel]);
+        $model = in_array((string) $selectedModel, $allowedModels, true) ? (string) $selectedModel : $defaultModel;
         $temperature = (float) config('openai.temperature', 0.3);
         $timeout = (int) config('openai.request_timeout', 30);
 
