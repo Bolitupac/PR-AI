@@ -3,12 +3,15 @@
 }
 
 .hero-view {
+    height: 100vh;
     min-height: 100vh;
     display: flex;
 }
 
 .main-workspace {
     flex: 1;
+    height: 100%;
+    min-height: 0;
     min-width: 0;
     display: flex;
     gap: 18px;
@@ -49,6 +52,7 @@
     flex: 1;
     max-width: 420px;
     min-width: 320px;
+    max-height: calc(100vh - 32px);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -58,7 +62,9 @@
     flex: 1;
     min-height: 0;
     padding: 16px 18px;
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .line-sep {
