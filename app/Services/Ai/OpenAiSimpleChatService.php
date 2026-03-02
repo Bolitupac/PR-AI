@@ -7,6 +7,7 @@ use Throwable;
 
 class OpenAiSimpleChatService
 {
+    //prompt here
     private const SYSTEM_PROMPT = 'You are PR-AI, a concise pull request audit assistant. '
         .'Give practical, direct answers. Use short bullet points when useful. '
         .'If unsure, say what information is missing.';

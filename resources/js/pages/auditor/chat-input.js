@@ -1,4 +1,5 @@
 import { createChatStatus } from './chat-status';
+import { renderChatMarkdown } from './chat-markdown';
 
 // Pushes user input into the chat area as a new message.
 export function initChatInput() {
@@ -11,7 +12,11 @@ export function initChatInput() {
     const appendMessage = (text, role) => {
         const message = document.createElement('div');
         message.className = `msg ${role}`;
-        message.textContent = text;
+        if (role === 'ai') {
+            message.innerHTML = renderChatMarkdown(text);
+        } else {
+            message.textContent = text;
+        }
         responseArea.appendChild(message);
         responseArea.scrollTop = responseArea.scrollHeight;
         return message;
