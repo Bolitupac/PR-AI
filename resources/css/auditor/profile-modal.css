@@ -1,0 +1,113 @@
+.profile-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 230;
+}
+
+.profile-modal.is-open {
+    display: flex;
+}
+
+.profile-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(17, 24, 39, 0.34);
+}
+
+.profile-modal-card {
+    position: relative;
+    width: min(420px, 92vw);
+    border: 1px solid #d7dce8;
+    border-radius: var(--radius-lg);
+    background: #fbfcfe;
+    padding: 18px;
+    box-shadow: 0 24px 50px rgba(22, 31, 51, 0.16);
+    z-index: 1;
+}
+
+.profile-modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #d8ddea;
+    background: #f8f9fc;
+    color: #2d3b58;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.profile-modal-head {
+    margin-bottom: 12px;
+}
+
+.profile-modal-title {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text-main);
+}
+
+.profile-modal-sub {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--text-soft);
+}
+
+.profile-modal-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #e0e6f2;
+    border-radius: var(--radius-md);
+    background: #f7f9fc;
+    padding: 10px;
+    margin-bottom: 12px;
+}
+
+.profile-modal-avatar {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    border: 1px solid #cfdae9;
+}
+
+.profile-modal-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.profile-modal-handle {
+    font-size: 12px;
+    color: #4d6391;
+    margin-top: 2px;
+}
+
+.profile-modal-email {
+    font-size: 12px;
+    color: var(--text-soft);
+    margin-top: 2px;
+}
+
+.profile-modal-action {
+    width: 100%;
+    border: 1px solid #0085ff;
+    background: #0085ff;
+    color: #ffffff;
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+

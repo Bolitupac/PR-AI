@@ -30,13 +30,47 @@ class SimpleChatController extends Controller
         $message = (string) $payload['message'];
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
         $history = isset($payload['history']) && is_array($payload['history']) ? $payload['history'] : [];
+        $activeAuditContext = trim((string) $request->session()->get('active_audit_context', ''));
 
-        $reply = $this->openAiSimpleChatService->replyWithHistory($message, $history, $selectedModel);
+        $messageForModel = $message;
+        if ($activeAuditContext !== '') {
+            $messageForModel =
+                "You have active code audit context below.\n"
+                ."Use it when relevant to the user's question. "
+                ."Answer naturally like a human, but when you mention code location include file and line.\n\n"
+                ."ACTIVE AUDIT CONTEXT:\n{$activeAuditContext}\n\n"
+                ."USER QUESTION:\n{$message}";
+        }
+
+        $reply = $this->openAiSimpleChatService->replyWithHistory($messageForModel, $history, $selectedModel);
+        if ($this->requiresEvidence($message) && !$this->hasEvidenceReference($reply)) {
+            $strictMessage =
+                "Answer naturally and directly.\n"
+                ."If available, include concrete code evidence like file:line and a short snippet.\n"
+                ."If not found in context, say that clearly.\n\n"
+                ."Question: {$message}";
+
+            if ($activeAuditContext !== '') {
+                $strictMessage .= "\n\nActive context:\n{$activeAuditContext}";
+            }
+
+            $reply = $this->openAiSimpleChatService->replyWithHistory($strictMessage, $history, $selectedModel);
+        }
 
         return response()->json([
             'provider' => 'openai',
             'model' => $selectedModel ?? (string) config('openai.model', 'gpt-4o-mini'),
             'reply' => $reply,
         ]);
+    }
+
+    private function requiresEvidence(string $message): bool
+    {
+        return (bool) preg_match('/\b(where|which line|line number|line|function|is .* in the diff|exists in the diff|in the diff)\b/i', $message);
+    }
+
+    private function hasEvidenceReference(string $reply): bool
+    {
+        return (bool) preg_match('/[A-Za-z0-9_\/\.\-]+\.[A-Za-z0-9_+-]+:\d+(?:-\d+)?/', $reply);
     }
 }

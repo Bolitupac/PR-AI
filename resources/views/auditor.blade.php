@@ -5,6 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nabla&family=Science+Gothic:wght@400;600;700&display=swap"
+        rel="stylesheet">
     <title>Git PULL Assistant | Auditor</title>
     @vite(['resources/css/auditor-ui.css', 'resources/js/app.js'])
 </head>
@@ -36,7 +40,10 @@
                                             &#64;{{ auth()->user()->github_username ?? 'github-user' }}</div>
                                     </div>
                                 </div>
-                                <button class="signin-action" type="button">Open profile</button>
+                                <button class="signin-action" id="open-profile-btn" type="button"
+                                    data-profile-url="https://github.com/{{ auth()->user()->github_username }}">
+                                    Open profile
+                                </button>
                             @endauth
                             @guest
                                 <div class="signin-title">Connect GitHub</div>
@@ -82,8 +89,17 @@
 
                 <section class="ai-panel">
                     <div class="ai-content">
+                        @php
+                            $chatModels = config('openai.chat_models', [config('openai.model', 'gpt-4o-mini')]);
+                            $defaultChatModel = config('openai.model', 'gpt-4o-mini');
+                        @endphp
                         <header class="panel-head ai-head">
                             <h3>PR ai</h3>
+                            <select class="chat-model-select" id="chat-model-select" aria-label="Select model">
+                                @foreach ($chatModels as $chatModel)
+                                    <option value="{{ $chatModel }}" @selected($chatModel === $defaultChatModel)>{{ $chatModel }}</option>
+                                @endforeach
+                            </select>
                         </header>
                         <hr class="line-sep">
 
@@ -99,27 +115,18 @@
                     </div>
 
                     <div class="chat-container">
-                        <button class="action-btn ghost" id="mic-btn" type="button" aria-label="Mic">
-                            <img src="{{ asset('images/mic.png') }}" alt="Mic" class="action-icon">
-                        </button>
-
-                        @php
-                            $chatModels = config('openai.chat_models', [config('openai.model', 'gpt-4o-mini')]);
-                            $defaultChatModel = config('openai.model', 'gpt-4o-mini');
-                        @endphp
                         <div class="chat-input-wrap">
                             <textarea class="chat-input" id="user-prompt" rows="1" placeholder="Ask AI..."></textarea>
-                            <select class="chat-model-select" id="chat-model-select" aria-label="Select model">
-                                @foreach ($chatModels as $chatModel)
-                                    <option value="{{ $chatModel }}" @selected($chatModel === $defaultChatModel)>{{ $chatModel }}</option>
-                                @endforeach
-                            </select>
+                            <button class="action-btn input-send-btn" id="send-btn" type="button" aria-label="Send"
+                                data-chat-url="{{ route('ai.chat') }}">
+                                <img src="{{ asset('images/send.png') }}" alt="Send" class="action-icon">
+                            </button>
                         </div>
-
-                        <button class="action-btn" id="send-btn" type="button" aria-label="Send"
-                            data-chat-url="{{ route('ai.chat') }}">
-                            <img src="{{ asset('images/send.png') }}" alt="Send" class="action-icon">
-                        </button>
+                        <div class="chat-tools-row">
+                            <button class="action-btn ghost" id="mic-btn" type="button" aria-label="Mic">
+                                <img src="{{ asset('images/mic.png') }}" alt="Mic" class="action-icon">
+                            </button>
+                        </div>
                     </div>
                 </section>
             </main>
@@ -128,8 +135,14 @@
         @include('partials.diff-viewer')
     </div>
 
+    <footer class="site-credit" aria-label="Copyright">
+        <div class="site-credit-line"><span class="site-credit-by">by</span> <span class="site-credit-brand">BOLITUPAC</span></div>
+        <div class="site-credit-line">&copy;2026</div>
+    </footer>
+
     @include('partials.repo-import')
     @include('partials.diff-upload')
+    @include('partials.profile-modal')
 
     <div class="mic-listening-modal" id="mic-listening-modal" aria-hidden="true">
         <div class="mic-listening-card" role="dialog" aria-modal="true" aria-label="Voice Listening">

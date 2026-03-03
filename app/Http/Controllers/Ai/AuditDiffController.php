@@ -58,6 +58,17 @@ class AuditDiffController extends Controller
         }
 
         $changedLines = $this->auditSnapshotWriter->extractChangedLines($diffText);
+        $chatContext = $this->auditPromptComposer->composeChatContext([
+            'source' => $source,
+            'repo' => $repo !== '' ? $repo : null,
+            'pr_number' => $prNumber !== '' ? $prNumber : null,
+            'file_name' => $payload['file_name'] ?? null,
+            'changed_lines' => $changedLines,
+            'issue_comments' => $issueComments,
+            'review_comments' => $reviewComments,
+        ]);
+        $request->session()->put('active_audit_context', $chatContext);
+
         $userPrompt = $this->auditPromptComposer->compose([
             'source' => $source,
             'repo' => $repo !== '' ? $repo : null,

@@ -48,6 +48,9 @@ export function renderChatMarkdown(markdownText) {
         }
 
         if (line === '') {
+            if (inUl || inOl) {
+                continue;
+            }
             closeLists();
             html.push('<p></p>');
             continue;
@@ -71,7 +74,7 @@ export function renderChatMarkdown(markdownText) {
             continue;
         }
 
-        const ol = line.match(/^\d+\.\s+(.+)$/);
+        const ol = line.match(/^\d+[.)]\s*(.+)$/);
         if (ol) {
             if (!inOl) {
                 closeLists();
@@ -113,7 +116,7 @@ function formatInline(input) {
     out = out.replace(/(^|[^*])\*(?!\*)([^*]+)\*(?!\*)/g, '$1<em>$2</em>');
     out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
     out = out.replace(/\[(LOW|MEDIUM|HIGH|CRITICAL)\]/gi, (_m, level) => `<span class="severity-tag is-${String(level).toLowerCase()}">[${String(level).toUpperCase()}]</span>`);
-    out = out.replace(/(^|[\s(])([A-Za-z0-9_./-]+\.[A-Za-z0-9_+-]+:\d+)(?=$|[\s),.;])/g, '$1<span class="file-line-ref">$2</span>');
+    out = out.replace(/(^|[\s(])([A-Za-z0-9_./-]+\.[A-Za-z0-9_+-]+:\d+(?:-\d+)?)(?=$|[\s),.;])/g, '$1<span class="file-line-ref">$2</span>');
     return out;
 }
 
