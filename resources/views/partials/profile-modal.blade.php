@@ -18,11 +18,33 @@
                     <div class="profile-modal-email">{{ auth()->user()->email ?? 'no-email' }}</div>
                 </div>
             </div>
-            <div class="profile_modal_user">
-                <p>this is where the ui will be </p>
+
+            <div class="profile-modal-grid">
+                <div class="profile-modal-box">
+                    <div class="profile-modal-label">Current Plan</div>
+                    <div class="profile-modal-value">
+                        <span class="profile-plan-pill">{{ auth()->user()->plan_name ?? 'Free' }}</span>
+                    </div>
+                </div>
+
+                <div class="profile-modal-box">
+                    <div class="profile-modal-label">API Key</div>
+                    <input class="profile-api-input" type="password" placeholder="Enter API key for custom provider">
+                    <div class="profile-api-sub">Stored securely when backend save is connected.</div>
+                </div>
+            </div>
+
+            <div class="profile-modal-actions">
+                <a class="profile-modal-action" href="https://github.com/{{ auth()->user()->github_username }}"
+                    target="_blank" rel="noopener noreferrer">
+                    View on GitHub
+                </a>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button class="profile-logout-btn" type="submit">Log out</button>
+                </form>
             </div>
 
         </div>
     </div>
 @endauth
-

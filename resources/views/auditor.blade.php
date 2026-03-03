@@ -23,35 +23,18 @@
                         <img src="{{ asset('images/menu.png') }}" alt="Menu" class="ui-logo">
                     </button>
 
-                    <div class="signin-anchor">
-                        <button class="icon-btn bottom" type="button" aria-label="GitHub">
-                            <img src="{{ asset('images/github.png') }}" alt="GitHub" class="ui-logo">
+                    @auth
+                        <button class="icon-btn bottom profile-avatar-btn" id="open-profile-btn" type="button"
+                            aria-label="Open profile">
+                            <img class="profile-avatar-img" src="https://github.com/{{ auth()->user()->github_username }}.png"
+                                alt="GitHub avatar">
                         </button>
-                        <div class="signin-popover" role="dialog" aria-label="Sign in">
-                            @auth
-                                <div class="signin-title">Connected</div>
-                                <div class="signin-profile">
-                                    <img class="signin-avatar"
-                                        src="https://github.com/{{ auth()->user()->github_username }}.png"
-                                        alt="GitHub avatar">
-                                    <div class="signin-meta">
-                                        <div class="signin-name">{{ auth()->user()->name ?? 'User' }}</div>
-                                        <div class="signin-handle">
-                                            &#64;{{ auth()->user()->github_username ?? 'github-user' }}</div>
-                                    </div>
-                                </div>
-                                <button class="signin-action" id="open-profile-btn" type="button"
-                                    data-profile-url="https://github.com/{{ auth()->user()->github_username }}">
-                                    Open profile
-                                </button>
-                            @endauth
-                            @guest
-                                <div class="signin-title">Connect GitHub</div>
-                                <div class="signin-desc">Link your GitHub to load repositories and PRs.</div>
-                                <a class="signin-action" href="{{ route('github.redirect') }}">Connect GitHub</a>
-                            @endguest
-                        </div>
-                    </div>
+                    @endauth
+                    @guest
+                        <a class="icon-btn bottom" href="{{ route('github.redirect') }}" aria-label="Connect GitHub">
+                            <img src="{{ asset('images/github.png') }}" alt="GitHub" class="ui-logo">
+                        </a>
+                    @endguest
                 </div>
             </aside>
 

@@ -42,97 +42,15 @@
     display: block;
 }
 
-.signin-anchor {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.profile-avatar-btn {
+    padding: 0;
+    overflow: hidden;
+    border-radius: 50% !important;
 }
 
-.signin-anchor::after {
-    content: "";
-    position: absolute;
-    right: -10px;
-    bottom: 0;
-    width: 12px;
-    height: 56px;
-}
-
-.signin-popover {
-    position: absolute;
-    left: calc(100% + 4px);
-    bottom: 0;
-    width: 220px;
-    background: #fcfcfe;
-    border: 1px solid var(--panel-stroke-strong);
-    border-radius: var(--radius-md);
-    box-shadow: 0 18px 34px rgba(26, 35, 58, 0.14);
-    padding: 12px 12px 10px;
-    opacity: 0;
-    transform: translateY(6px);
-    pointer-events: none;
-    transition: opacity 0.15s ease, transform 0.15s ease 0.5s;
-    z-index: 50;
-}
-
-.signin-anchor:hover .signin-popover,
-.signin-anchor:focus-within .signin-popover {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-    transition-delay: 0s;
-}
-
-.signin-title {
-    font-weight: 700;
-    font-size: 14px;
-    margin-bottom: 6px;
-    color: var(--text-main);
-}
-
-.signin-desc {
-    font-size: 12px;
-    color: var(--text-soft);
-    line-height: 1.4;
-    margin-bottom: 10px;
-}
-
-.signin-action {
+.profile-avatar-img {
     width: 100%;
-    border: 1px solid #cbd3e5;
-    background: #f5f7fc;
-    color: #1f2b44;
-    border-radius: var(--radius-sm);
-    padding: 8px 10px;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-    text-align: center;
-}
-
-.signin-profile {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 8px 0 10px;
-}
-
-.signin-avatar {
-    width: 36px;
-    height: 36px;
+    height: 100%;
+    object-fit: cover;
     border-radius: 50%;
-    border: 1px solid var(--panel-stroke-strong);
-}
-
-.signin-name {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text-main);
-}
-
-.signin-handle {
-    font-size: 12px;
-    color: var(--text-soft);
 }
