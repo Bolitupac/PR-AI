@@ -1,6 +1,7 @@
 import { fetchGitRepos } from './git-repos-api';
 import { fetchGitPullRequests } from './git-pulls-api';
 import { fetchGitPullDiff } from './git-diff-api';
+import { setButtonLoading } from './button-loading';
 
 // Controls repo modal open/close, PR selection, and loading diff from GitHub.
 export function initGitRepoModal() {
@@ -133,8 +134,7 @@ export function initGitRepoModal() {
             return;
         }
 
-        repoSelectTrigger.disabled = true;
-        repoSelectTrigger.classList.add('is-loading');
+        setButtonLoading(repoSelectTrigger, true, 'Loading');
         setLoadButtonEnabled(false);
 
         try {
@@ -165,8 +165,7 @@ export function initGitRepoModal() {
             setSingleOption('Failed to load repos');
             setLoadButtonEnabled(false);
         } finally {
-            repoSelectTrigger.disabled = false;
-            repoSelectTrigger.classList.remove('is-loading');
+            setButtonLoading(repoSelectTrigger, false);
         }
     };
 
@@ -200,6 +199,7 @@ export function initGitRepoModal() {
 
         startLoadingTicker('Loading selected pull request diff');
         setLoadButtonEnabled(false);
+        setButtonLoading(loadRepoButton, true, 'Loading');
 
         try {
             const diffText = await fetchGitPullDiff(pullDiffUrl, repoFullName, selectedPullNumber);
@@ -220,6 +220,7 @@ export function initGitRepoModal() {
         } catch (error) {
             setPrState('Failed to load pull request diff.', 'error');
         } finally {
+            setButtonLoading(loadRepoButton, false);
             setLoadButtonEnabled(Boolean(selectedPullNumber));
         }
     };

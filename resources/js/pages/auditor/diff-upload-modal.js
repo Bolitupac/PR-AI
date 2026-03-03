@@ -1,4 +1,5 @@
 import { readDiffFile } from './diff-file-reader';
+import { setButtonLoading } from './button-loading';
 
 // Controls the diff upload modal and emits selected diff content.
 export function initDiffUploadModal() {
@@ -95,6 +96,7 @@ export function initDiffUploadModal() {
     actionBtn.addEventListener('click', function () {
         if (!selectedDiff) return;
         const run = async () => {
+            setButtonLoading(actionBtn, true, 'Loading');
             setState(`Using ${selectedDiff.name}`, 'success');
             document.dispatchEvent(new CustomEvent('auditor:diff-selected', {
                 detail: {
@@ -108,6 +110,7 @@ export function initDiffUploadModal() {
             setTimeout(() => {
                 closeModal();
             }, 520);
+            setButtonLoading(actionBtn, false);
         };
         run();
     });

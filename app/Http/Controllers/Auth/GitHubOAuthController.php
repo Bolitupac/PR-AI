@@ -18,7 +18,10 @@ class GitHubOAuthController extends Controller
     {
         return Socialite::driver('github')
             ->scopes(['read:user', 'repo'])
-            ->stateless()
+            ->with([
+                // Ask GitHub to show account/login prompt instead of silent reuse.
+                'prompt' => 'login',
+            ])
             ->redirect();
     }
 
@@ -44,7 +47,8 @@ class GitHubOAuthController extends Controller
             ]
         );
 
-        Auth::login($user, true);
+        // Do not persist remember-cookie login across browser restarts/users.
+        Auth::login($user, false);
 
         return redirect('/auditor');
     }
