@@ -39,9 +39,9 @@
                     target="_blank" rel="noopener noreferrer">
                     View on GitHub
                 </a>
-                <form id="profile-logout-form" action="{{ route('logout') }}" method="POST">
+                <form id="profile-logout-form" action="{{ route('logout') }}" method="POST" data-loading-form>
                     @csrf
-                    <button class="profile-logout-btn" type="submit">Log out</button>
+                    <button class="profile-logout-btn" type="submit" data-loading-text="Logging out">Log out</button>
                 </form>
             </div>
         @endauth
@@ -60,7 +60,8 @@
             </div>
 
             <div class="profile-modal-actions">
-                <a class="profile-modal-action" href="{{ route('github.redirect') }}">
+                <a class="profile-modal-action" href="{{ route('github.redirect') }}" data-loading-link
+                    data-loading-text="Redirecting">
                     Login with GitHub
                 </a>
             </div>

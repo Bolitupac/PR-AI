@@ -7,6 +7,7 @@ import { initChatInput } from './chat-input';
 import { initMicListeningModal } from './mic-listening-modal';
 import { initAutoAudit } from './auto-audit';
 import { initProfileModal } from './profile-modal';
+import { initLoadingInteractions } from './loading-interactions';
 
 export function initAuditorPage() {
     if (!document.getElementById('monaco-editor')) return;
@@ -19,4 +20,5 @@ export function initAuditorPage() {
     initMicListeningModal();
     initAutoAudit();
     initProfileModal();
+    initLoadingInteractions();
 }

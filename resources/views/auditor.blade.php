@@ -59,7 +59,10 @@
                         @endauth
                         @guest
                             <div class="panel-actions">
-                                <a class="repo-connect" href="{{ route('github.redirect') }}">Connect GitHub</a>
+                                <a class="repo-connect" href="{{ route('github.redirect') }}" data-loading-link
+                                    data-loading-text="Redirecting">
+                                    Connect GitHub
+                                </a>
                                 <button class="repo-upload-btn" id="render-diff-btn" type="button"
                                     data-snapshot-url="{{ route('audit.snapshot') }}">Render Diff</button>
                             </div>

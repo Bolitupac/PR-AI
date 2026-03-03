@@ -109,8 +109,8 @@ export function initDiffUploadModal() {
 
             setTimeout(() => {
                 closeModal();
+                setButtonLoading(actionBtn, false);
             }, 520);
-            setButtonLoading(actionBtn, false);
         };
         run();
     });
