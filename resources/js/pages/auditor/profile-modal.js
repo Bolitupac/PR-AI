@@ -2,6 +2,7 @@
 export function initProfileModal() {
     const openBtn = document.getElementById('open-profile-btn');
     const modal = document.getElementById('profile-modal');
+    const logoutForm = document.getElementById('profile-logout-form');
 
     if (!openBtn || !modal) return;
 
@@ -28,5 +29,11 @@ export function initProfileModal() {
             closeModal();
         }
     });
-}
 
+    logoutForm?.addEventListener('submit', (event) => {
+        const proceed = window.confirm('Are you sure you want to log out?');
+        if (!proceed) {
+            event.preventDefault();
+        }
+    });
+}

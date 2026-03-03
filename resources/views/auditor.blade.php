@@ -31,9 +31,9 @@
                         </button>
                     @endauth
                     @guest
-                        <a class="icon-btn bottom" href="{{ route('github.redirect') }}" aria-label="Connect GitHub">
+                        <button class="icon-btn bottom" id="open-profile-btn" type="button" aria-label="Open profile">
                             <img src="{{ asset('images/github.png') }}" alt="GitHub" class="ui-logo">
-                        </a>
+                        </button>
                     @endguest
                 </div>
             </aside>

@@ -1,9 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\GitHubOAuthController;
+use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\GitHubRepositoryController;
 use App\Http\Controllers\Ai\SimpleChatController;
 use App\Http\Controllers\Ai\AuditDiffController;
@@ -32,10 +31,4 @@ Route::post('/api/ai/chat', [SimpleChatController::class, 'chat'])->name('ai.cha
 Route::post('/api/ai/audit-diff', [AuditDiffController::class, 'audit'])->name('ai.audit-diff');
 Route::post('/api/audit/snapshot', [AuditSnapshotController::class, 'store'])->name('audit.snapshot');
 
-Route::post('/logout', function (Request $request) {
-    Auth::logout();
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
-
-    return redirect('/');
-})->middleware('auth')->name('logout');
+Route::post('/logout', LogoutController::class)->middleware('auth')->name('logout');

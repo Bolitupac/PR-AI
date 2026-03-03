@@ -1,9 +1,9 @@
-@auth
-    <div class="profile-modal" id="profile-modal" aria-hidden="true">
-        <div class="profile-modal-backdrop" data-close="profile-modal"></div>
-        <div class="profile-modal-card" role="dialog" aria-label="GitHub Profile">
-            <button class="profile-modal-close" type="button" aria-label="Close" data-close="profile-modal">&times;</button>
+<div class="profile-modal" id="profile-modal" aria-hidden="true">
+    <div class="profile-modal-backdrop" data-close="profile-modal"></div>
+    <div class="profile-modal-card" role="dialog" aria-label="GitHub Profile">
+        <button class="profile-modal-close" type="button" aria-label="Close" data-close="profile-modal">&times;</button>
 
+        @auth
             <div class="profile-modal-head">
                 <div class="profile-modal-title">GitHub Profile</div>
                 <div class="profile-modal-sub">Connected account details</div>
@@ -39,12 +39,31 @@
                     target="_blank" rel="noopener noreferrer">
                     View on GitHub
                 </a>
-                <form action="{{ route('logout') }}" method="POST">
+                <form id="profile-logout-form" action="{{ route('logout') }}" method="POST">
                     @csrf
                     <button class="profile-logout-btn" type="submit">Log out</button>
                 </form>
             </div>
+        @endauth
 
-        </div>
+        @guest
+            <div class="profile-modal-head">
+                <div class="profile-modal-title">GitHub Profile</div>
+                <div class="profile-modal-sub">You are not logged in yet.</div>
+            </div>
+
+            <div class="profile-modal-box">
+                <div class="profile-modal-label">Status</div>
+                <div class="profile-modal-value">Guest</div>
+                <div class="profile-api-sub">Login with GitHub to load repos, pull requests, and your profile plan details.
+                </div>
+            </div>
+
+            <div class="profile-modal-actions">
+                <a class="profile-modal-action" href="{{ route('github.redirect') }}">
+                    Login with GitHub
+                </a>
+            </div>
+        @endguest
     </div>
-@endauth
+</div>
