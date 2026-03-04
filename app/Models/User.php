@@ -26,6 +26,8 @@ class User extends Authenticatable
         'github_access_token',
         'github_refresh_token',
         'github_token_expires_at',
+        'custom_openai_api_key',
+        'ai_key_mode',
     ];
 
     /**
@@ -38,6 +40,7 @@ class User extends Authenticatable
         'remember_token',
         'github_access_token',
         'github_refresh_token',
+        'custom_openai_api_key',
     ];
 
     /**
@@ -51,6 +54,26 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'github_token_expires_at' => 'datetime',
+            'custom_openai_api_key' => 'encrypted',
         ];
+    }
+
+    public function hasCustomOpenAiKey(): bool
+    {
+        return trim((string) $this->custom_openai_api_key) !== '';
+    }
+
+    public function getMaskedOpenAiKeyAttribute(): string
+    {
+        $key = trim((string) $this->custom_openai_api_key);
+        if ($key === '') {
+            return '';
+        }
+
+        if (strlen($key) <= 8) {
+            return str_repeat('*', strlen($key));
+        }
+
+        return substr($key, 0, 4).str_repeat('*', max(4, strlen($key) - 8)).substr($key, -4);
     }
 }

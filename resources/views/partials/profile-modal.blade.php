@@ -19,20 +19,44 @@
                 </div>
             </div>
 
-            <div class="profile-modal-grid">
-                <div class="profile-modal-box">
-                    <div class="profile-modal-label">Current Plan</div>
-                    <div class="profile-modal-value">
-                        <span class="profile-plan-pill">{{ auth()->user()->plan_name ?? 'Free' }}</span>
+                <div class="profile-modal-grid">
+                    <div class="profile-modal-box">
+                        <div class="profile-modal-label">Current Plan</div>
+                        <div class="profile-modal-value">
+                            <span class="profile-plan-pill">{{ auth()->user()->plan_name ?? 'Free' }}</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-modal-box" id="profile-ai-key-box" data-status-url="{{ route('profile.ai-key.status') }}"
+                        data-save-url="{{ route('profile.ai-key.save') }}" data-remove-url="{{ route('profile.ai-key.remove') }}"
+                        data-mode-url="{{ route('profile.ai-key.mode') }}">
+                        <div class="profile-modal-label">OpenAI API Key</div>
+
+                        <label class="profile-mode-label" for="profile-ai-key-mode">Key source</label>
+                        <select class="profile-mode-select" id="profile-ai-key-mode" aria-label="API key source">
+                            <option value="developer">Use developer key (recommended)</option>
+                            <option value="personal">Use my key</option>
+                        </select>
+
+                        <input class="profile-api-input" id="profile-api-input" type="password"
+                            placeholder="sk-...">
+
+                        <div class="profile-api-actions">
+                            <button class="profile-modal-action profile-api-save" id="profile-api-save-btn" type="button"
+                                data-loading-btn data-loading-text="Saving">
+                                Save key
+                            </button>
+                            <button class="profile-api-remove-btn" id="profile-api-remove-btn" type="button"
+                                data-loading-btn data-loading-text="Removing">
+                                Remove key
+                            </button>
+                        </div>
+
+                        <div class="profile-api-sub" id="profile-ai-key-hint">Choose which key source this account uses for
+                            AI chat.</div>
+                        <div class="profile-api-state" id="profile-ai-key-state"></div>
                     </div>
                 </div>
-
-                <div class="profile-modal-box">
-                    <div class="profile-modal-label">API Key</div>
-                    <input class="profile-api-input" type="password" placeholder="Enter API key for custom provider">
-                    <div class="profile-api-sub">Stored securely when backend save is connected.</div>
-                </div>
-            </div>
 
             <div class="profile-modal-actions">
                 <a class="profile-modal-action" href="https://github.com/{{ auth()->user()->github_username }}"

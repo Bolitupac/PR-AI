@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\Ai\OpenAiSimpleChatService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class SimpleChatController extends Controller
@@ -42,7 +43,7 @@ class SimpleChatController extends Controller
                 ."USER QUESTION:\n{$message}";
         }
 
-        $reply = $this->openAiSimpleChatService->replyWithHistory($messageForModel, $history, $selectedModel);
+        $reply = $this->openAiSimpleChatService->replyWithHistory($messageForModel, $history, $selectedModel, Auth::user());
         if ($this->requiresEvidence($message) && !$this->hasEvidenceReference($reply)) {
             $strictMessage =
                 "Answer naturally and directly.\n"
@@ -54,7 +55,7 @@ class SimpleChatController extends Controller
                 $strictMessage .= "\n\nActive context:\n{$activeAuditContext}";
             }
 
-            $reply = $this->openAiSimpleChatService->replyWithHistory($strictMessage, $history, $selectedModel);
+            $reply = $this->openAiSimpleChatService->replyWithHistory($strictMessage, $history, $selectedModel, Auth::user());
         }
 
         return response()->json([

@@ -7,6 +7,7 @@ use App\Http\Controllers\GitHubRepositoryController;
 use App\Http\Controllers\Ai\SimpleChatController;
 use App\Http\Controllers\Ai\AuditDiffController;
 use App\Http\Controllers\AuditSnapshotController;
+use App\Http\Controllers\ProfileAiKeyController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -32,3 +33,10 @@ Route::post('/api/ai/audit-diff', [AuditDiffController::class, 'audit'])->name('
 Route::post('/api/audit/snapshot', [AuditSnapshotController::class, 'store'])->name('audit.snapshot');
 
 Route::post('/logout', LogoutController::class)->middleware('auth')->name('logout');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile/ai-key/status', [ProfileAiKeyController::class, 'status'])->name('profile.ai-key.status');
+    Route::post('/profile/ai-key', [ProfileAiKeyController::class, 'save'])->name('profile.ai-key.save');
+    Route::delete('/profile/ai-key', [ProfileAiKeyController::class, 'remove'])->name('profile.ai-key.remove');
+    Route::post('/profile/ai-key/mode', [ProfileAiKeyController::class, 'setMode'])->name('profile.ai-key.mode');
+});

@@ -81,7 +81,7 @@ class AuditDiffController extends Controller
         ]);
 
         $systemPrompt = (string) config('audit_ai.system_prompt');
-        $reply = $this->openAiSimpleChatService->replyWithPrompt($systemPrompt, $userPrompt, $selectedModel);
+        $reply = $this->openAiSimpleChatService->replyWithPrompt($systemPrompt, $userPrompt, $selectedModel, Auth::user());
         $meta = $this->extractMeta($reply);
 
         $debugText = $this->auditSnapshotWriter->buildContent([

@@ -7,6 +7,7 @@ import { initChatInput } from './chat-input';
 import { initMicListeningModal } from './mic-listening-modal';
 import { initAutoAudit } from './auto-audit';
 import { initProfileModal } from './profile-modal';
+import { initProfileAiKey } from './profile-ai-key';
 import { initLoadingInteractions } from './loading-interactions';
 
 export function initAuditorPage() {
@@ -20,5 +21,6 @@ export function initAuditorPage() {
     initMicListeningModal();
     initAutoAudit();
     initProfileModal();
+    initProfileAiKey();
     initLoadingInteractions();
 }
