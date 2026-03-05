@@ -13,18 +13,41 @@ function mapRecorderError(error) {
 
 export function initVoiceController() {
     const micButton = document.getElementById('mic-btn');
-    const transcribeUrl = document.getElementById('send-btn')?.dataset.transcribeUrl || '/api/ai/transcribe';
-    const responseArea = document.getElementById('ai-response-area');
     const recordChip = document.getElementById('voice-record-chip');
     const recordTimer = document.getElementById('voice-record-timer');
+    const micButtonFab = document.getElementById('mic-btn-fab');
+    const recordChipFab = document.getElementById('voice-record-chip-fab');
+    const recordTimerFab = document.getElementById('voice-record-timer-fab');
+    const voiceFab = document.getElementById('voice-fab');
 
-    if (!micButton || !responseArea || !recordChip || !recordTimer) return;
+    const transcribeUrl = document.getElementById('send-btn')?.dataset.transcribeUrl || '/api/ai/transcribe';
+    const responseArea = document.getElementById('ai-response-area');
+
+    if (!micButton || !recordChip || !recordTimer || !responseArea) return;
+
+    const controls = [
+        {
+            chip: recordChip,
+            button: micButton,
+            timer: recordTimer,
+            icon: micButton.querySelector('img'),
+        },
+    ];
+
+    if (micButtonFab && recordChipFab && recordTimerFab) {
+        controls.push({
+            chip: recordChipFab,
+            button: micButtonFab,
+            timer: recordTimerFab,
+            icon: micButtonFab.querySelector('img'),
+        });
+    }
 
     const recorder = createVoiceRecorder();
     let status = null;
     let handling = false;
-    let startedAt = 0;
     let timerRef = null;
+    let startedAt = 0;
 
     const getStatus = () => {
         if (!status) {
@@ -39,13 +62,32 @@ export function initVoiceController() {
         return `${mins}:${secs}`;
     };
 
+    const updateIcons = (recording) => {
+        controls.forEach((control) => {
+            if (!control.icon) return;
+            const micIcon = control.icon.dataset.micIcon || control.icon.src;
+            const sendIcon = control.icon.dataset.sendIcon || control.icon.src;
+            control.icon.src = recording ? sendIcon : micIcon;
+            control.icon.alt = recording ? 'Send voice' : 'Mic';
+        });
+    };
+
+    const updateTimers = (text) => {
+        controls.forEach((control) => {
+            control.timer.textContent = text;
+        });
+    };
+
     const startTimer = () => {
-        stopTimer();
+        if (timerRef) {
+            clearInterval(timerRef);
+            timerRef = null;
+        }
         startedAt = Date.now();
-        recordTimer.textContent = '00:00';
+        updateTimers('00:00');
         timerRef = setInterval(() => {
-            const elapsedSeconds = Math.floor((Date.now() - startedAt) / 1000);
-            recordTimer.textContent = formatElapsed(elapsedSeconds);
+            const elapsed = Math.floor((Date.now() - startedAt) / 1000);
+            updateTimers(formatElapsed(elapsed));
         }, 500);
     };
 
@@ -54,18 +96,26 @@ export function initVoiceController() {
             clearInterval(timerRef);
             timerRef = null;
         }
-        recordTimer.textContent = '00:00';
+        updateTimers('00:00');
     };
 
-    const setRecordingButton = (recording) => {
-        micButton.classList.toggle('is-stop', recording);
-        recordChip.classList.toggle('is-recording', recording);
-        micButton.setAttribute('aria-label', recording ? 'Stop recording' : 'Start voice recording');
-        if (recording) {
-            startTimer();
-        } else {
-            stopTimer();
+    const setRecordingUi = (recording) => {
+        controls.forEach((control) => {
+            control.chip.classList.toggle('is-recording', recording);
+            control.button.classList.toggle('is-stop', recording);
+            control.button.setAttribute('aria-label', recording ? 'Send voice recording' : 'Start voice recording');
+        });
+        updateIcons(recording);
+        if (recording) startTimer();
+        else stopTimer();
+    };
+
+    const handleToggle = async () => {
+        if (recorder.isRecording()) {
+            await stopRecordingFlow();
+            return;
         }
+        await startRecordingFlow();
     };
 
     const startRecordingFlow = async () => {
@@ -74,15 +124,17 @@ export function initVoiceController() {
             statusRef.set('AI is busy. Wait for current response to finish.', 'error');
             return;
         }
+
         handling = true;
         statusRef.set('Requesting microphone...', 'info');
+
         try {
             await recorder.startRecording();
-            setRecordingButton(true);
+            setRecordingUi(true);
             statusRef.startDots('Microphone ready. Recording', 'info');
         } catch (error) {
             statusRef.set(mapRecorderError(error), 'error');
-            setRecordingButton(false);
+            setRecordingUi(false);
         } finally {
             handling = false;
         }
@@ -92,7 +144,8 @@ export function initVoiceController() {
         const statusRef = getStatus();
         if (handling) return;
         handling = true;
-        setRecordingButton(false);
+
+        setRecordingUi(false);
         statusRef.stopDots();
         statusRef.set('Recording stopped. Preparing audio...', 'info');
 
@@ -110,6 +163,7 @@ export function initVoiceController() {
                 model: 'gpt-4o-mini-transcribe',
                 language: 'en',
             });
+
             statusRef.stopDots();
             statusRef.set('Transcription received. Sending to AI...', 'success');
 
@@ -124,18 +178,55 @@ export function initVoiceController() {
                 statusRef.set('Could not send transcribed message.', 'error');
             }
         } catch (error) {
-            const message = error?.message || 'Transcription request failed.';
-            statusRef.set(message, 'error');
+            statusRef.set(error?.message || 'Transcription request failed.', 'error');
         } finally {
             handling = false;
         }
     };
 
-    micButton.addEventListener('click', () => {
-        if (recorder.isRecording()) {
-            stopRecordingFlow();
-            return;
+    const showFab = (visible) => {
+        if (!voiceFab) return;
+        voiceFab.classList.toggle('is-visible', visible);
+    };
+
+    if (voiceFab) {
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver(
+                ([entry]) => showFab(!entry.isIntersecting),
+                { threshold: 0.12 }
+            );
+            observer.observe(recordChip);
+        } else {
+            const syncFallback = () => {
+                const rect = recordChip.getBoundingClientRect();
+                const inView = rect.bottom > 0 && rect.top < window.innerHeight;
+                showFab(!inView);
+            };
+            window.addEventListener('scroll', syncFallback, { passive: true });
+            window.addEventListener('resize', syncFallback);
+            syncFallback();
         }
-        startRecordingFlow();
+    }
+
+    controls.forEach((control) => {
+        control.chip.setAttribute('role', 'button');
+        control.chip.setAttribute('tabindex', '0');
+        control.chip.addEventListener('click', () => {
+            handleToggle();
+        });
+        control.chip.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                handleToggle();
+            }
+        });
+        control.button.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            handleToggle();
+        });
     });
+
+    setRecordingUi(false);
 }
+

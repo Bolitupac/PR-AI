@@ -112,7 +112,9 @@
                         <div class="chat-tools-row">
                             <div class="voice-record-chip" id="voice-record-chip">
                                 <button class="action-btn ghost" id="mic-btn" type="button" aria-label="Mic">
-                                    <img src="{{ asset('images/mic.png') }}" alt="Mic" class="action-icon">
+                                    <img src="{{ asset('images/mic.png') }}" alt="Mic" class="action-icon"
+                                        data-mic-icon="{{ asset('images/mic.png') }}"
+                                        data-send-icon="{{ asset('images/send.png') }}">
                                 </button>
                                 <span class="voice-record-timer" id="voice-record-timer">00:00</span>
                             </div>
@@ -133,6 +135,17 @@
     @include('partials.repo-import')
     @include('partials.diff-upload')
     @include('partials.profile-modal')
+
+    <div class="voice-fab" id="voice-fab">
+        <div class="voice-record-chip voice-record-chip--fab" id="voice-record-chip-fab">
+            <button class="action-btn ghost" id="mic-btn-fab" type="button" aria-label="Mic">
+                <img src="{{ asset('images/mic.png') }}" alt="Mic" class="action-icon"
+                    data-mic-icon="{{ asset('images/mic.png') }}"
+                    data-send-icon="{{ asset('images/send.png') }}">
+            </button>
+            <span class="voice-record-timer" id="voice-record-timer-fab">00:00</span>
+        </div>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.min.js"></script>
 
