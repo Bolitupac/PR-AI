@@ -12,11 +12,11 @@ export function initGitRepoModal() {
     const repoPrList = document.getElementById('repo-pr-list');
     const loadRepoButton = document.getElementById('load-repo-btn');
 
-    if (!repoSelectTrigger || !repoModal || !repoSelectModal || !repoPrState || !repoPrList || !loadRepoButton) return;
+    if (!repoModal || !repoSelectModal || !repoPrState || !repoPrList || !loadRepoButton) return;
 
-    const reposUrl = repoSelectTrigger.dataset.reposUrl;
-    const pullsUrl = repoSelectTrigger.dataset.pullsUrl;
-    const pullDiffUrl = repoSelectTrigger.dataset.pullDiffUrl;
+    const reposUrl = repoSelectTrigger?.dataset.reposUrl || repoModal.dataset.reposUrl || '';
+    const pullsUrl = repoSelectTrigger?.dataset.pullsUrl || repoModal.dataset.pullsUrl || '';
+    const pullDiffUrl = repoSelectTrigger?.dataset.pullDiffUrl || repoModal.dataset.pullDiffUrl || '';
     const closeButtons = document.querySelectorAll('[data-close="repo-modal"]');
     let reposLoaded = false;
     let selectedPullNumber = null;
@@ -134,7 +134,9 @@ export function initGitRepoModal() {
             return;
         }
 
-        setButtonLoading(repoSelectTrigger, true, 'Loading');
+        if (repoSelectTrigger) {
+            setButtonLoading(repoSelectTrigger, true, 'Loading');
+        }
         setLoadButtonEnabled(false);
 
         try {
@@ -165,7 +167,9 @@ export function initGitRepoModal() {
             setSingleOption('Failed to load repos');
             setLoadButtonEnabled(false);
         } finally {
-            setButtonLoading(repoSelectTrigger, false);
+            if (repoSelectTrigger) {
+                setButtonLoading(repoSelectTrigger, false);
+            }
         }
     };
 
@@ -236,8 +240,12 @@ export function initGitRepoModal() {
         repoModal.setAttribute('aria-hidden', 'true');
     };
 
-    repoSelectTrigger.addEventListener('click', function (event) {
+    repoSelectTrigger?.addEventListener('click', function (event) {
         event.preventDefault();
+        openModal();
+    });
+
+    document.addEventListener('auditor:open-repo-modal', function () {
         openModal();
     });
 

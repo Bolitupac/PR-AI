@@ -24,55 +24,27 @@
                     </button>
 
                     @auth
-                        <button class="icon-btn bottom profile-avatar-btn" id="open-profile-btn" type="button"
-                            aria-label="Open profile">
-                            <img class="profile-avatar-img" src="https://github.com/{{ auth()->user()->github_username }}.png"
-                                alt="GitHub avatar">
-                        </button>
+                        <div class="hint-wrap hint-wrap--profile">
+                            <button class="icon-btn bottom profile-avatar-btn" id="open-profile-btn" type="button"
+                                aria-label="Open profile">
+                                <img class="profile-avatar-img" src="https://github.com/{{ auth()->user()->github_username }}.png"
+                                    alt="GitHub avatar">
+                            </button>
+                            <span class="tiny-action-hint" role="tooltip">Open profile</span>
+                        </div>
                     @endauth
                     @guest
-                        <button class="icon-btn bottom" id="open-profile-btn" type="button" aria-label="Open profile">
-                            <img src="{{ asset('images/github.png') }}" alt="GitHub" class="ui-logo">
-                        </button>
+                        <div class="hint-wrap hint-wrap--profile">
+                            <button class="icon-btn bottom" id="open-profile-btn" type="button" aria-label="Open profile">
+                                <img src="{{ asset('images/github.png') }}" alt="GitHub" class="ui-logo">
+                            </button>
+                            <span class="tiny-action-hint" role="tooltip">Open profile</span>
+                        </div>
                     @endguest
                 </div>
             </aside>
 
             <main class="main-workspace">
-                <section class="codebox-outer">
-                    <header class="panel-head">
-                        <span class="panel-title">Logic Auditor</span>
-                        @auth
-                            <div class="panel-actions">
-                                <button class="repo-select" id="repo-select" type="button"
-                                    data-repos-url="{{ route('github.repos') }}"
-                                    data-pulls-url="{{ route('github.pulls') }}"
-                                    data-pull-diff-url="{{ route('github.pull-diff') }}"
-                                    data-snapshot-url="{{ route('audit.snapshot') }}">
-                                    Select git repo
-                                </button>
-                                <button class="repo-upload-btn" id="upload-diff-btn" type="button"
-                                    data-snapshot-url="{{ route('audit.snapshot') }}">Upload diff file</button>
-                                <button class="repo-upload-btn" id="render-diff-btn" type="button"
-                                    data-snapshot-url="{{ route('audit.snapshot') }}">Render Diff</button>
-                            </div>
-                        @endauth
-                        @guest
-                            <div class="panel-actions">
-                                <a class="repo-connect" href="{{ route('github.redirect') }}" data-loading-link
-                                    data-loading-text="Redirecting">
-                                    Connect GitHub
-                                </a>
-                                <button class="repo-upload-btn" id="render-diff-btn" type="button"
-                                    data-snapshot-url="{{ route('audit.snapshot') }}">Render Diff</button>
-                            </div>
-                        @endguest
-                    </header>
-                    <div class="editor-status is-info" id="editor-diff-status">Paste unified git diff, then click Render
-                        Diff.</div>
-                    <div id="monaco-editor" aria-label="Code Editor"></div>
-                </section>
-
                 <section class="ai-panel">
                     <div class="ai-content">
                         @php
@@ -81,13 +53,21 @@
                         @endphp
                         <header class="panel-head ai-head">
                             <h3>PR ai</h3>
-                            <select class="chat-model-select" id="chat-model-select" aria-label="Select model">
-                                @foreach ($chatModels as $chatModel)
-                                    <option value="{{ $chatModel }}" @selected($chatModel === $defaultChatModel)>{{ $chatModel }}</option>
-                                @endforeach
-                            </select>
+                            <div class="panel-actions">
+                                <div class="import-hover" id="import-trigger-wrap">
+                                    <button class="repo-upload-btn" id="import-trigger" type="button">Import</button>
+                                    @include('partials.import-hover-menu')
+                                </div>
+                                <div class="hint-wrap hint-wrap--model">
+                                    <select class="chat-model-select" id="chat-model-select" aria-label="Select model">
+                                        @foreach ($chatModels as $chatModel)
+                                            <option value="{{ $chatModel }}" @selected($chatModel === $defaultChatModel)>{{ $chatModel }}</option>
+                                        @endforeach
+                                    </select>
+                                    <span class="tiny-action-hint" role="tooltip">Select AI model</span>
+                                </div>
+                            </div>
                         </header>
-                        <hr class="line-sep">
 
                         <div id="ai-response-area" class="chat-demo-list">
                             <div class="chat-empty-state" id="chat-empty-state">
@@ -110,13 +90,26 @@
                             </button>
                         </div>
                         <div class="chat-tools-row">
-                            <div class="voice-record-chip" id="voice-record-chip">
-                                <button class="action-btn ghost" id="mic-btn" type="button" aria-label="Mic">
-                                    <img src="{{ asset('images/mic.png') }}" alt="Mic" class="action-icon"
-                                        data-mic-icon="{{ asset('images/mic.png') }}"
-                                        data-send-icon="{{ asset('images/send.png') }}">
+                            <div class="voice-record-chip-wrap">
+                                <div class="voice-record-chip" id="voice-record-chip">
+                                    <button class="action-btn ghost" id="mic-btn" type="button" aria-label="Mic">
+                                        <img src="{{ asset('images/mic.png') }}" alt="Mic" class="action-icon"
+                                            data-mic-icon="{{ asset('images/mic.png') }}"
+                                            data-send-icon="{{ asset('images/send.png') }}">
+                                    </button>
+                                    <span class="voice-record-timer" id="voice-record-timer">00:00</span>
+                                </div>
+                                <span class="tiny-action-hint" role="tooltip">Talk to the AI</span>
+                            </div>
+                            <div class="import-hover import-hover--plus" id="import-plus-wrap">
+                                <button class="action-btn ghost import-plus-btn" id="import-plus-trigger" type="button"
+                                    aria-label="Import options" aria-haspopup="true" aria-expanded="false">
+                                    <svg class="plus-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
+                                    </svg>
                                 </button>
-                                <span class="voice-record-timer" id="voice-record-timer">00:00</span>
+                                <span class="tiny-action-hint" role="tooltip">Upload or import file/repo</span>
+                                @include('partials.import-hover-menu')
                             </div>
                         </div>
                     </div>
@@ -134,6 +127,8 @@
 
     @include('partials.repo-import')
     @include('partials.diff-upload')
+    @include('partials.import-monaco')
+    @include('partials.import-paste')
     @include('partials.profile-modal')
 
     <div class="voice-fab" id="voice-fab">

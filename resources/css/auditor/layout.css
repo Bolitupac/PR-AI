@@ -14,12 +14,11 @@
     min-height: 0;
     min-width: 0;
     display: flex;
-    gap: 14px;
+    gap: 0;
     padding: 14px;
     background: var(--workspace-bg);
 }
 
-.codebox-outer,
 .ai-panel,
 .diff-wrap {
     min-height: 0;
@@ -29,27 +28,9 @@
     box-shadow: var(--panel-shadow);
 }
 
-.codebox-outer {
-    flex: 1;
-    min-width: 0;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-#monaco-editor {
-    flex: 1;
-    min-height: 300px;
-    width: 100%;
-    border-radius: var(--radius-lg);
-    border: 1px solid #2b3550;
-    overflow: hidden;
-    background: #1e1e1e;
-}
-
 .ai-panel {
-    flex: 1;
+    flex: 1 1 100%;
+    width: 100%;
     max-width: none;
     min-width: 0;
     max-height: calc(100vh - 28px);

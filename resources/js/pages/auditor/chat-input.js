@@ -25,10 +25,11 @@ export function initChatInput() {
     const responseArea = document.getElementById('ai-response-area');
     const promptInput = document.getElementById('user-prompt');
     const sendButton = document.getElementById('send-btn');
+    const chatContainer = document.querySelector('.chat-container');
     const modelSelect = document.getElementById('chat-model-select');
     const emptyState = document.getElementById('chat-empty-state');
 
-    if (!responseArea || !promptInput || !sendButton) return;
+    if (!responseArea || !promptInput || !sendButton || !chatContainer) return;
     const sendButtonDefaultHtml = sendButton.innerHTML;
     let activeRequest = null;
     let selectedModel = modelSelect?.value || '';
@@ -43,6 +44,13 @@ export function initChatInput() {
         const next = Math.min(promptInput.scrollHeight, 180);
         promptInput.style.height = `${Math.max(next, 46)}px`;
         promptInput.style.overflowY = promptInput.scrollHeight > 180 ? 'auto' : 'hidden';
+    };
+
+    const syncComposerState = () => {
+        const hasText = promptInput.value.trim().length > 0;
+        const hasFocus = document.activeElement === promptInput;
+        const isBusy = Boolean(activeRequest);
+        chatContainer.classList.toggle('is-active', hasText || hasFocus || isBusy);
     };
 
     const appendMessage = (text, role) => {
@@ -65,6 +73,7 @@ export function initChatInput() {
             const status = createChatStatus({ container: responseArea, anchorNode: null });
             status.set('Validating message...');
             status.markError('Message is empty.');
+            syncComposerState();
             return false;
         }
 
@@ -81,6 +90,7 @@ export function initChatInput() {
             promptInput.value = '';
             resizeInput();
         }
+        syncComposerState();
 
         const chatUrl = sendButton.dataset.chatUrl || '/api/ai/chat';
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
@@ -160,7 +170,7 @@ export function initChatInput() {
             sendButton.classList.remove('is-stop');
             sendButton.setAttribute('aria-label', 'Send');
             sendButton.innerHTML = sendButtonDefaultHtml;
-            promptInput.focus();
+            syncComposerState();
         }
     };
 
@@ -176,11 +186,19 @@ export function initChatInput() {
             activeRequest.abortController.abort();
             activeRequest.replyNode?.remove();
             activeRequest.status.markError('Response stopped.');
+            syncComposerState();
             return;
         }
         sendTextInternal(promptInput.value, { source: 'text' });
     });
-    promptInput.addEventListener('input', resizeInput);
+    promptInput.addEventListener('input', () => {
+        resizeInput();
+        syncComposerState();
+    });
+    promptInput.addEventListener('focus', syncComposerState);
+    promptInput.addEventListener('blur', () => {
+        setTimeout(syncComposerState, 0);
+    });
     modelSelect?.addEventListener('change', function () {
         selectedModel = modelSelect.value;
         const status = createChatStatus({ container: responseArea, anchorNode: null });
@@ -198,4 +216,5 @@ export function initChatInput() {
     });
 
     resizeInput();
+    syncComposerState();
 }

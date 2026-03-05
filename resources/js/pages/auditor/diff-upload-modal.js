@@ -12,7 +12,7 @@ export function initDiffUploadModal() {
     const state = document.getElementById('diff-upload-state');
     const actionBtn = document.getElementById('diff-upload-action');
 
-    if (!openBtn || !modal || !dropzone || !fileInput || !fileName || !state || !actionBtn) return;
+    if (!modal || !dropzone || !fileInput || !fileName || !state || !actionBtn) return;
 
     let selectedDiff = null;
 
@@ -56,7 +56,11 @@ export function initDiffUploadModal() {
         }
     };
 
-    openBtn.addEventListener('click', function () {
+    openBtn?.addEventListener('click', function () {
+        openModal();
+    });
+
+    document.addEventListener('auditor:open-diff-upload-modal', function () {
         openModal();
     });
 

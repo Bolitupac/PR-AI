@@ -1,4 +1,7 @@
-<div class="repo-modal" id="repo-modal" aria-hidden="true">
+<div class="repo-modal" id="repo-modal" aria-hidden="true"
+    data-repos-url="{{ route('github.repos') }}"
+    data-pulls-url="{{ route('github.pulls') }}"
+    data-pull-diff-url="{{ route('github.pull-diff') }}">
     <div class="repo-modal-backdrop" data-close="repo-modal"></div>
     <div class="repo-modal-card" role="dialog" aria-label="Import from GitHub">
         <button class="repo-modal-close" type="button" aria-label="Close" data-close="repo-modal">&times;</button>

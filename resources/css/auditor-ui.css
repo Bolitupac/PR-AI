@@ -3,6 +3,7 @@
 @import './auditor/layout.css';
 @import './auditor/sidebar.css';
 @import './auditor/controls.css';
+@import './auditor/import.css';
 @import './auditor/repo-modal.css';
 @import './auditor/profile-modal.css';
 @import './auditor/diff-upload-modal.css';
