@@ -4,7 +4,7 @@ import { initDiffUploadModal } from './diff-upload-modal';
 import { initDiffViewer } from './diff-viewer';
 import { initMonacoDiffBridge } from './monaco-diff-bridge';
 import { initChatInput } from './chat-input';
-import { initMicListeningModal } from './mic-listening-modal';
+import { initVoiceInput } from './voice';
 import { initAutoAudit } from './auto-audit';
 import { initProfileModal } from './profile-modal';
 import { initProfileAiKey } from './profile-ai-key';
@@ -18,7 +18,7 @@ export function initAuditorPage() {
     initDiffUploadModal();
     initMonacoDiffBridge();
     initChatInput();
-    initMicListeningModal();
+    initVoiceInput();
     initAutoAudit();
     initProfileModal();
     initProfileAiKey();

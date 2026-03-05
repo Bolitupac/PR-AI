@@ -2,6 +2,24 @@ import { createChatStatus } from './chat-status';
 import { renderChatMarkdown } from './chat-markdown';
 import { chatContextStore } from './chat-context-store';
 
+let chatApi = {
+    sendTextToChat: async () => false,
+    isBusy: () => false,
+    getSelectedModel: () => '',
+};
+
+export function sendTextToChat(text, options = {}) {
+    return chatApi.sendTextToChat(text, options);
+}
+
+export function isChatBusy() {
+    return chatApi.isBusy();
+}
+
+export function getSelectedChatModel() {
+    return chatApi.getSelectedModel();
+}
+
 // Pushes user input into the chat area as a new message.
 export function initChatInput() {
     const responseArea = document.getElementById('ai-response-area');
@@ -40,15 +58,14 @@ export function initChatInput() {
         return message;
     };
 
-    const sendMessage = async () => {
-        if (activeRequest) return;
-        const rawText = promptInput.value;
-        const text = rawText.trim();
+    const sendTextInternal = async (rawText, { source = 'text' } = {}) => {
+        if (activeRequest) return false;
+        const text = String(rawText ?? '').trim();
         if (!text) {
             const status = createChatStatus({ container: responseArea, anchorNode: null });
             status.set('Validating message...');
             status.markError('Message is empty.');
-            return;
+            return false;
         }
 
         hideEmptyState();
@@ -60,8 +77,10 @@ export function initChatInput() {
         status.set('Message validated.');
         status.set('Preparing request...');
 
-        promptInput.value = '';
-        resizeInput();
+        if (source === 'text') {
+            promptInput.value = '';
+            resizeInput();
+        }
 
         const chatUrl = sendButton.dataset.chatUrl || '/api/ai/chat';
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
@@ -95,7 +114,7 @@ export function initChatInput() {
             });
             if (requestState.stopped) {
                 status.markError('Response stopped.');
-                return;
+                return false;
             }
             clearTimeout(awaitingTimer);
             if (!switchedToAwaiting) {
@@ -106,25 +125,26 @@ export function initChatInput() {
             const data = await res.json().catch(() => ({}));
             if (requestState.stopped) {
                 status.markError('Response stopped.');
-                return;
+                return false;
             }
             if (!res.ok) {
                 status.markError('Request failed.');
                 if (!requestState.stopped) {
                     requestState.replyNode = appendMessage(data?.message || 'Chat request failed.', 'ai');
                 }
-                return;
+                return false;
             }
 
             status.set('Rendering AI response...');
             if (requestState.stopped) {
                 status.markError('Response stopped.');
-                return;
+                return false;
             }
             requestState.replyNode = appendMessage(data?.reply || 'No response from AI.', 'ai');
             chatContextStore.push('assistant', data?.reply || 'No response from AI.');
             status.markSuccess('Request sent.');
             status.remove(450);
+            return true;
         } catch (error) {
             clearTimeout(awaitingTimer);
             if (error?.name === 'AbortError' || requestState.stopped) {
@@ -134,6 +154,7 @@ export function initChatInput() {
                 status.markError('Request failed.');
                 appendMessage('Could not reach AI service.', 'ai');
             }
+            return false;
         } finally {
             activeRequest = null;
             sendButton.classList.remove('is-stop');
@@ -141,6 +162,12 @@ export function initChatInput() {
             sendButton.innerHTML = sendButtonDefaultHtml;
             promptInput.focus();
         }
+    };
+
+    chatApi = {
+        sendTextToChat: sendTextInternal,
+        isBusy: () => Boolean(activeRequest),
+        getSelectedModel: () => selectedModel,
     };
 
     sendButton.addEventListener('click', function () {
@@ -151,7 +178,7 @@ export function initChatInput() {
             activeRequest.status.markError('Response stopped.');
             return;
         }
-        sendMessage();
+        sendTextInternal(promptInput.value, { source: 'text' });
     });
     promptInput.addEventListener('input', resizeInput);
     modelSelect?.addEventListener('change', function () {
@@ -167,7 +194,7 @@ export function initChatInput() {
             return;
         }
         event.preventDefault();
-        sendMessage();
+        sendTextInternal(promptInput.value, { source: 'text' });
     });
 
     resizeInput();

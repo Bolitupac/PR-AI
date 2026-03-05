@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\GitHubRepositoryController;
 use App\Http\Controllers\Ai\SimpleChatController;
 use App\Http\Controllers\Ai\AuditDiffController;
+use App\Http\Controllers\Ai\Voice\TranscriptionController;
 use App\Http\Controllers\AuditSnapshotController;
 use App\Http\Controllers\ProfileAiKeyController;
 
@@ -14,6 +15,7 @@ Route::get('/', function () {
 });
 
 Route::get('/auditor', function () {
+    request()->session()->forget('active_audit_context');
     return view('auditor');
 });
 
@@ -29,6 +31,7 @@ Route::get('/api/github/pull-diff', [GitHubRepositoryController::class, 'pullDif
     ->middleware('auth')
     ->name('github.pull-diff');
 Route::post('/api/ai/chat', [SimpleChatController::class, 'chat'])->name('ai.chat');
+Route::post('/api/ai/transcribe', [TranscriptionController::class, 'transcribe'])->name('ai.transcribe');
 Route::post('/api/ai/audit-diff', [AuditDiffController::class, 'audit'])->name('ai.audit-diff');
 Route::post('/api/audit/snapshot', [AuditSnapshotController::class, 'store'])->name('audit.snapshot');
 

@@ -104,14 +104,18 @@
                         <div class="chat-input-wrap">
                             <textarea class="chat-input" id="user-prompt" rows="1" placeholder="Ask AI..."></textarea>
                             <button class="action-btn input-send-btn" id="send-btn" type="button" aria-label="Send"
-                                data-chat-url="{{ route('ai.chat') }}">
+                                data-chat-url="{{ route('ai.chat') }}"
+                                data-transcribe-url="{{ route('ai.transcribe') }}">
                                 <img src="{{ asset('images/send.png') }}" alt="Send" class="action-icon">
                             </button>
                         </div>
                         <div class="chat-tools-row">
-                            <button class="action-btn ghost" id="mic-btn" type="button" aria-label="Mic">
-                                <img src="{{ asset('images/mic.png') }}" alt="Mic" class="action-icon">
-                            </button>
+                            <div class="voice-record-chip" id="voice-record-chip">
+                                <button class="action-btn ghost" id="mic-btn" type="button" aria-label="Mic">
+                                    <img src="{{ asset('images/mic.png') }}" alt="Mic" class="action-icon">
+                                </button>
+                                <span class="voice-record-timer" id="voice-record-timer">00:00</span>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -129,19 +133,6 @@
     @include('partials.repo-import')
     @include('partials.diff-upload')
     @include('partials.profile-modal')
-
-    <div class="mic-listening-modal" id="mic-listening-modal" aria-hidden="true">
-        <div class="mic-listening-card" role="dialog" aria-modal="true" aria-label="Voice Listening">
-            <div class="mic-listening-top">
-                <h4 class="mic-listening-title">Listening...</h4>
-                <button class="mic-listening-close" id="mic-listening-close" type="button" aria-label="Close">&times;</button>
-            </div>
-            <div class="mic-listening-body">
-                <div class="mic-wave"></div>
-                <p class="mic-listening-text">Speak now. Your voice input will appear in chat.</p>
-            </div>
-        </div>
-    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.min.js"></script>
 
