@@ -7,6 +7,7 @@ export function initThemeToggle() {
     if (!btn) return;
     let switchTimer = null;
     let logoSpinTimer = null;
+    let logoSpinReverseTimer = null;
 
     const runThemeTransition = () => {
         root.classList.add('theme-switching');
@@ -41,6 +42,16 @@ export function initThemeToggle() {
             logoSpinTimer = setTimeout(() => {
                 root.classList.remove('logo-spin-on-switch');
                 logoSpinTimer = null;
+            }, 560);
+        }
+        if (current === 'light' && next === 'dark') {
+            root.classList.add('logo-spin-on-switch-reverse');
+            if (logoSpinReverseTimer) {
+                clearTimeout(logoSpinReverseTimer);
+            }
+            logoSpinReverseTimer = setTimeout(() => {
+                root.classList.remove('logo-spin-on-switch-reverse');
+                logoSpinReverseTimer = null;
             }, 560);
         }
         applyTheme(next);

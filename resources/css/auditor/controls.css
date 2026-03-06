@@ -44,6 +44,10 @@ html.logo-spin-on-switch .brand-logo--dark-on-light {
     animation: brand-logo-spin-once 0.52s cubic-bezier(0.2, 0.8, 0.2, 1) 1;
 }
 
+html.logo-spin-on-switch-reverse .brand-logo--light-on-dark {
+    animation: brand-logo-spin-once-reverse 0.52s cubic-bezier(0.2, 0.8, 0.2, 1) 1;
+}
+
 @keyframes brand-logo-spin-once {
     from {
         transform: rotate(0deg);
@@ -51,6 +55,16 @@ html.logo-spin-on-switch .brand-logo--dark-on-light {
 
     to {
         transform: rotate(360deg);
+    }
+}
+
+@keyframes brand-logo-spin-once-reverse {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(-360deg);
     }
 }
 
