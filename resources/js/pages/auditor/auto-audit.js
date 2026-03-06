@@ -26,9 +26,20 @@ export function initAutoAudit() {
 
     const appendScoreCard = (meta = null) => {
         if (!meta) return;
+        const scoreToRiskClass = (score) => {
+            if (!Number.isInteger(score)) return 'is-risk';
+            if (score >= 80) return 'is-risk-critical';
+            if (score >= 60) return 'is-risk-high';
+            if (score >= 35) return 'is-risk-medium';
+            return 'is-risk-low';
+        };
+
         const changeType = String(meta.change_type || 'neutral').toLowerCase();
         const riskLevel = String(meta.risk_level || 'medium').toLowerCase();
         const riskScore = Number.isInteger(meta.risk_score) ? Math.max(0, Math.min(100, meta.risk_score)) : null;
+        const securityScore = Number.isInteger(meta.security_score) ? Math.max(0, Math.min(100, meta.security_score)) : null;
+        const scalabilityScore = Number.isInteger(meta.scalability_score) ? Math.max(0, Math.min(100, meta.scalability_score)) : null;
+        const reliabilityScore = Number.isInteger(meta.reliability_score) ? Math.max(0, Math.min(100, meta.reliability_score)) : null;
         const suggestion = String(meta.suggestion || 'review_then_merge').toLowerCase();
         const toneClass = changeType === 'upgrade' ? 'is-upgrade' : (changeType === 'downgrade' ? 'is-downgrade' : 'is-neutral');
         const riskClass = ['low', 'medium', 'high', 'critical'].includes(riskLevel) ? `is-risk-${riskLevel}` : 'is-risk-medium';
@@ -36,6 +47,9 @@ export function initAutoAudit() {
             ? 'Merge'
             : (suggestion === 'dont_merge' ? "Don't merge" : 'Review then merge');
         const scoreWidth = riskScore === null ? 0 : riskScore;
+        const securityClass = scoreToRiskClass(securityScore);
+        const scalabilityClass = scoreToRiskClass(scalabilityScore);
+        const reliabilityClass = scoreToRiskClass(reliabilityScore);
 
         const card = document.createElement('div');
         card.className = 'msg ai audit-scorecard';
@@ -44,6 +58,11 @@ export function initAutoAudit() {
                 <span class="meta-pill ${toneClass}">Change: ${changeType}</span>
                 <span class="meta-pill ${riskClass}">Risk: ${riskLevel}${riskScore !== null ? ` (${riskScore}/100)` : ''}</span>
                 <span class="meta-pill is-suggestion">Suggestion: ${suggestionText}</span>
+            </div>
+            <div class="audit-scorecard-top">
+                <span class="meta-pill ${securityClass}">Security: ${securityScore !== null ? `${securityScore}/100` : 'N/A'}</span>
+                <span class="meta-pill ${scalabilityClass}">Scalability: ${scalabilityScore !== null ? `${scalabilityScore}/100` : 'N/A'}</span>
+                <span class="meta-pill ${reliabilityClass}">Reliability: ${reliabilityScore !== null ? `${reliabilityScore}/100` : 'N/A'}</span>
             </div>
             <div class="audit-score-track">
                 <div class="audit-score-fill ${riskClass}" style="width: ${scoreWidth}%"></div>

@@ -113,6 +113,9 @@ class AuditDiffController extends Controller
         $riskScore = null;
         $riskLevel = 'medium';
         $suggestion = 'review_then_merge';
+        $securityScore = null;
+        $scalabilityScore = null;
+        $reliabilityScore = null;
 
         if (preg_match('/\[AUDIT_META\](.*?)\[\/AUDIT_META\]/is', $reply, $metaBlockMatch)) {
             $metaBlock = (string) $metaBlockMatch[1];
@@ -132,6 +135,18 @@ class AuditDiffController extends Controller
             if (preg_match('/suggestion\s*=\s*(merge|dont_merge|review_then_merge)/i', $metaBlock, $m)) {
                 $suggestion = strtolower((string) $m[1]);
             }
+
+            if (preg_match('/security_score\s*=\s*(\d{1,3})/i', $metaBlock, $m)) {
+                $securityScore = max(0, min(100, (int) $m[1]));
+            }
+
+            if (preg_match('/scalability_score\s*=\s*(\d{1,3})/i', $metaBlock, $m)) {
+                $scalabilityScore = max(0, min(100, (int) $m[1]));
+            }
+
+            if (preg_match('/reliability_score\s*=\s*(\d{1,3})/i', $metaBlock, $m)) {
+                $reliabilityScore = max(0, min(100, (int) $m[1]));
+            }
         }
 
         if (preg_match('/Change Type:\s*(upgrade|downgrade|neutral)/i', $reply, $m)) {
@@ -148,11 +163,26 @@ class AuditDiffController extends Controller
             $riskLevel = $riskScore >= 80 ? 'critical' : ($riskScore >= 60 ? 'high' : ($riskScore >= 35 ? 'medium' : 'low'));
         }
 
+        if (!is_int($securityScore) && preg_match('/Security Score:\s*(\d{1,3})\s*\/\s*100/i', $reply, $m)) {
+            $securityScore = max(0, min(100, (int) $m[1]));
+        }
+
+        if (!is_int($scalabilityScore) && preg_match('/Scalability Score:\s*(\d{1,3})\s*\/\s*100/i', $reply, $m)) {
+            $scalabilityScore = max(0, min(100, (int) $m[1]));
+        }
+
+        if (!is_int($reliabilityScore) && preg_match('/Reliability Score:\s*(\d{1,3})\s*\/\s*100/i', $reply, $m)) {
+            $reliabilityScore = max(0, min(100, (int) $m[1]));
+        }
+
         return [
             'change_type' => $changeType,
             'risk_score' => $riskScore,
             'risk_level' => $riskLevel,
             'suggestion' => $suggestion,
+            'security_score' => $securityScore,
+            'scalability_score' => $scalabilityScore,
+            'reliability_score' => $reliabilityScore,
         ];
     }
 }

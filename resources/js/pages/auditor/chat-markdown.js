@@ -56,7 +56,7 @@ export function renderChatMarkdown(markdownText) {
             continue;
         }
 
-        const hr = line.match(/^([-*_])\1{2,}$/);
+        const hr = line.match(/^(?:-{3,}|\*{3,}|_{3,})$/);
         if (hr) {
             closeLists();
             html.push('<hr class="msg-hr">');
