@@ -22,6 +22,19 @@
                     <button class="icon-btn" type="button" aria-label="Menu">
                         <img src="{{ asset('images/menu.png') }}" alt="Menu" class="ui-logo">
                     </button>
+                    <div class="hint-wrap hint-wrap--theme">
+                        <button class="icon-btn" id="theme-toggle-btn" type="button" aria-label="Switch to dark mode">
+                            <svg class="theme-toggle-icon theme-toggle-icon--moon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M14.5 3.5a8.5 8.5 0 1 0 6 14.5A9 9 0 1 1 14.5 3.5Z" fill="currentColor" />
+                            </svg>
+                            <svg class="theme-toggle-icon theme-toggle-icon--sun" viewBox="0 0 24 24" aria-hidden="true">
+                                <circle cx="12" cy="12" r="4.1" fill="currentColor" />
+                                <path d="M12 2.8v2.2m0 14v2.2m9.2-9.2h-2.2M5 12H2.8m15.7-6.7-1.6 1.6M7.1 16.9l-1.6 1.6m0-13.2 1.6 1.6m9.8 9.8 1.6 1.6"
+                                    stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                            </svg>
+                        </button>
+                        <span class="tiny-action-hint" role="tooltip">Toggle dark mode</span>
+                    </div>
 
                     @auth
                         <div class="hint-wrap hint-wrap--profile">
@@ -119,11 +132,6 @@
 
         @include('partials.diff-viewer')
     </div>
-
-    <footer class="site-credit" aria-label="Copyright">
-        <div class="site-credit-line"><span class="site-credit-by">by</span> <span class="site-credit-brand">BOLITUPAC</span></div>
-        <div class="site-credit-line">&copy;2026</div>
-    </footer>
 
     @include('partials.repo-import')
     @include('partials.diff-upload')

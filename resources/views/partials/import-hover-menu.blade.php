@@ -2,7 +2,12 @@
     <button class="import-hover-item" type="button" data-import-choice="repo">
         <span class="import-hover-label">Import from GitHub repo</span>
         <span class="import-hover-icon" aria-hidden="true">
-            <img src="{{ asset('images/github.png') }}" alt="">
+            <svg viewBox="0 0 24 24" focusable="false">
+                <circle cx="6" cy="6" r="2.1" fill="none" stroke="currentColor" stroke-width="1.8" />
+                <circle cx="18" cy="6" r="2.1" fill="none" stroke="currentColor" stroke-width="1.8" />
+                <circle cx="12" cy="18" r="2.1" fill="none" stroke="currentColor" stroke-width="1.8" />
+                <path d="M7.9 7.2 10.3 16M16.1 7.2 13.7 16M8.1 6h7.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
         </span>
     </button>
     <button class="import-hover-item" type="button" data-import-choice="upload">

@@ -8,9 +8,11 @@ import { initAutoAudit } from './auto-audit';
 import { initProfileModal } from './profile-modal';
 import { initProfileAiKey } from './profile-ai-key';
 import { initLoadingInteractions } from './loading-interactions';
+import { initThemeToggle } from './theme-toggle';
 
 export function initAuditorPage() {
     if (!document.getElementById('ai-response-area')) return;
+    initThemeToggle();
     initDiffViewer();
     initImportUi();
     initGitRepoModal();

@@ -9,4 +9,5 @@
 @import './auditor/diff-upload-modal.css';
 @import './auditor/chat.css';
 @import './auditor/diff.css';
+@import './auditor/dark/theme.css';
 @import './auditor/responsive.css';

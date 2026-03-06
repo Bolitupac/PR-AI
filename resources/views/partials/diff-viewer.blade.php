@@ -12,4 +12,9 @@
         </div>
         <div id="diff2html-container"></div>
     </div>
+
+    <footer class="site-credit" aria-label="Copyright">
+        <div class="site-credit-line"><span class="site-credit-by">by</span> <span class="site-credit-brand">BOLITUPAC</span></div>
+        <div class="site-credit-line">&copy;2026</div>
+    </footer>
 </section>

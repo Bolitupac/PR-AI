@@ -729,6 +729,8 @@
     background: transparent !important;
     animation: none !important;
     padding: 0;
+    box-shadow: none !important;
+    outline: none !important;
 }
 
 #mic-btn-fab .action-icon {
@@ -736,6 +738,13 @@
     height: 20px;
     filter: none;
     opacity: 0.68;
+}
+
+#mic-btn-fab:focus,
+#mic-btn-fab:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
 }
 
 #voice-record-timer-fab {

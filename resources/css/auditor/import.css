@@ -211,6 +211,10 @@
     display: block;
 }
 
+.import-hover-item[data-import-choice="repo"] .import-hover-icon {
+    color: #2e3f68;
+}
+
 @keyframes modal-fade-in {
     from {
         opacity: 0;

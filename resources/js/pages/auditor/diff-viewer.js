@@ -18,10 +18,13 @@ function drawDiff(container, diffText, outputFormat) {
         return;
     }
 
+    const colorScheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+
     const diffUi = new window.Diff2HtmlUI(container, diffText, {
         drawFileList: true,
         fileListStartVisible: true,
         outputFormat,
+        colorScheme,
         matching: 'none',
         synchronisedScroll: true,
         highlight: true,
@@ -61,6 +64,10 @@ export function initDiffViewer() {
         currentDiffText = event?.detail?.diffText || '';
         const diffCount = countDifferences(currentDiffText);
         badge.textContent = `${diffCount} Differences`;
+        renderCurrentDiff();
+    });
+
+    document.addEventListener('auditor:theme-changed', () => {
         renderCurrentDiff();
     });
 }
