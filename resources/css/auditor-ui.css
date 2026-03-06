@@ -1,5 +1,6 @@
 /* resources/css/auditor-ui.css */
 @import './auditor/base.css';
+@import './auditor/theme-transition.css';
 @import './auditor/layout.css';
 @import './auditor/sidebar.css';
 @import './auditor/controls.css';

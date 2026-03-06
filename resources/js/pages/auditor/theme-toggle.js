@@ -5,6 +5,18 @@ export function initThemeToggle() {
     const root = document.documentElement;
     const btn = document.getElementById('theme-toggle-btn');
     if (!btn) return;
+    let switchTimer = null;
+
+    const runThemeTransition = () => {
+        root.classList.add('theme-switching');
+        if (switchTimer) {
+            clearTimeout(switchTimer);
+        }
+        switchTimer = setTimeout(() => {
+            root.classList.remove('theme-switching');
+            switchTimer = null;
+        }, 420);
+    };
 
     const applyTheme = (theme) => {
         const next = theme === 'dark' ? 'dark' : 'light';
@@ -19,6 +31,7 @@ export function initThemeToggle() {
     btn.addEventListener('click', () => {
         const current = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
         const next = current === 'dark' ? 'light' : 'dark';
+        runThemeTransition();
         applyTheme(next);
         localStorage.setItem(THEME_KEY, next);
     });
