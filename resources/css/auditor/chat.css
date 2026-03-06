@@ -476,9 +476,9 @@
 
 .chat-container:not(.is-active) .chat-input {
     min-height: 26px;
-    padding-top: 6px;
-    padding-bottom: 2px;
-    padding-left: 74px;
+    padding-top: 7px;
+    padding-bottom: 1px;
+    padding-left: 82px;
     padding-right: 44px;
     line-height: 1.2;
     text-align: left;
