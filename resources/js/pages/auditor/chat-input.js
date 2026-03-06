@@ -30,9 +30,11 @@ export function initChatInput() {
     const emptyState = document.getElementById('chat-empty-state');
 
     if (!responseArea || !promptInput || !sendButton || !chatContainer) return;
+    chatContextStore.clear();
     const sendButtonDefaultHtml = sendButton.innerHTML;
     let activeRequest = null;
     let selectedModel = modelSelect?.value || '';
+    let lastBusyState = false;
 
     const hideEmptyState = () => {
         if (!emptyState) return;
@@ -51,6 +53,18 @@ export function initChatInput() {
         const hasFocus = document.activeElement === promptInput;
         const isBusy = Boolean(activeRequest);
         chatContainer.classList.toggle('is-active', hasText || hasFocus || isBusy);
+        if (isBusy !== lastBusyState) {
+            document.dispatchEvent(new CustomEvent('auditor:chat-busy-changed', { detail: { busy: isBusy } }));
+            lastBusyState = isBusy;
+        }
+    };
+
+    const showBusyBlockedStatus = () => {
+        const status = createChatStatus({ container: responseArea, anchorNode: null });
+        status.markError('AI is still responding. Wait or press Stop.');
+        status.remove(1050);
+        chatContainer.classList.add('is-busy-blocked');
+        setTimeout(() => chatContainer.classList.remove('is-busy-blocked'), 260);
     };
 
     const appendMessage = (text, role) => {
@@ -207,7 +221,11 @@ export function initChatInput() {
     });
     promptInput.addEventListener('keydown', function (event) {
         if (event.key !== 'Enter') return;
-        if (activeRequest) return;
+        if (activeRequest) {
+            event.preventDefault();
+            showBusyBlockedStatus();
+            return;
+        }
         if (event.ctrlKey || event.metaKey || event.shiftKey) {
             return;
         }

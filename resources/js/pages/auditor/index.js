@@ -10,6 +10,7 @@ import { initProfileAiKey } from './profile-ai-key';
 import { initLoadingInteractions } from './loading-interactions';
 import { initThemeToggle } from './theme-toggle';
 import { initSidebar } from './sidebar';
+import { initChatScrollBottomButton } from './chat-scroll-bottom';
 
 export function initAuditorPage() {
     if (!document.getElementById('ai-response-area')) return;
@@ -20,6 +21,7 @@ export function initAuditorPage() {
     initGitRepoModal();
     initDiffUploadModal();
     initChatInput();
+    initChatScrollBottomButton();
     initVoiceInput();
     initAutoAudit();
     initProfileModal();

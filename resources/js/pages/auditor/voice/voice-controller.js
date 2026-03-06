@@ -48,6 +48,7 @@ export function initVoiceController() {
     let handling = false;
     let timerRef = null;
     let startedAt = 0;
+    let chatBusy = isChatBusy();
 
     const getStatus = () => {
         if (!status) {
@@ -110,7 +111,18 @@ export function initVoiceController() {
         else stopTimer();
     };
 
+    const setBusyUi = (busy) => {
+        controls.forEach((control) => {
+            control.chip.classList.toggle('is-chat-busy', busy);
+            control.chip.setAttribute('aria-disabled', busy ? 'true' : 'false');
+        });
+    };
+
     const handleToggle = async () => {
+        if (chatBusy && !recorder.isRecording()) {
+            getStatus().set('AI is still responding. Voice input is temporarily locked.', 'error');
+            return;
+        }
         if (recorder.isRecording()) {
             await stopRecordingFlow();
             return;
@@ -120,8 +132,8 @@ export function initVoiceController() {
 
     const startRecordingFlow = async () => {
         const statusRef = getStatus();
-        if (handling || isChatBusy()) {
-            statusRef.set('AI is busy. Wait for current response to finish.', 'error');
+        if (handling || chatBusy || isChatBusy()) {
+            statusRef.set('AI is still responding. Voice input is temporarily locked.', 'error');
             return;
         }
 
@@ -227,6 +239,11 @@ export function initVoiceController() {
         });
     });
 
-    setRecordingUi(false);
-}
+    document.addEventListener('auditor:chat-busy-changed', (event) => {
+        chatBusy = Boolean(event?.detail?.busy);
+        setBusyUi(chatBusy);
+    });
 
+    setRecordingUi(false);
+    setBusyUi(chatBusy);
+}

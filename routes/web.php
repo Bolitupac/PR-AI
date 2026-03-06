@@ -15,6 +15,7 @@ Route::get('/', function () {
 });
 
 Route::get('/auditor', function () {
+    request()->session()->forget('active_audit_context');
     return view('auditor');
 });
 

@@ -34,6 +34,7 @@
     max-width: none;
     min-width: 0;
     max-height: calc(100vh - 28px);
+    position: relative;
     display: flex;
     flex-direction: column;
     overflow: hidden;
