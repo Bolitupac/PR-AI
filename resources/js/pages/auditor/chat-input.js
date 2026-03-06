@@ -80,6 +80,38 @@ export function initChatInput() {
         return message;
     };
 
+    const parseSseBlock = (blockText) => {
+        const lines = String(blockText || '').split('\n');
+        let eventName = 'message';
+        const dataParts = [];
+
+        for (const line of lines) {
+            if (line.startsWith('event:')) {
+                eventName = line.slice(6).trim() || 'message';
+                continue;
+            }
+            if (line.startsWith('data:')) {
+                dataParts.push(line.slice(5).trim());
+            }
+        }
+
+        const payloadRaw = dataParts.join('\n');
+        let payload = {};
+        try {
+            payload = payloadRaw ? JSON.parse(payloadRaw) : {};
+        } catch {
+            payload = {};
+        }
+
+        return { eventName, payload, payloadRaw };
+    };
+
+    const extractOpenAiToken = (payload) => {
+        if (!payload || typeof payload !== 'object') return '';
+        const token = String(payload?.choices?.[0]?.delta?.content ?? '');
+        return token;
+    };
+
     const sendTextInternal = async (rawText, { source = 'text' } = {}) => {
         if (activeRequest) return false;
         const text = String(rawText ?? '').trim();
@@ -106,7 +138,7 @@ export function initChatInput() {
         }
         syncComposerState();
 
-        const chatUrl = sendButton.dataset.chatUrl || '/api/ai/chat';
+        const chatUrl = sendButton.dataset.chatStreamUrl || '/api/ai/chat-stream';
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
         const abortController = new AbortController();
         const requestState = { abortController, status, stopped: false, replyNode: null };
@@ -126,7 +158,7 @@ export function initChatInput() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json',
+                    'Accept': 'text/event-stream',
                     'X-CSRF-TOKEN': csrfToken,
                 },
                 body: JSON.stringify({
@@ -145,27 +177,87 @@ export function initChatInput() {
                 status.stopDots();
             }
             status.set('Backend responded.');
-
-            const data = await res.json().catch(() => ({}));
-            if (requestState.stopped) {
-                status.markError('Response stopped.');
+            if (!res.ok) {
+                const fallbackText = await res.text().catch(() => '');
+                let message = 'Chat request failed.';
+                try {
+                    const parsed = fallbackText ? JSON.parse(fallbackText) : null;
+                    message = parsed?.message || message;
+                } catch {
+                    if (fallbackText) message = fallbackText;
+                }
+                status.markError('Request failed.');
+                requestState.replyNode = appendMessage(message, 'ai');
                 return false;
             }
-            if (!res.ok) {
+            const reader = res.body?.getReader?.();
+            if (!reader) {
                 status.markError('Request failed.');
-                if (!requestState.stopped) {
-                    requestState.replyNode = appendMessage(data?.message || 'Chat request failed.', 'ai');
-                }
+                appendMessage('Could not read AI stream.', 'ai');
                 return false;
             }
 
             status.set('Rendering AI response...');
+            requestState.replyNode = appendMessage('', 'ai');
+            const decoder = new TextDecoder('utf-8');
+            let fullReply = '';
+            let buffer = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                if (requestState.stopped) {
+                    break;
+                }
+
+                buffer += decoder.decode(value, { stream: true });
+                let splitPos = buffer.search(/\r?\n\r?\n/);
+                while (splitPos !== -1) {
+                    const block = buffer.slice(0, splitPos);
+                    const sepMatch = buffer.match(/\r?\n\r?\n/);
+                    const sepLen = sepMatch ? sepMatch[0].length : 2;
+                    buffer = buffer.slice(splitPos + sepLen);
+                    const { eventName, payload, payloadRaw } = parseSseBlock(block);
+                    if (payloadRaw === '[DONE]') {
+                        break;
+                    }
+
+                    if (eventName === 'message' || eventName === 'token') {
+                        const token = extractOpenAiToken(payload) || String(payload?.text ?? '');
+                        if (token !== '') {
+                            fullReply += token;
+                            if (requestState.replyNode) {
+                                requestState.replyNode.innerHTML = renderChatMarkdown(fullReply);
+                                responseArea.scrollTop = responseArea.scrollHeight;
+                            }
+                        }
+                    } else if (eventName === 'error') {
+                        status.markError('Request failed.');
+                        if (requestState.replyNode) {
+                            requestState.replyNode.innerHTML = renderChatMarkdown(String(payload?.message || 'Chat request failed.'));
+                        }
+                        return false;
+                    } else if (eventName === 'done') {
+                        break;
+                    }
+
+                    splitPos = buffer.search(/\r?\n\r?\n/);
+                }
+            }
+
             if (requestState.stopped) {
                 status.markError('Response stopped.');
                 return false;
             }
-            requestState.replyNode = appendMessage(data?.reply || 'No response from AI.', 'ai');
-            chatContextStore.push('assistant', data?.reply || 'No response from AI.');
+
+            if (fullReply.trim() === '') {
+                fullReply = 'No response from AI.';
+                if (requestState.replyNode) {
+                    requestState.replyNode.innerHTML = renderChatMarkdown(fullReply);
+                }
+            }
+
+            chatContextStore.push('assistant', fullReply);
             status.markSuccess('Request sent.');
             status.remove(450);
             return true;

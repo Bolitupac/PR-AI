@@ -78,6 +78,32 @@ export function initAutoAudit() {
         return String(text).replace(/\[AUDIT_META\][\s\S]*?\[\/AUDIT_META\]/gi, '').trim();
     };
 
+    const parseSseBlock = (blockText) => {
+        const lines = String(blockText || '').split('\n');
+        let eventName = 'message';
+        const dataParts = [];
+
+        for (const line of lines) {
+            if (line.startsWith('event:')) {
+                eventName = line.slice(6).trim() || 'message';
+                continue;
+            }
+            if (line.startsWith('data:')) {
+                dataParts.push(line.slice(5).trim());
+            }
+        }
+
+        const payloadRaw = dataParts.join('\n');
+        let payload = {};
+        try {
+            payload = payloadRaw ? JSON.parse(payloadRaw) : {};
+        } catch {
+            payload = {};
+        }
+
+        return { eventName, payload, payloadRaw };
+    };
+
     document.addEventListener('auditor:diff-selected', async (event) => {
         const detail = event?.detail || {};
         const diffText = detail.diffText || '';
@@ -96,11 +122,11 @@ export function initAutoAudit() {
 
         try {
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-            const res = await fetch('/api/ai/audit-diff', {
+            const res = await fetch('/api/ai/audit-diff-stream', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Accept: 'application/json',
+                    Accept: 'text/event-stream',
                     'X-CSRF-TOKEN': csrfToken,
                 },
                 body: JSON.stringify({
@@ -114,19 +140,67 @@ export function initAutoAudit() {
             });
 
             status.set('Backend responded.');
-            const data = await res.json().catch(() => ({}));
-
             if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
                 status.markError('Audit failed.');
                 appendMessage(data?.message || 'Audit request failed.', 'ai');
                 return;
             }
 
             status.set('Rendering AI audit...');
-            const cleanReply = stripAuditMeta(data?.reply || 'No audit response from AI.');
-            appendMessage(cleanReply, 'ai');
+            const reader = res.body?.getReader?.();
+            if (!reader) {
+                status.markError('Audit failed.');
+                appendMessage('Could not read audit stream.', 'ai');
+                return;
+            }
+
+            const replyNode = appendMessage('', 'ai');
+            const decoder = new TextDecoder('utf-8');
+            let fullReply = '';
+            let doneMeta = null;
+            let buffer = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                buffer += decoder.decode(value, { stream: true });
+
+                let splitPos = buffer.search(/\r?\n\r?\n/);
+                while (splitPos !== -1) {
+                    const block = buffer.slice(0, splitPos);
+                    const sepMatch = buffer.match(/\r?\n\r?\n/);
+                    const sepLen = sepMatch ? sepMatch[0].length : 2;
+                    buffer = buffer.slice(splitPos + sepLen);
+
+                    const { eventName, payload, payloadRaw } = parseSseBlock(block);
+                    if (payloadRaw === '[DONE]') {
+                        break;
+                    }
+
+                    if (eventName === 'token' || eventName === 'message') {
+                        const token = String(payload?.text ?? payload?.choices?.[0]?.delta?.content ?? '');
+                        if (token) {
+                            fullReply += token;
+                            replyNode.innerHTML = renderChatMarkdown(stripAuditMeta(fullReply));
+                            responseArea.scrollTop = responseArea.scrollHeight;
+                        }
+                    } else if (eventName === 'done') {
+                        doneMeta = payload?.meta || null;
+                    } else if (eventName === 'error') {
+                        status.markError('Audit failed.');
+                        replyNode.innerHTML = renderChatMarkdown(String(payload?.message || 'Audit request failed.'));
+                        return;
+                    }
+
+                    splitPos = buffer.search(/\r?\n\r?\n/);
+                }
+            }
+
+            const cleanReply = stripAuditMeta(fullReply || 'No audit response from AI.');
+            replyNode.innerHTML = renderChatMarkdown(cleanReply);
             chatContextStore.push('assistant', `Audit summary:\n${cleanReply}`);
-            appendScoreCard(data?.meta || null);
+            appendScoreCard(doneMeta);
             status.markSuccess('Audit complete.');
             status.remove(700);
         } catch (error) {

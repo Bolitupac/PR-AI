@@ -10,6 +10,7 @@ use App\Services\GitHubApiService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AuditDiffController extends Controller
 {
@@ -103,6 +104,142 @@ class AuditDiffController extends Controller
             'reply' => $reply,
             'meta' => $meta,
             'debug_path' => $debugPath,
+        ]);
+    }
+
+    // Streams audit response tokens while still returning final meta/debug info via a done event.
+    public function auditStream(Request $request): StreamedResponse
+    {
+        $payload = $request->validate([
+            'source' => ['required', 'string', 'in:github,upload,editor'],
+            'repo' => ['nullable', 'string', 'max:255'],
+            'pr_number' => ['nullable', 'integer'],
+            'file_name' => ['nullable', 'string', 'max:255'],
+            'diff_text' => ['required', 'string', 'max:2000000'],
+            'model' => ['nullable', 'string', 'max:120'],
+        ]);
+
+        $source = (string) $payload['source'];
+        $repo = (string) ($payload['repo'] ?? '');
+        $prNumber = isset($payload['pr_number']) ? (string) $payload['pr_number'] : '';
+        $diffText = (string) $payload['diff_text'];
+        $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
+
+        $issueComments = [];
+        $reviewComments = [];
+
+        if ($source === 'github' && $repo !== '' && $prNumber !== '') {
+            $user = Auth::user();
+            if ($user?->github_access_token) {
+                $issueResult = $this->gitHubApiService->getPullIssueComments($user->github_access_token, $repo, $prNumber);
+                if ($issueResult['ok']) {
+                    $issueComments = $issueResult['data'];
+                }
+
+                $reviewResult = $this->gitHubApiService->getPullReviewComments($user->github_access_token, $repo, $prNumber);
+                if ($reviewResult['ok']) {
+                    $reviewComments = $reviewResult['data'];
+                }
+            }
+        }
+
+        $changedLines = $this->auditSnapshotWriter->extractChangedLines($diffText);
+        $chatContext = $this->auditPromptComposer->composeChatContext([
+            'source' => $source,
+            'repo' => $repo !== '' ? $repo : null,
+            'pr_number' => $prNumber !== '' ? $prNumber : null,
+            'file_name' => $payload['file_name'] ?? null,
+            'changed_lines' => $changedLines,
+            'issue_comments' => $issueComments,
+            'review_comments' => $reviewComments,
+        ]);
+        $request->session()->put('active_audit_context', $chatContext);
+
+        $userPrompt = $this->auditPromptComposer->compose([
+            'source' => $source,
+            'repo' => $repo !== '' ? $repo : null,
+            'pr_number' => $prNumber !== '' ? $prNumber : null,
+            'file_name' => $payload['file_name'] ?? null,
+            'changed_lines' => $changedLines,
+            'issue_comments' => $issueComments,
+            'review_comments' => $reviewComments,
+            'diff_text' => $diffText,
+        ]);
+
+        $systemPrompt = (string) config('audit_ai.system_prompt');
+
+        return response()->stream(function () use ($source, $repo, $prNumber, $payload, $diffText, $issueComments, $reviewComments, $systemPrompt, $userPrompt, $selectedModel): void {
+            @ini_set('output_buffering', 'off');
+            @ini_set('zlib.output_compression', '0');
+            @set_time_limit(0);
+            @ignore_user_abort(true);
+            while (ob_get_level() > 0) {
+                @ob_end_flush();
+            }
+            @ob_implicit_flush(true);
+
+            if (function_exists('session_write_close')) {
+                @session_write_close();
+            }
+
+            echo ':' . str_repeat(' ', 1024) . "\n\n";
+            @ob_flush();
+            flush();
+
+            $fullReply = '';
+
+            $this->openAiSimpleChatService->streamWithMessages(
+                [
+                    ['role' => 'system', 'content' => $systemPrompt],
+                    ['role' => 'user', 'content' => $userPrompt],
+                ],
+                $selectedModel,
+                Auth::user(),
+                function (string $token) use (&$fullReply): void {
+                    $fullReply .= $token;
+                    $json = json_encode(['text' => $token], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                    echo "event: token\n";
+                    echo 'data: '.($json ?: '{"text":""}')."\n\n";
+                    @ob_flush();
+                    flush();
+                },
+                function (string $message): void {
+                    $json = json_encode(['message' => $message], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                    echo "event: error\n";
+                    echo 'data: '.($json ?: '{"message":"Audit failed."}')."\n\n";
+                    @ob_flush();
+                    flush();
+                }
+            );
+
+            $meta = $this->extractMeta($fullReply);
+            $debugText = $this->auditSnapshotWriter->buildContent([
+                'source' => $source,
+                'repo' => $repo !== '' ? $repo : null,
+                'pr_number' => $prNumber !== '' ? $prNumber : null,
+                'file_name' => $payload['file_name'] ?? null,
+                'diff_text' => $diffText,
+                'issue_comments' => $issueComments,
+                'review_comments' => $reviewComments,
+                'prompt_system' => $systemPrompt,
+                'prompt_user' => $userPrompt,
+                'ai_response' => $fullReply,
+            ]);
+            $debugPath = $this->auditSnapshotWriter->write($debugText);
+
+            $donePayload = json_encode([
+                'meta' => $meta,
+                'debug_path' => $debugPath,
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            echo "event: done\n";
+            echo 'data: '.($donePayload ?: '{"meta":null}')."\n\n";
+            @ob_flush();
+            flush();
+        }, 200, [
+            'Content-Type' => 'text/event-stream',
+            'Cache-Control' => 'no-cache, no-transform',
+            'Connection' => 'keep-alive',
+            'X-Accel-Buffering' => 'no',
         ]);
     }
 

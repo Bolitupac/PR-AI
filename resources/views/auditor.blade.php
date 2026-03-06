@@ -154,6 +154,7 @@
                             <textarea class="chat-input" id="user-prompt" rows="1" placeholder="Ask AI..."></textarea>
                             <button class="action-btn input-send-btn" id="send-btn" type="button" aria-label="Send"
                                 data-chat-url="{{ route('ai.chat') }}"
+                                data-chat-stream-url="{{ route('ai.chat.stream') }}"
                                 data-transcribe-url="{{ route('ai.transcribe') }}">
                                 <img src="{{ asset('images/send.png') }}" alt="Send" class="action-icon">
                             </button>

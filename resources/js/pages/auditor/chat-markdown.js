@@ -116,7 +116,10 @@ function formatInline(input) {
     out = out.replace(/(^|[^*])\*(?!\*)([^*]+)\*(?!\*)/g, '$1<em>$2</em>');
     out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
     out = out.replace(/\[(LOW|MEDIUM|HIGH|CRITICAL)\]/gi, (_m, level) => `<span class="severity-tag is-${String(level).toLowerCase()}">[${String(level).toUpperCase()}]</span>`);
-    out = out.replace(/(^|[\s(])([A-Za-z0-9_./-]+\.[A-Za-z0-9_+-]+:\d+(?:-\d+)?)(?=$|[\s),.;])/g, '$1<span class="file-line-ref">$2</span>');
+    out = out.replace(
+        /(^|[\s(])([A-Za-z0-9_./-]+\.[A-Za-z0-9_+-]+:\d+(?:-\d+)?)(?=$|[\s),.;])/g,
+        '$1<span class="file-line-ref">$2</span>'
+    );
     return out;
 }
 
