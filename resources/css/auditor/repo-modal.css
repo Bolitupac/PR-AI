@@ -17,6 +17,10 @@
     background: rgba(17, 24, 39, 0.32);
 }
 
+.repo-modal.is-open .repo-modal-backdrop {
+    animation: modal-fade-in 0.2s ease;
+}
+
 .repo-modal-card {
     position: relative;
     width: min(520px, 92vw);
@@ -26,6 +30,10 @@
     padding: 18px;
     box-shadow: 0 24px 50px rgba(22, 31, 51, 0.14);
     z-index: 1;
+}
+
+.repo-modal.is-open .repo-modal-card {
+    animation: modal-card-in 0.24s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .repo-modal-close {
@@ -75,6 +83,15 @@
     color: var(--text-main);
     background: #f7f9fc;
     margin-bottom: 12px;
+    transition: border-color 0.24s ease, background 0.24s ease, box-shadow 0.24s ease;
+}
+
+.repo-import-select.is-loaded {
+    border-color: transparent;
+    background:
+        linear-gradient(#f7f9fc, #f7f9fc) padding-box,
+        linear-gradient(130deg, #009eff 0%, #2f86ff 34%, #5d74ff 60%, #9360ff 100%) border-box;
+    box-shadow: 0 0 0 1px rgba(75, 126, 232, 0.1);
 }
 
 .repo-import-action {
@@ -102,6 +119,15 @@
     border-radius: var(--radius-sm);
     background: #f8fafd;
     padding: 10px;
+    transition: border-color 0.24s ease, background 0.24s ease, box-shadow 0.24s ease;
+}
+
+.repo-pr-box.is-loaded {
+    border-color: transparent;
+    background:
+        linear-gradient(#f8fafd, #f8fafd) padding-box,
+        linear-gradient(130deg, #009eff 0%, #2f86ff 34%, #5d74ff 60%, #9360ff 100%) border-box;
+    box-shadow: 0 0 0 1px rgba(75, 126, 232, 0.08);
 }
 
 .repo-pr-state {
@@ -154,6 +180,35 @@
     background: #edf5ff;
 }
 
+.repo-load-cue {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #166534;
+    opacity: 0;
+    transform: translateY(3px);
+    pointer-events: none;
+    margin: 0 0 10px;
+}
+
+.repo-load-cue.is-show {
+    animation: repo-load-cue-in 1.2s ease forwards;
+}
+
+.repo-load-cue-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #22c55e;
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.44);
+}
+
+.repo-load-cue.is-show .repo-load-cue-dot {
+    animation: repo-load-pulse 1.1s ease-out;
+}
+
 .repo-pr-title {
     font-size: 13px;
     font-weight: 700;
@@ -165,4 +220,52 @@
     font-size: 11px;
     color: var(--text-soft);
     margin-top: 3px;
+}
+
+@keyframes repo-load-cue-in {
+    0% {
+        opacity: 0;
+        transform: translateY(3px);
+    }
+
+    15%,
+    80% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-2px);
+    }
+}
+
+@keyframes repo-load-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.44);
+    }
+
+    100% {
+        box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+    }
+}
+
+@keyframes modal-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modal-card-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.985);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }

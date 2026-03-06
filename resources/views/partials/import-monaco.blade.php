@@ -4,13 +4,12 @@
         <button class="import-monaco-close" type="button" aria-label="Close" data-close="import-monaco-modal">&times;</button>
 
         <div class="import-monaco-head">
-            <div class="import-monaco-title">Upload diff file</div>
-            <div class="import-monaco-sub">Paste unified git diff in the editor and render it.</div>
+            <div class="import-monaco-title">Paste diff/code</div>
+            <div class="import-monaco-sub">Paste unified git diff in Monaco, then render.</div>
         </div>
 
         <div class="import-monaco-status is-info" id="import-monaco-status">Paste unified git diff, then render.</div>
         <div id="import-monaco-editor"></div>
-        <button class="import-monaco-action" id="import-monaco-render-btn" type="button">Use this diff</button>
+        <button class="import-monaco-action" id="import-monaco-render-btn" type="button">Render diff</button>
     </div>
 </div>
-

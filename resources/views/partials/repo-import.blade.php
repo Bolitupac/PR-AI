@@ -21,6 +21,11 @@
             <div class="repo-pr-list" id="repo-pr-list"></div>
         </div>
 
+        <div class="repo-load-cue" id="repo-load-cue" aria-live="polite">
+            <span class="repo-load-cue-dot" aria-hidden="true"></span>
+            Repo loaded successfully
+        </div>
+
         <button class="repo-import-action" id="load-repo-btn" type="button" disabled>Load repo</button>
     </div>
 </div>

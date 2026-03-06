@@ -13,6 +13,11 @@
     display: flex;
 }
 
+.import-monaco-modal.is-open .import-monaco-backdrop,
+.import-paste-modal.is-open .import-paste-backdrop {
+    animation: modal-fade-in 0.2s ease;
+}
+
 .import-menu-backdrop,
 .import-monaco-backdrop,
 .import-paste-backdrop {
@@ -31,6 +36,11 @@
     padding: 18px;
     box-shadow: 0 24px 50px rgba(22, 31, 51, 0.14);
     z-index: 1;
+}
+
+.import-monaco-modal.is-open .import-monaco-card,
+.import-paste-modal.is-open .import-paste-card {
+    animation: modal-card-in 0.24s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .import-monaco-close,
@@ -199,6 +209,26 @@
     height: 14px;
     object-fit: contain;
     display: block;
+}
+
+@keyframes modal-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modal-card-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.985);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 .import-hover--plus .import-hover-menu {

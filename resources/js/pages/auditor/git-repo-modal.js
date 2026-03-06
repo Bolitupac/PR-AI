@@ -8,8 +8,10 @@ export function initGitRepoModal() {
     const repoSelectTrigger = document.getElementById('repo-select');
     const repoModal = document.getElementById('repo-modal');
     const repoSelectModal = document.getElementById('repo-import-select');
+    const repoPrBox = document.getElementById('repo-pr-box');
     const repoPrState = document.getElementById('repo-pr-state');
     const repoPrList = document.getElementById('repo-pr-list');
+    const repoLoadCue = document.getElementById('repo-load-cue');
     const loadRepoButton = document.getElementById('load-repo-btn');
 
     if (!repoModal || !repoSelectModal || !repoPrState || !repoPrList || !loadRepoButton) return;
@@ -21,6 +23,8 @@ export function initGitRepoModal() {
     let reposLoaded = false;
     let selectedPullNumber = null;
     let loadingTicker = null;
+    let repoLoadingTicker = null;
+    let cueTimer = null;
 
     const setSingleOption = (text) => {
         repoSelectModal.innerHTML = '';
@@ -29,6 +33,24 @@ export function initGitRepoModal() {
         opt.disabled = true;
         opt.selected = true;
         repoSelectModal.appendChild(opt);
+    };
+
+    const stopRepoLoadingTicker = () => {
+        if (repoLoadingTicker) {
+            clearInterval(repoLoadingTicker);
+            repoLoadingTicker = null;
+        }
+    };
+
+    const startRepoLoadingTicker = (baseText = 'Loading repositories') => {
+        stopRepoLoadingTicker();
+        const dots = ['.', '..', '...'];
+        let index = 0;
+        setSingleOption(`${baseText}${dots[index]}`);
+        repoLoadingTicker = setInterval(() => {
+            index = (index + 1) % dots.length;
+            setSingleOption(`${baseText}${dots[index]}`);
+        }, 420);
     };
 
     const setPrState = (text, tone = 'info') => {
@@ -60,8 +82,31 @@ export function initGitRepoModal() {
         repoPrList.innerHTML = '';
     };
 
+    const flashLoadedCue = () => {
+        if (!repoLoadCue) return;
+        if (cueTimer) {
+            clearTimeout(cueTimer);
+            cueTimer = null;
+        }
+        repoLoadCue.classList.remove('is-show');
+        void repoLoadCue.offsetWidth;
+        repoLoadCue.classList.add('is-show');
+        cueTimer = setTimeout(() => {
+            repoLoadCue.classList.remove('is-show');
+        }, 1250);
+    };
+
     const setLoadButtonEnabled = (enabled) => {
         loadRepoButton.disabled = !enabled;
+    };
+
+    const setLoadedBorder = (loaded) => {
+        if (!repoPrBox) return;
+        repoPrBox.classList.toggle('is-loaded', loaded);
+    };
+
+    const setRepoSelectLoadedBorder = (loaded) => {
+        repoSelectModal.classList.toggle('is-loaded', loaded);
     };
 
     const formatRelativeTime = (isoDate) => {
@@ -103,6 +148,7 @@ export function initGitRepoModal() {
         selectedPullNumber = null;
         repoModal.dataset.selectedPrNumber = '';
         setLoadButtonEnabled(false);
+        setLoadedBorder(false);
 
         if (!pulls.length) {
             setPrState('No pull requests found for this repository.', 'empty');
@@ -131,6 +177,7 @@ export function initGitRepoModal() {
         if (!reposUrl) {
             setSingleOption('Repo URL is missing');
             setLoadButtonEnabled(false);
+            setRepoSelectLoadedBorder(false);
             return;
         }
 
@@ -138,9 +185,12 @@ export function initGitRepoModal() {
             setButtonLoading(repoSelectTrigger, true, 'Loading');
         }
         setLoadButtonEnabled(false);
+        setRepoSelectLoadedBorder(false);
+        startRepoLoadingTicker('Loading repositories');
 
         try {
             const repos = await fetchGitRepos(reposUrl);
+            stopRepoLoadingTicker();
             repoSelectModal.innerHTML = '';
 
             const placeholder = document.createElement('option');
@@ -153,6 +203,7 @@ export function initGitRepoModal() {
             if (!repos.length) {
                 setSingleOption('No repositories found');
                 setLoadButtonEnabled(false);
+                setRepoSelectLoadedBorder(false);
                 return;
             }
 
@@ -163,10 +214,14 @@ export function initGitRepoModal() {
                 repoSelectModal.appendChild(opt);
             });
             reposLoaded = true;
+            setRepoSelectLoadedBorder(true);
         } catch (error) {
+            stopRepoLoadingTicker();
             setSingleOption('Failed to load repos');
             setLoadButtonEnabled(false);
+            setRepoSelectLoadedBorder(false);
         } finally {
+            stopRepoLoadingTicker();
             if (repoSelectTrigger) {
                 setButtonLoading(repoSelectTrigger, false);
             }
@@ -178,6 +233,7 @@ export function initGitRepoModal() {
         selectedPullNumber = null;
         repoModal.dataset.selectedPrNumber = '';
         setLoadButtonEnabled(false);
+        setLoadedBorder(false);
         startLoadingTicker('Loading pull requests');
 
         if (!pullsUrl) {
@@ -217,12 +273,15 @@ export function initGitRepoModal() {
             }));
 
             setPrState(`Loaded PR #${selectedPullNumber}. Auto audit started.`, 'success');
+            setLoadedBorder(true);
+            flashLoadedCue();
 
             setTimeout(() => {
                 closeModal();
             }, 520);
         } catch (error) {
             setPrState('Failed to load pull request diff.', 'error');
+            setLoadedBorder(false);
         } finally {
             setButtonLoading(loadRepoButton, false);
             setLoadButtonEnabled(Boolean(selectedPullNumber));
@@ -232,12 +291,16 @@ export function initGitRepoModal() {
     const openModal = () => {
         repoModal.classList.add('is-open');
         repoModal.setAttribute('aria-hidden', 'false');
+        setLoadedBorder(false);
+        setRepoSelectLoadedBorder(false);
         loadRepos();
     };
 
     const closeModal = () => {
         repoModal.classList.remove('is-open');
         repoModal.setAttribute('aria-hidden', 'true');
+        setLoadedBorder(false);
+        stopRepoLoadingTicker();
     };
 
     repoSelectTrigger?.addEventListener('click', function (event) {

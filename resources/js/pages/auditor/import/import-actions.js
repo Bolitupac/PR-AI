@@ -4,11 +4,10 @@ export function dispatchImportAction(kind) {
         return;
     }
     if (kind === 'upload') {
-        document.dispatchEvent(new CustomEvent('auditor:open-import-monaco-modal'));
+        document.dispatchEvent(new CustomEvent('auditor:open-diff-upload-modal'));
         return;
     }
     if (kind === 'paste') {
-        document.dispatchEvent(new CustomEvent('auditor:open-import-paste-modal'));
+        document.dispatchEvent(new CustomEvent('auditor:open-import-monaco-modal'));
     }
 }
-
