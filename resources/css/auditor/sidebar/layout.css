@@ -1,0 +1,34 @@
+.app-shell {
+    --sidebar-collapsed-width: 54px;
+    --sidebar-expanded-width: 208px;
+    --sidebar-width: var(--sidebar-collapsed-width);
+}
+
+.app-shell.sidebar-expanded {
+    --sidebar-width: var(--sidebar-expanded-width);
+}
+
+.sidebar-bg {
+    width: var(--sidebar-width);
+    background: linear-gradient(180deg, #f2f4f9 0%, #eceff6 100%);
+    border-right: 1px solid var(--panel-stroke);
+    box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.72);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 6px;
+    transition: width 0.28s ease, padding 0.28s ease, background 0.28s ease, border-color 0.28s ease;
+}
+
+.sidebar-top,
+.sidebar-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+.sidebar-bottom {
+    margin-top: auto;
+    padding-bottom: 6px;
+}

@@ -20,6 +20,38 @@
     padding: 6px 12px;
     background: #f7f9fe;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.brand-logo {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    display: block;
+}
+
+.brand-logo--light-on-dark {
+    display: none;
+}
+
+.brand-logo--dark-on-light {
+    filter: brightness(0);
+}
+
+html.logo-spin-on-switch .brand-logo--dark-on-light {
+    animation: brand-logo-spin-once 0.52s cubic-bezier(0.2, 0.8, 0.2, 1) 1;
+}
+
+@keyframes brand-logo-spin-once {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .panel-actions {

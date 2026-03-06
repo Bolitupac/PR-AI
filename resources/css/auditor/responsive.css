@@ -12,10 +12,22 @@
         border-bottom: 1px solid var(--panel-stroke);
     }
 
+    .sidebar-top,
     .sidebar-bottom {
         margin-top: 0;
         flex-direction: row;
         padding-bottom: 0;
+        width: auto;
+    }
+
+    .sidebar-item {
+        justify-content: center !important;
+        padding-inline: 8px !important;
+    }
+
+    .sidebar-label,
+    .sidebar-profile-meta {
+        display: none !important;
     }
 
     .signin-anchor {

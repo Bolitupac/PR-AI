@@ -6,6 +6,7 @@ export function initThemeToggle() {
     const btn = document.getElementById('theme-toggle-btn');
     if (!btn) return;
     let switchTimer = null;
+    let logoSpinTimer = null;
 
     const runThemeTransition = () => {
         root.classList.add('theme-switching');
@@ -32,6 +33,16 @@ export function initThemeToggle() {
         const current = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
         const next = current === 'dark' ? 'light' : 'dark';
         runThemeTransition();
+        if (current === 'dark' && next === 'light') {
+            root.classList.add('logo-spin-on-switch');
+            if (logoSpinTimer) {
+                clearTimeout(logoSpinTimer);
+            }
+            logoSpinTimer = setTimeout(() => {
+                root.classList.remove('logo-spin-on-switch');
+                logoSpinTimer = null;
+            }, 560);
+        }
         applyTheme(next);
         localStorage.setItem(THEME_KEY, next);
     });

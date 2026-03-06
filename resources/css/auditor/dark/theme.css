@@ -63,9 +63,21 @@ html[data-theme="dark"] .sidebar-bg {
 }
 
 html[data-theme="dark"] .icon-btn {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: rgba(197, 185, 218, 0.26);
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+}
+
+html[data-theme="dark"] .sidebar-item {
+    color: #dbe4fa;
+}
+
+html[data-theme="dark"] .sidebar-item:hover {
+    background: rgba(0, 133, 255, 0.16);
+}
+
+html[data-theme="dark"] .sidebar-profile-plan {
+    color: #c5b9da;
 }
 
 html[data-theme="dark"] .theme-toggle-icon {
@@ -118,6 +130,18 @@ html[data-theme="dark"] .panel-head h3 {
     background: transparent;
     border-color: transparent;
     box-shadow: none;
+}
+
+html[data-theme="dark"] .brand-logo {
+    filter: none;
+}
+
+html[data-theme="dark"] .brand-logo--dark-on-light {
+    display: none;
+}
+
+html[data-theme="dark"] .brand-logo--light-on-dark {
+    display: block;
 }
 
 html[data-theme="dark"] .repo-upload-btn,

@@ -2,7 +2,9 @@
 @import './auditor/base.css';
 @import './auditor/theme-transition.css';
 @import './auditor/layout.css';
-@import './auditor/sidebar.css';
+@import './auditor/sidebar/layout.css';
+@import './auditor/sidebar/items.css';
+@import './auditor/sidebar/state.css';
 @import './auditor/controls.css';
 @import './auditor/import.css';
 @import './auditor/repo-modal.css';

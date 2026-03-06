@@ -9,9 +9,11 @@ import { initProfileModal } from './profile-modal';
 import { initProfileAiKey } from './profile-ai-key';
 import { initLoadingInteractions } from './loading-interactions';
 import { initThemeToggle } from './theme-toggle';
+import { initSidebar } from './sidebar';
 
 export function initAuditorPage() {
     if (!document.getElementById('ai-response-area')) return;
+    initSidebar();
     initThemeToggle();
     initDiffViewer();
     initImportUi();

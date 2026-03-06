@@ -1,0 +1,19 @@
+.sidebar-toggle-btn {
+    margin-bottom: 4px;
+}
+
+.app-shell:not(.sidebar-expanded) .sidebar-profile-item {
+    justify-content: center;
+}
+
+.app-shell:not(.sidebar-expanded) .sidebar-profile-item .sidebar-icon {
+    width: 30px;
+    height: 30px;
+    flex-basis: 30px;
+}
+
+.app-shell.sidebar-expanded .sidebar-profile-item .sidebar-icon {
+    width: 26px;
+    height: 26px;
+    flex-basis: 26px;
+}
