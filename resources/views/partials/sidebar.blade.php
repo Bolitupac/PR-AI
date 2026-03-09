@@ -133,7 +133,7 @@
                 aria-label="{{ auth()->user()->github_username ?? 'Profile' }}">
                 <span class="sidebar-icon sidebar-avatar-wrap" aria-hidden="true">
                     <img class="profile-avatar-img" src="https://github.com/{{ auth()->user()->github_username }}.png"
-                        alt="GitHub avatar">
+                        alt="GitHub avatar" loading="lazy">
                 </span>
                 <span class="sidebar-profile-meta">
                     <span

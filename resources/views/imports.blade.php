@@ -8,7 +8,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nabla&family=Science+Gothic:wght@400;600;700&display=swap"
-        rel="stylesheet">
+        rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Nabla&family=Science+Gothic:wght@400;600;700&display=swap"
+            rel="stylesheet">
+    </noscript>
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo 512 transp bg white color svg.svg') }}">
     <title>Git PULL Assistant | Imports</title>
     @vite(['resources/css/imports-ui.css', 'resources/css/imports/skeleton.css', 'resources/js/app.js'])
@@ -80,6 +84,13 @@
                             <div class="skeleton-item repo-skeleton__meta"></div>
                         </li>
                     @endfor
+
+                    <li id="load-more-wrap" class="imports-load-more-item" style="display:none;">
+                        <button id="load-more-btn" class="imports-load-more-btn" type="button">
+                            Load more repositories
+                        </button>
+                        <p id="repo-count-label" class="imports-load-more-count"></p>
+                    </li>
                 </ul>
             </section>
         </main>
