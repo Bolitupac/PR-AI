@@ -1,0 +1,59 @@
+.imports-shell {
+    min-height: 100vh;
+    height: 100vh;
+    display: flex;
+    background: radial-gradient(circle at 20% 10%, rgba(0, 133, 255, 0.08), transparent 40%),
+        radial-gradient(circle at 85% 12%, rgba(197, 185, 218, 0.2), transparent 32%), var(--app-bg, #f9fafc);
+}
+
+.imports-workspace {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 16px;
+    padding: 18px 18px 22px 14px;
+    min-width: 0;
+}
+
+.imports-panel {
+    border: 1px solid var(--panel-stroke);
+    border-radius: 20px;
+    background: var(--panel-bg);
+    box-shadow: var(--panel-shadow);
+    min-height: 0;
+}
+
+.imports-panel__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid var(--panel-stroke);
+}
+
+.imports-panel__title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.imports-page-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.imports-page-subtitle {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: var(--text-soft);
+}
+
+@media (max-width: 1100px) {
+    .imports-workspace {
+        grid-template-columns: 1fr;
+    }
+}

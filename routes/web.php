@@ -19,6 +19,10 @@ Route::get('/auditor', function () {
     return view('auditor');
 });
 
+Route::get('/imports', function () {
+    return view('imports');
+})->name('imports.index');
+
 Route::get('/auth/github', [GitHubOAuthController::class, 'redirect'])->name('github.redirect');
 Route::get('/auth/github/callback', [GitHubOAuthController::class, 'callback'])->name('github.callback');
 Route::get('/api/github/repos', [GitHubRepositoryController::class, 'repos'])

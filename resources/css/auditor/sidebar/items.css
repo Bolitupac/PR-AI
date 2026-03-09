@@ -8,20 +8,28 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 0;
+    /* No gap when collapsed so icon centers perfectly */
     padding: 6px 8px;
     cursor: pointer;
     text-align: left;
-    transition: background 0.2s ease, color 0.2s ease, padding 0.28s ease, justify-content 0.28s ease;
+    transition: background 0.2s ease, color 0.2s ease, padding 0.28s ease, justify-content 0.28s ease, gap 0.28s ease;
 }
 
 .app-shell.sidebar-expanded .sidebar-item {
     justify-content: flex-start;
     padding: 6px 10px;
+    gap: 10px;
+    /* Gap only exists when expanded */
 }
 
 .sidebar-item:hover {
     background: rgba(0, 133, 255, 0.09);
+}
+
+.sidebar-item.is-active {
+    background: rgba(0, 133, 255, 0.14);
+    color: #0b2f67;
 }
 
 .sidebar-icon {
@@ -39,6 +47,10 @@
     height: 18px;
     display: block;
     object-fit: contain;
+}
+
+.sidebar-item {
+    text-decoration: none;
 }
 
 .sidebar-label,
