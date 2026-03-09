@@ -29,9 +29,13 @@ class GitHubApiService
         }
 
         $repos = collect($response->json())
-            ->map(fn ($repo) => [
+            ->map(fn($repo) => [
                 'name' => $repo['name'] ?? '',
                 'full_name' => $repo['full_name'] ?? '',
+                'private' => $repo['private'] ?? false,
+                'language' => $repo['language'] ?? 'Unknown',
+                'updated_at' => $repo['updated_at'] ?? null,
+                'open_issues_count' => $repo['open_issues_count'] ?? 0, // Roughly PRs + Issues
             ])
             ->values()
             ->all();
@@ -39,28 +43,79 @@ class GitHubApiService
         return ['ok' => true, 'status' => 200, 'data' => $repos];
     }
 
-    // Fetches open pull requests for a selected repository.
-    public function getPullRequests(string $encryptedToken, string $repo): array
+    // Fetches branches for a selected repository.
+    public function getBranches(string $encryptedToken, string $repo): array
     {
-        $response = $this->client($encryptedToken)->get("https://api.github.com/repos/{$repo}/pulls", [
-            'state' => 'open',
+        $response = $this->client($encryptedToken)->get("https://api.github.com/repos/{$repo}/branches", [
             'per_page' => 100,
-            'sort' => 'updated',
-            'direction' => 'desc',
         ]);
 
         if ($response->failed()) {
             return ['ok' => false, 'status' => $response->status(), 'data' => []];
         }
 
-        $pulls = collect($response->json())
-            ->map(fn ($pr) => [
+        $branches = collect($response->json())
+            ->map(fn($branch) => [
+                'name' => $branch['name'] ?? '',
+                'protected' => $branch['protected'] ?? false,
+                // The branches list endpoint includes the tip commit object
+                'updated_at' => $branch['commit']['commit']['author']['date'] ?? null,
+            ])
+            ->values()
+            ->all();
+
+        return ['ok' => true, 'status' => 200, 'data' => $branches];
+    }
+
+    // Fetches open pull requests for a selected repository.
+    public function getPullRequests(string $encryptedToken, string $repo): array
+    {
+        $client = $this->client($encryptedToken);
+
+        // Fetch Pull Requests (for state, draft, refs)
+        $pullsResponse = $client->get("https://api.github.com/repos/{$repo}/pulls", [
+            'state' => 'open',
+            'per_page' => 100,
+            'sort' => 'updated',
+            'direction' => 'desc',
+        ]);
+
+        if ($pullsResponse->failed()) {
+            return ['ok' => false, 'status' => $pullsResponse->status(), 'data' => []];
+        }
+
+        // Fetch Issues (to get comment counts, as pulls list doesn't have them)
+        $issuesResponse = $client->get("https://api.github.com/repos/{$repo}/issues", [
+            'state' => 'open',
+            'per_page' => 100,
+        ]);
+
+        $commentCounts = [];
+        if ($issuesResponse->successful()) {
+            foreach ($issuesResponse->json() as $issue) {
+                if (isset($issue['number'])) {
+                    $commentCounts[$issue['number']] = $issue['comments'] ?? 0;
+                }
+            }
+        }
+
+        $pulls = collect($pullsResponse->json())
+            ->map(fn($pr) => [
                 'number' => $pr['number'] ?? null,
                 'title' => $pr['title'] ?? '',
                 'state' => $pr['state'] ?? '',
+                'draft' => $pr['draft'] ?? false,
                 'html_url' => $pr['html_url'] ?? '',
                 'updated_at' => $pr['updated_at'] ?? null,
                 'author' => $pr['user']['login'] ?? '',
+                'comments' => $commentCounts[$pr['number']] ?? 0,
+                'review_comments' => $pr['review_comments'] ?? 0, // List API might have this sometimes or not
+                'head_ref' => $pr['head']['ref'] ?? '',
+                'base_ref' => $pr['base']['ref'] ?? '',
+                'labels' => collect($pr['labels'] ?? [])->map(fn($l) => [
+                    'name' => $l['name'],
+                    'color' => $l['color']
+                ])->all(),
             ])
             ->values()
             ->all();
@@ -127,7 +182,7 @@ class GitHubApiService
         }
 
         $comments = collect($response->json())
-            ->map(fn ($comment) => [
+            ->map(fn($comment) => [
                 'author' => $comment['user']['login'] ?? '',
                 'body' => $comment['body'] ?? '',
                 'updated_at' => $comment['updated_at'] ?? null,
@@ -152,7 +207,7 @@ class GitHubApiService
         }
 
         $comments = collect($response->json())
-            ->map(fn ($comment) => [
+            ->map(fn($comment) => [
                 'author' => $comment['user']['login'] ?? '',
                 'path' => $comment['path'] ?? '',
                 'line' => $comment['line'] ?? null,

@@ -29,6 +29,28 @@ class GitHubRepositoryController extends Controller
         return response()->json(['repos' => $result['data']]);
     }
 
+    // Returns branches for the selected repository.
+    public function branches(): JsonResponse
+    {
+        $user = Auth::user();
+        $repo = request()->query('repo');
+
+        if (!$user || !$user->github_access_token) {
+            return response()->json(['branches' => []], 401);
+        }
+
+        if (!$repo || !str_contains($repo, '/')) {
+            return response()->json(['branches' => []], 422);
+        }
+
+        $result = $this->githubApiService->getBranches($user->github_access_token, $repo);
+        if (!$result['ok']) {
+            return response()->json(['branches' => []], $result['status']);
+        }
+
+        return response()->json(['branches' => $result['data']]);
+    }
+
     // Returns open pull requests for the selected repository.
     public function pullRequests(): JsonResponse
     {
@@ -49,6 +71,32 @@ class GitHubRepositoryController extends Controller
         }
 
         return response()->json(['pulls' => $result['data']]);
+    }
+
+    // Returns lightweight metadata (branch + PR counts) for a repository.
+    public function metadata(): JsonResponse
+    {
+        $user = Auth::user();
+        $repo = request()->query('repo');
+
+        if (!$user || !$user->github_access_token) {
+            return response()->json(['ok' => false], 401);
+        }
+
+        if (!$repo || !str_contains($repo, '/')) {
+            return response()->json(['ok' => false], 422);
+        }
+
+        $branches = $this->githubApiService->getBranches($user->github_access_token, $repo);
+        $pulls = $this->githubApiService->getPullRequests($user->github_access_token, $repo);
+
+        return response()->json([
+            'ok' => true,
+            'data' => [
+                'branch_count' => count($branches['data'] ?? []),
+                'pull_count' => count($pulls['data'] ?? []),
+            ],
+        ]);
     }
 
     // Returns raw diff text for a selected pull request.

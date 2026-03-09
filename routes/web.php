@@ -28,6 +28,12 @@ Route::get('/auth/github/callback', [GitHubOAuthController::class, 'callback'])-
 Route::get('/api/github/repos', [GitHubRepositoryController::class, 'repos'])
     ->middleware('auth')
     ->name('github.repos');
+Route::get('/api/github/branches', [GitHubRepositoryController::class, 'branches'])
+    ->middleware('auth')
+    ->name('github.branches');
+Route::get('/api/github/metadata', [GitHubRepositoryController::class, 'metadata'])
+    ->middleware('auth')
+    ->name('github.metadata');
 Route::get('/api/github/pulls', [GitHubRepositoryController::class, 'pullRequests'])
     ->middleware('auth')
     ->name('github.pulls');
