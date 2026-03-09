@@ -1,20 +1,23 @@
 <aside class="sidebar-bg" id="app-sidebar">
     <div class="sidebar-top">
         <button class="sidebar-item sidebar-toggle-btn" id="sidebar-toggle-btn" type="button"
-            aria-label="Toggle sidebar" aria-expanded="true">
-            <span class="sidebar-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
+            aria-label="Collapse sidebar" aria-expanded="true">
+            <span class="sidebar-icon pr-logo-wrapper" aria-hidden="true">
+                <img src="{{ asset('images/git-pull-ai-Logo tp bg 512.png') }}" alt="PR ai logo" class="pr-cat-logo">
+                <svg viewBox="0 0 24 24" class="sidebar-collapse-svg">
                     <rect x="3.5" y="4.5" width="17" height="15" rx="2.2" fill="none" stroke="currentColor"
                         stroke-width="1.6" />
                     <path d="M9 4.5v15M6 9h0M6 12h0M6 15h0" fill="none" stroke="currentColor" stroke-width="1.6"
                         stroke-linecap="round" />
                 </svg>
             </span>
-            <span class="sidebar-label">Collapse bar</span>
+            <span class="sidebar-label">Collapse sidebar</span>
         </button>
 
+        <hr class="sidebar-separator">
+
         <a class="sidebar-item {{ request()->is('auditor*') || request()->is('/') ? 'is-active' : '' }}"
-            href="{{ url('/auditor') }}" aria-label="Open auditor">
+            href="{{ url('/auditor') }}" aria-label="Auditor">
             <span class="sidebar-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24">
                     <path
@@ -28,18 +31,8 @@
             <span class="sidebar-label">Auditor</span>
         </a>
 
-        <button class="sidebar-item" id="sidebar-search-chat-btn" type="button" aria-label="Search chat">
-            <span class="sidebar-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                    <circle cx="11" cy="11" r="5.2" fill="none" stroke="currentColor" stroke-width="1.8" />
-                    <path d="m16 16 4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-                </svg>
-            </span>
-            <span class="sidebar-label">Search chat</span>
-        </button>
-
         <a class="sidebar-item {{ request()->routeIs('imports.*') ? 'is-active' : '' }}"
-            href="{{ route('imports.index') }}" aria-label="Open imports">
+            href="{{ route('imports.index') }}" aria-label="Import">
             <span class="sidebar-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24">
                     <path d="M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4M12 4v11m0 0-3-3m3 3 3-3" fill="none"
@@ -101,7 +94,7 @@
     </div>
 
     <div class="sidebar-bottom">
-        <button class="sidebar-item sidebar-theme-toggle" id="theme-toggle-btn" type="button" aria-label="Switch theme">
+        <button class="sidebar-item sidebar-theme-toggle" id="theme-toggle-btn" type="button" aria-label="Switch Theme">
             <span class="sidebar-icon" aria-hidden="true">
                 <svg class="theme-toggle-icon theme-toggle-icon--moon" viewBox="0 0 24 24">
                     <path d="M14.5 3.5a8.5 8.5 0 1 0 6 14.5A9 9 0 1 1 14.5 3.5Z" fill="currentColor" />
@@ -136,7 +129,8 @@
         </button>
 
         @auth
-            <button class="sidebar-item sidebar-profile-item" id="open-profile-btn" type="button" aria-label="Open profile">
+            <button class="sidebar-item sidebar-profile-item" id="open-profile-btn" type="button"
+                aria-label="{{ auth()->user()->github_username ?? 'Profile' }}">
                 <span class="sidebar-icon sidebar-avatar-wrap" aria-hidden="true">
                     <img class="profile-avatar-img" src="https://github.com/{{ auth()->user()->github_username }}.png"
                         alt="GitHub avatar">
@@ -149,21 +143,20 @@
             </button>
         @endauth
         @guest
-            <button class="sidebar-item sidebar-profile-item" id="open-profile-btn" type="button" aria-label="Open profile">
+            <a class="sidebar-item sidebar-profile-item" href="{{ route('github.redirect') }}" aria-label="Connect GitHub">
                 <span class="sidebar-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24">
-                        <circle cx="6" cy="6" r="2.1" fill="none" stroke="currentColor" stroke-width="1.8" />
-                        <circle cx="18" cy="6" r="2.1" fill="none" stroke="currentColor" stroke-width="1.8" />
-                        <circle cx="12" cy="18" r="2.1" fill="none" stroke="currentColor" stroke-width="1.8" />
-                        <path d="M7.9 7.2 10.3 16M16.1 7.2 13.7 16M8.1 6h7.8" fill="none" stroke="currentColor"
-                            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                        <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7" />
+                        <path
+                            d="M9 17c0-2.3 6-2.3 6 0M9.5 10.8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm5 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"
+                            fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
                     </svg>
                 </span>
                 <span class="sidebar-profile-meta">
-                    <span class="sidebar-profile-name">GitHub</span>
+                    <span class="sidebar-profile-name">Connect GitHub</span>
                     <span class="sidebar-profile-plan">Free</span>
                 </span>
-            </button>
+            </a>
         @endguest
     </div>
 </aside>

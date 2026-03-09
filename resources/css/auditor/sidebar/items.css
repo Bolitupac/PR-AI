@@ -7,20 +7,28 @@
     color: #2c3958;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 0;
-    /* No gap when collapsed so icon centers perfectly */
-    padding: 6px 8px;
+    padding: 6px 12px;
     cursor: pointer;
     text-align: left;
-    transition: background 0.2s ease, color 0.2s ease, padding 0.28s ease, justify-content 0.28s ease, gap 0.28s ease;
+    transition: background 0.2s ease, color 0.2s ease, gap 0.28s ease, padding 0.28s ease;
 }
 
 .app-shell.sidebar-expanded .sidebar-item {
-    justify-content: flex-start;
-    padding: 6px 10px;
-    gap: 10px;
-    /* Gap only exists when expanded */
+    gap: 12px;
+}
+
+.sidebar-separator {
+    height: 1px;
+    background: var(--panel-stroke, rgba(0, 0, 0, 0.08));
+    margin: 8px 10px;
+    border: none;
+    transition: margin 0.28s ease;
+}
+
+.app-shell.sidebar-expanded .sidebar-separator {
+    margin: 8px 14px;
 }
 
 .sidebar-item:hover {
@@ -36,9 +44,9 @@
     width: 18px;
     height: 18px;
     flex: 0 0 18px;
-    display: inline-grid;
+    display: inline-flex;
     place-items: center;
-    justify-self: center;
+    justify-content: center;
 }
 
 .sidebar-icon svg,
@@ -47,6 +55,37 @@
     height: 18px;
     display: block;
     object-fit: contain;
+}
+
+.sidebar-icon.pr-logo-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pr-cat-logo {
+    position: absolute;
+    width: 20px !important;
+    height: 20px !important;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.sidebar-collapse-svg {
+    position: absolute;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.sidebar-toggle-btn:hover .pr-cat-logo {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+.sidebar-toggle-btn:hover .sidebar-collapse-svg {
+    opacity: 1;
+    transform: scale(1);
 }
 
 .sidebar-item {
@@ -101,16 +140,47 @@
 }
 
 .sidebar-profile-name {
-    font-size: 12px;
-    font-weight: 700;
-    line-height: 1.1;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-base);
 }
 
 .sidebar-profile-plan {
-    font-size: 10px;
-    color: #6f7b94;
-    font-weight: 600;
-    line-height: 1.1;
+    font-size: 11px;
+    color: var(--text-soft);
+}
+
+/* Custom tooltips for collapsed mode */
+.app-shell:not(.sidebar-expanded) .sidebar-item {
+    position: relative;
+    overflow: visible;
+}
+
+.app-shell:not(.sidebar-expanded) .sidebar-item::after {
+    content: attr(aria-label);
+    position: absolute;
+    left: 100%;
+    margin-left: 10px;
+    background-color: var(--theme-color, #0085ff);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 2px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 9999;
+    box-shadow: 0 4px 12px rgba(0, 133, 255, 0.2);
+    transition: opacity 0.2s ease 0.1s, visibility 0.2s ease 0.1s, transform 0.2s ease 0.1s;
+    transform: translateX(-4px);
+    pointer-events: none;
+}
+
+.app-shell:not(.sidebar-expanded) .sidebar-item:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
 }
 
 .theme-toggle-icon {
