@@ -125,4 +125,34 @@ class GitHubRepositoryController extends Controller
 
         return response($result['data'], 200, ['Content-Type' => 'text/plain; charset=utf-8']);
     }
+
+    /**
+     * Returns raw diff text comparing two branches.
+     */
+    public function branchDiff(): Response|JsonResponse
+    {
+        $user = Auth::user();
+        $repo = request()->query('repo');
+        $base = request()->query('base');
+        $head = request()->query('head');
+
+        if (!$user || !$user->github_access_token) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        if (!$repo || !str_contains($repo, '/')) {
+            return response()->json(['message' => 'Invalid repo'], 422);
+        }
+
+        if (!$base || !$head) {
+            return response()->json(['message' => 'Base and head branches are required'], 422);
+        }
+
+        $result = $this->githubApiService->getBranchDiff($user->github_access_token, $repo, $base, $head);
+        if (!$result['ok']) {
+            return response()->json(['message' => 'Failed to load branch diff'], $result['status']);
+        }
+
+        return response($result['data'], 200, ['Content-Type' => 'text/plain; charset=utf-8']);
+    }
 }

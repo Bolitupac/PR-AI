@@ -27,4 +27,22 @@ export function initAuditorPage() {
     initProfileModal();
     initProfileAiKey();
     initLoadingInteractions();
+
+    // Check for pending audit from Imports page
+    const pending = sessionStorage.getItem('pending_audit');
+    if (pending) {
+        try {
+            const data = JSON.parse(pending);
+            sessionStorage.removeItem('pending_audit');
+
+            // Small delay to ensure all listeners (auto-audit.js) are ready
+            setTimeout(() => {
+                document.dispatchEvent(new CustomEvent('auditor:diff-selected', {
+                    detail: data
+                }));
+            }, 100);
+        } catch (e) {
+            console.error('Failed to parse pending audit:', e);
+        }
+    }
 }

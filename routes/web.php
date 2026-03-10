@@ -40,6 +40,9 @@ Route::get('/api/github/pulls', [GitHubRepositoryController::class, 'pullRequest
 Route::get('/api/github/pull-diff', [GitHubRepositoryController::class, 'pullDiff'])
     ->middleware('auth')
     ->name('github.pull-diff');
+Route::get('/api/github/branch-diff', [GitHubRepositoryController::class, 'branchDiff'])
+    ->middleware('auth')
+    ->name('github.branch-diff');
 Route::post('/api/ai/chat', [SimpleChatController::class, 'chat'])->name('ai.chat');
 Route::post('/api/ai/chat-stream', [SimpleChatController::class, 'chatStream'])->name('ai.chat.stream');
 Route::post('/api/ai/transcribe', [TranscriptionController::class, 'transcribe'])->name('ai.transcribe');

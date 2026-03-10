@@ -64,7 +64,7 @@ export async function initImportsPage() {
                     if (branches.length === 0) {
                         branchList.innerHTML = '<li style="padding: 10px 20px; color: var(--text-soft); font-size: 13px;">No branches found.</li>';
                     } else {
-                        branches.forEach(branch => branchList.appendChild(Renderers.createBranchItem(branch, pulls)));
+                        branches.forEach(branch => branchList.appendChild(Renderers.createBranchItem(branch, pulls, repo.default_branch)));
                     }
                     details.dataset.loaded = 'true';
                 } catch (err) {
@@ -95,6 +95,73 @@ export async function initImportsPage() {
     };
 
     loadMoreBtn?.addEventListener('click', renderNextPage);
+
+    // ── import actions ──────────────────────────────────────────────────────────
+    const handleImportClick = async (event) => {
+        const btn = event.target.closest('.imports-action-btn');
+        if (!btn) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const action = btn.dataset.action;
+        const details = btn.closest('.imports-repo-details');
+        const repo = details?.dataset.repo;
+        const defaultBranch = details?.dataset.defaultBranch;
+
+        if (!repo) return;
+
+        btn.classList.add('is-loading');
+
+        try {
+            let diffText = '';
+            let name = '';
+            let source = 'import';
+            let prNumber = null;
+
+            if (action === 'import-branch') {
+                const head = btn.dataset.branch;
+                if (head === defaultBranch) {
+                    alert(`Cannot import the default branch (${defaultBranch}). Choose a different branch to compare against ${defaultBranch}.`);
+                    btn.classList.remove('is-loading');
+                    return;
+                }
+                diffText = await API.fetchBranchDiff(repo, defaultBranch, head);
+                name = `${repo} (${head})`;
+                source = 'import';
+            } else if (action === 'import-pr') {
+                const prNum = btn.dataset.pr;
+                const prTitle = btn.dataset.title;
+                diffText = await API.fetchPullDiff(repo, prNum);
+                name = `${repo} PR#${prNum}: ${prTitle}`;
+                source = 'github';
+                prNumber = prNum;
+            }
+
+            if (!diffText || !diffText.trim()) {
+                throw new Error('Fetched diff is empty');
+            }
+
+            // Store for Auditor page
+            sessionStorage.setItem('pending_audit', JSON.stringify({
+                source: source,
+                repo: repo,
+                prNumber: prNumber,
+                name: name,
+                diffText: diffText
+            }));
+
+            // Redirect
+            window.location.href = '/auditor';
+
+        } catch (err) {
+            console.error('Import failed:', err);
+            alert(`Import failed: ${err.message || 'Check console for details'}`);
+            btn.classList.remove('is-loading');
+        }
+    };
+
+    repoContainer.addEventListener('click', handleImportClick);
 
     // ── initial fetch ─────────────────────────────────────────────────────────
     try {

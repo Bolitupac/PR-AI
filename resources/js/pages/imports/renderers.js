@@ -68,7 +68,7 @@ export function createRepoItem(repo) {
     const totalIssues = repo.open_issues_count || 0;
 
     li.innerHTML = `
-        <details class="imports-repo-details" data-repo="${repo.full_name}">
+        <details class="imports-repo-details" data-repo="${repo.full_name}" data-default-branch="${repo.default_branch || 'main'}">
             <summary class="imports-repo-summary">
                 <div class="imports-repo-main">
                     <svg class="repo-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" title="Repository"><path fill-rule="evenodd" d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z" fill="currentColor"></path></svg>
@@ -110,7 +110,7 @@ export function createRepoItem(repo) {
     return li;
 }
 
-export function createBranchItem(branch, pullRequests) {
+export function createBranchItem(branch, pullRequests, defaultBranch = 'main') {
     // Group PRs that belong to this branch (either head or base)
     const branchPrs = pullRequests.filter(pr => pr.head_ref === branch.name);
 
@@ -135,6 +135,10 @@ export function createBranchItem(branch, pullRequests) {
                         ${branchPrs.length}
                     </span>
                 </div>
+                ${branch.name !== defaultBranch ? `
+                <button type="button" class="imports-action-btn" data-action="import-branch" data-branch="${branch.name}">
+                    <span>Import</span>
+                </button>` : ''}
                 <span class="imports-chevron" aria-hidden="true">
                     <svg viewBox="0 0 24 24" width="20" height="20"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </span>
@@ -189,6 +193,9 @@ export function createPrItem(pr) {
                         ${totalComments}
                     </span>
                 </div>
+                <button type="button" class="imports-action-btn" data-action="import-pr" data-pr="${pr.number}" data-title="${pr.title}">
+                    <span>Import</span>
+                </button>
             </div>
         </div>
     `;

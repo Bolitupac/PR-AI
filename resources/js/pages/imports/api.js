@@ -31,3 +31,15 @@ export async function fetchPullRequests(repoFullName) {
     // Controller wraps in { pulls: [...] }
     return data.pulls || data.data || [];
 }
+
+export async function fetchPullDiff(repoFullName, prNumber) {
+    const response = await fetch(`/api/github/pull-diff?repo=${encodeURIComponent(repoFullName)}&pr_number=${prNumber}`);
+    if (!response.ok) throw new Error('Failed to fetch pull request diff');
+    return await response.text();
+}
+
+export async function fetchBranchDiff(repoFullName, base, head) {
+    const response = await fetch(`/api/github/branch-diff?repo=${encodeURIComponent(repoFullName)}&base=${encodeURIComponent(base)}&head=${encodeURIComponent(head)}`);
+    if (!response.ok) throw new Error('Failed to fetch branch diff');
+    return await response.text();
+}

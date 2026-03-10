@@ -35,7 +35,8 @@ class GitHubApiService
                 'private' => $repo['private'] ?? false,
                 'language' => $repo['language'] ?? 'Unknown',
                 'updated_at' => $repo['updated_at'] ?? null,
-                'open_issues_count' => $repo['open_issues_count'] ?? 0, // Roughly PRs + Issues
+                'open_issues_count' => $repo['open_issues_count'] ?? 0,
+                'default_branch' => $repo['default_branch'] ?? 'main',
             ])
             ->values()
             ->all();
@@ -218,5 +219,22 @@ class GitHubApiService
             ->all();
 
         return ['ok' => true, 'status' => 200, 'data' => $comments];
+    }
+
+    /**
+     * Fetches unified diff text comparing two branches.
+     */
+    public function getBranchDiff(string $encryptedToken, string $repo, string $base, string $head): array
+    {
+        $token = Crypt::decryptString($encryptedToken);
+        $response = Http::withToken($token)
+            ->withHeaders(['Accept' => 'application/vnd.github.v3.diff'])
+            ->get("https://api.github.com/repos/{$repo}/compare/{$base}...{$head}");
+
+        if ($response->failed()) {
+            return ['ok' => false, 'status' => $response->status(), 'data' => ''];
+        }
+
+        return ['ok' => true, 'status' => 200, 'data' => $response->body()];
     }
 }

@@ -26,7 +26,7 @@ class AuditDiffController extends Controller
     public function audit(Request $request): JsonResponse
     {
         $payload = $request->validate([
-            'source' => ['required', 'string', 'in:github,upload,editor'],
+            'source' => ['required', 'string', 'in:github,upload,editor,import,paste'],
             'repo' => ['nullable', 'string', 'max:255'],
             'pr_number' => ['nullable', 'integer'],
             'file_name' => ['nullable', 'string', 'max:255'],
@@ -111,7 +111,7 @@ class AuditDiffController extends Controller
     public function auditStream(Request $request): StreamedResponse
     {
         $payload = $request->validate([
-            'source' => ['required', 'string', 'in:github,upload,editor'],
+            'source' => ['required', 'string', 'in:github,upload,editor,import,paste'],
             'repo' => ['nullable', 'string', 'max:255'],
             'pr_number' => ['nullable', 'integer'],
             'file_name' => ['nullable', 'string', 'max:255'],
@@ -199,14 +199,14 @@ class AuditDiffController extends Controller
                     $fullReply .= $token;
                     $json = json_encode(['text' => $token], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
                     echo "event: token\n";
-                    echo 'data: '.($json ?: '{"text":""}')."\n\n";
+                    echo 'data: ' . ($json ?: '{"text":""}') . "\n\n";
                     @ob_flush();
                     flush();
                 },
                 function (string $message): void {
                     $json = json_encode(['message' => $message], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
                     echo "event: error\n";
-                    echo 'data: '.($json ?: '{"message":"Audit failed."}')."\n\n";
+                    echo 'data: ' . ($json ?: '{"message":"Audit failed."}') . "\n\n";
                     @ob_flush();
                     flush();
                 }
@@ -232,7 +232,7 @@ class AuditDiffController extends Controller
                 'debug_path' => $debugPath,
             ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             echo "event: done\n";
-            echo 'data: '.($donePayload ?: '{"meta":null}')."\n\n";
+            echo 'data: ' . ($donePayload ?: '{"meta":null}') . "\n\n";
             @ob_flush();
             flush();
         }, 200, [
