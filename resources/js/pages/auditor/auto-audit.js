@@ -1,5 +1,6 @@
 import { createChatStatus } from './chat-status';
 import { renderChatMarkdown } from './chat-markdown';
+import { renderMermaidIn } from './mermaid';
 import { chatContextStore } from './chat-context-store';
 
 // Auto-runs AI audit whenever a diff is selected from any source.
@@ -16,6 +17,7 @@ export function initAutoAudit() {
         message.className = `msg ${role}`;
         if (role === 'ai') {
             message.innerHTML = renderChatMarkdown(text);
+            renderMermaidIn(message);
         } else {
             message.textContent = text;
         }
@@ -54,20 +56,29 @@ export function initAutoAudit() {
         const card = document.createElement('div');
         card.className = 'msg ai audit-scorecard';
         card.innerHTML = `
-            <div class="audit-scorecard-top">
-                <span class="meta-pill ${toneClass}">Change: ${changeType}</span>
-                <span class="meta-pill ${riskClass}">Risk: ${riskLevel}${riskScore !== null ? ` (${riskScore}/100)` : ''}</span>
-                <span class="meta-pill is-suggestion">Suggestion: ${suggestionText}</span>
+            <div class="audit-scorecard-header">
+                <span class="audit-chip ${toneClass}">Change: ${changeType}</span>
+                <span class="audit-chip is-suggestion">Suggestion: ${suggestionText}</span>
             </div>
-            <div class="audit-scorecard-top">
-                <span class="meta-pill ${securityClass}">Security: ${securityScore !== null ? `${securityScore}/100` : 'N/A'}</span>
-                <span class="meta-pill ${scalabilityClass}">Scalability: ${scalabilityScore !== null ? `${scalabilityScore}/100` : 'N/A'}</span>
-                <span class="meta-pill ${reliabilityClass}">Reliability: ${reliabilityScore !== null ? `${reliabilityScore}/100` : 'N/A'}</span>
+            <table class="audit-score-table">
+                <tbody>
+                    <tr>
+                        <th>Security</th>
+                        <td><span class="audit-pill ${securityClass}">${securityScore !== null ? `${securityScore}/100` : 'N/A'}</span></td>
+                    </tr>
+                    <tr>
+                        <th>Scalability</th>
+                        <td><span class="audit-pill ${scalabilityClass}">${scalabilityScore !== null ? `${scalabilityScore}/100` : 'N/A'}</span></td>
+                    </tr>
+                    <tr>
+                        <th>Reliability</th>
+                        <td><span class="audit-pill ${reliabilityClass}">${reliabilityScore !== null ? `${reliabilityScore}/100` : 'N/A'}</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="audit-risk-footer ${riskClass}">
+                Risk: ${riskLevel}${riskScore !== null ? ` (${riskScore}/100)` : ''}
             </div>
-            <div class="audit-score-track">
-                <div class="audit-score-fill ${riskClass}" style="width: ${scoreWidth}%"></div>
-            </div>
-            <div class="audit-score-caption">Risk score ${riskScore !== null ? `${riskScore}/100` : 'N/A'}</div>
         `;
         responseArea.appendChild(card);
         responseArea.scrollTop = responseArea.scrollHeight;
@@ -133,6 +144,9 @@ export function initAutoAudit() {
                     source,
                     repo: detail.repo || null,
                     pr_number: detail.prNumber || null,
+                    compare_type: detail.compareType || null,
+                    base_branch: detail.baseBranch || null,
+                    head_branch: detail.headBranch || null,
                     file_name: detail.name || null,
                     diff_text: diffText,
                     model: model || undefined,
@@ -190,6 +204,7 @@ export function initAutoAudit() {
                     } else if (eventName === 'error') {
                         status.markError('Audit failed.');
                         replyNode.innerHTML = renderChatMarkdown(String(payload?.message || 'Audit request failed.'));
+                        renderMermaidIn(replyNode);
                         return;
                     }
 
@@ -199,6 +214,7 @@ export function initAutoAudit() {
 
             const cleanReply = stripAuditMeta(fullReply || 'No audit response from AI.');
             replyNode.innerHTML = renderChatMarkdown(cleanReply);
+            renderMermaidIn(replyNode);
             chatContextStore.push('assistant', `Audit summary:\n${cleanReply}`);
             appendScoreCard(doneMeta);
             status.markSuccess('Audit complete.');

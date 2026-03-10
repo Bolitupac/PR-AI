@@ -74,6 +74,7 @@
                         <h1 class="imports-page-title">Import Branches & Pull Requests</h1>
                         <p class="imports-page-subtitle">Select a repository to view branches and pull requests.</p>
                     </div>
+                    <div class="imports-import-status" id="imports-import-status" aria-live="polite"></div>
                 </header>
 
                 <ul class="imports-repo-list" id="repo-list-container">

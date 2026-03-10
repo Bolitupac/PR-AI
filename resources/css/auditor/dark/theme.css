@@ -332,6 +332,13 @@ html[data-theme="dark"] .msg.ai .file-line-ref {
     color: #c5b9da;
 }
 
+html[data-theme="dark"] .audit-scorecard {
+    background: transparent;
+    border-color: rgba(197, 185, 218, 0.18);
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
 html[data-theme="dark"] .chat-container {
     background: rgba(16, 20, 44, 0.82);
     border-color: rgba(197, 185, 218, 0.22);

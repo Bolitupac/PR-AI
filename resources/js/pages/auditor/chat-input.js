@@ -1,5 +1,6 @@
 import { createChatStatus } from './chat-status';
 import { renderChatMarkdown } from './chat-markdown';
+import { renderMermaidIn } from './mermaid';
 import { chatContextStore } from './chat-context-store';
 
 let chatApi = {
@@ -72,6 +73,7 @@ export function initChatInput() {
         message.className = `msg ${role}`;
         if (role === 'ai') {
             message.innerHTML = renderChatMarkdown(text);
+            renderMermaidIn(message);
         } else {
             message.textContent = text;
         }
@@ -235,6 +237,7 @@ export function initChatInput() {
                         status.markError('Request failed.');
                         if (requestState.replyNode) {
                             requestState.replyNode.innerHTML = renderChatMarkdown(String(payload?.message || 'Chat request failed.'));
+                            renderMermaidIn(requestState.replyNode);
                         }
                         return false;
                     } else if (eventName === 'done') {
@@ -254,6 +257,7 @@ export function initChatInput() {
                 fullReply = 'No response from AI.';
                 if (requestState.replyNode) {
                     requestState.replyNode.innerHTML = renderChatMarkdown(fullReply);
+                    renderMermaidIn(requestState.replyNode);
                 }
             }
 

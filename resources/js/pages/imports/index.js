@@ -16,6 +16,7 @@ export async function initImportsPage() {
     const loadMoreWrap = document.getElementById('load-more-wrap');
     const loadMoreBtn = document.getElementById('load-more-btn');
     const countLabel = document.getElementById('repo-count-label');
+    const importStatus = document.getElementById('imports-import-status');
     if (!repoContainer) return;
 
     // All fetched repos stored here; we reveal PAGE_SIZE at a time
@@ -97,6 +98,12 @@ export async function initImportsPage() {
     loadMoreBtn?.addEventListener('click', renderNextPage);
 
     // ── import actions ──────────────────────────────────────────────────────────
+    const setImportStatus = (text, isLoading = false) => {
+        if (!importStatus) return;
+        importStatus.textContent = text;
+        importStatus.classList.toggle('is-loading', Boolean(isLoading));
+    };
+
     const handleImportClick = async (event) => {
         const btn = event.target.closest('.imports-action-btn');
         if (!btn) return;
@@ -112,34 +119,36 @@ export async function initImportsPage() {
         if (!repo) return;
 
         btn.classList.add('is-loading');
+        setImportStatus('Preparing audit in Auditor...', true);
 
         try {
-            let diffText = '';
             let name = '';
-            let source = 'import';
+            let source = 'upload';
             let prNumber = null;
+            let branchName = null;
+            let baseBranch = null;
+            let compareType = 'upload';
 
             if (action === 'import-branch') {
                 const head = btn.dataset.branch;
                 if (head === defaultBranch) {
                     alert(`Cannot import the default branch (${defaultBranch}). Choose a different branch to compare against ${defaultBranch}.`);
                     btn.classList.remove('is-loading');
+                    setImportStatus('', false);
                     return;
                 }
-                diffText = await API.fetchBranchDiff(repo, defaultBranch, head);
                 name = `${repo} (${head})`;
-                source = 'import';
+                source = 'upload';
+                compareType = 'branch_vs_main';
+                branchName = head;
+                baseBranch = defaultBranch;
             } else if (action === 'import-pr') {
                 const prNum = btn.dataset.pr;
                 const prTitle = btn.dataset.title;
-                diffText = await API.fetchPullDiff(repo, prNum);
                 name = `${repo} PR#${prNum}: ${prTitle}`;
                 source = 'github';
                 prNumber = prNum;
-            }
-
-            if (!diffText || !diffText.trim()) {
-                throw new Error('Fetched diff is empty');
+                compareType = 'pull_request';
             }
 
             // Store for Auditor page
@@ -148,16 +157,21 @@ export async function initImportsPage() {
                 repo: repo,
                 prNumber: prNumber,
                 name: name,
-                diffText: diffText
+                branch: branchName,
+                base: baseBranch,
+                compareType: compareType
             }));
 
             // Redirect
-            window.location.href = '/auditor';
+            setTimeout(() => {
+                window.location.href = '/auditor';
+            }, 120);
 
         } catch (err) {
             console.error('Import failed:', err);
             alert(`Import failed: ${err.message || 'Check console for details'}`);
             btn.classList.remove('is-loading');
+            setImportStatus('', false);
         }
     };
 
@@ -218,7 +232,5 @@ export async function initImportsPage() {
         repoContainer.innerHTML = '<li style="padding: 20px; text-align: center; color: #ef4444;">Failed to load repositories. Please try again.</li>';
     }
 }
-
-
 
 

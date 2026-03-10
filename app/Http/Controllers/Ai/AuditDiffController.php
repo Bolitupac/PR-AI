@@ -29,6 +29,13 @@ class AuditDiffController extends Controller
             'source' => ['required', 'string', 'in:github,upload,editor,import,paste'],
             'repo' => ['nullable', 'string', 'max:255'],
             'pr_number' => ['nullable', 'integer'],
+            'compare_type' => ['nullable', 'string', 'max:120'],
+            'base_branch' => ['nullable', 'string', 'max:255'],
+            'head_branch' => ['nullable', 'string', 'max:255'],
+            'pr_title' => ['nullable', 'string', 'max:255'],
+            'pr_description' => ['nullable', 'string', 'max:4000'],
+            'linked_issues' => ['nullable', 'string', 'max:4000'],
+            'context' => ['nullable', 'string', 'max:4000'],
             'file_name' => ['nullable', 'string', 'max:255'],
             'diff_text' => ['required', 'string', 'max:2000000'],
             'model' => ['nullable', 'string', 'max:120'],
@@ -37,8 +44,15 @@ class AuditDiffController extends Controller
         $source = (string) $payload['source'];
         $repo = (string) ($payload['repo'] ?? '');
         $prNumber = isset($payload['pr_number']) ? (string) $payload['pr_number'] : '';
+        $compareType = (string) ($payload['compare_type'] ?? '');
+        $baseBranch = (string) ($payload['base_branch'] ?? '');
+        $headBranch = (string) ($payload['head_branch'] ?? '');
         $diffText = (string) $payload['diff_text'];
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
+        $prTitle = (string) ($payload['pr_title'] ?? '');
+        $prDescription = (string) ($payload['pr_description'] ?? '');
+        $linkedIssues = (string) ($payload['linked_issues'] ?? '');
+        $contextNote = (string) ($payload['context'] ?? '');
 
         $issueComments = [];
         $reviewComments = [];
@@ -63,6 +77,13 @@ class AuditDiffController extends Controller
             'source' => $source,
             'repo' => $repo !== '' ? $repo : null,
             'pr_number' => $prNumber !== '' ? $prNumber : null,
+            'compare_type' => $compareType !== '' ? $compareType : null,
+            'base_branch' => $baseBranch !== '' ? $baseBranch : null,
+            'head_branch' => $headBranch !== '' ? $headBranch : null,
+            'pr_title' => $prTitle !== '' ? $prTitle : null,
+            'pr_description' => $prDescription !== '' ? $prDescription : null,
+            'linked_issues' => $linkedIssues !== '' ? $linkedIssues : null,
+            'context' => $contextNote !== '' ? $contextNote : null,
             'file_name' => $payload['file_name'] ?? null,
             'changed_lines' => $changedLines,
             'issue_comments' => $issueComments,
@@ -74,6 +95,13 @@ class AuditDiffController extends Controller
             'source' => $source,
             'repo' => $repo !== '' ? $repo : null,
             'pr_number' => $prNumber !== '' ? $prNumber : null,
+            'compare_type' => $compareType !== '' ? $compareType : null,
+            'base_branch' => $baseBranch !== '' ? $baseBranch : null,
+            'head_branch' => $headBranch !== '' ? $headBranch : null,
+            'pr_title' => $prTitle !== '' ? $prTitle : null,
+            'pr_description' => $prDescription !== '' ? $prDescription : null,
+            'linked_issues' => $linkedIssues !== '' ? $linkedIssues : null,
+            'context' => $contextNote !== '' ? $contextNote : null,
             'file_name' => $payload['file_name'] ?? null,
             'changed_lines' => $changedLines,
             'issue_comments' => $issueComments,
@@ -89,6 +117,13 @@ class AuditDiffController extends Controller
             'source' => $source,
             'repo' => $repo !== '' ? $repo : null,
             'pr_number' => $prNumber !== '' ? $prNumber : null,
+            'compare_type' => $compareType !== '' ? $compareType : null,
+            'base_branch' => $baseBranch !== '' ? $baseBranch : null,
+            'head_branch' => $headBranch !== '' ? $headBranch : null,
+            'pr_title' => $prTitle !== '' ? $prTitle : null,
+            'pr_description' => $prDescription !== '' ? $prDescription : null,
+            'linked_issues' => $linkedIssues !== '' ? $linkedIssues : null,
+            'context' => $contextNote !== '' ? $contextNote : null,
             'file_name' => $payload['file_name'] ?? null,
             'diff_text' => $diffText,
             'issue_comments' => $issueComments,
@@ -114,6 +149,13 @@ class AuditDiffController extends Controller
             'source' => ['required', 'string', 'in:github,upload,editor,import,paste'],
             'repo' => ['nullable', 'string', 'max:255'],
             'pr_number' => ['nullable', 'integer'],
+            'compare_type' => ['nullable', 'string', 'max:120'],
+            'base_branch' => ['nullable', 'string', 'max:255'],
+            'head_branch' => ['nullable', 'string', 'max:255'],
+            'pr_title' => ['nullable', 'string', 'max:255'],
+            'pr_description' => ['nullable', 'string', 'max:4000'],
+            'linked_issues' => ['nullable', 'string', 'max:4000'],
+            'context' => ['nullable', 'string', 'max:4000'],
             'file_name' => ['nullable', 'string', 'max:255'],
             'diff_text' => ['required', 'string', 'max:2000000'],
             'model' => ['nullable', 'string', 'max:120'],
@@ -122,8 +164,15 @@ class AuditDiffController extends Controller
         $source = (string) $payload['source'];
         $repo = (string) ($payload['repo'] ?? '');
         $prNumber = isset($payload['pr_number']) ? (string) $payload['pr_number'] : '';
+        $compareType = (string) ($payload['compare_type'] ?? '');
+        $baseBranch = (string) ($payload['base_branch'] ?? '');
+        $headBranch = (string) ($payload['head_branch'] ?? '');
         $diffText = (string) $payload['diff_text'];
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
+        $prTitle = (string) ($payload['pr_title'] ?? '');
+        $prDescription = (string) ($payload['pr_description'] ?? '');
+        $linkedIssues = (string) ($payload['linked_issues'] ?? '');
+        $contextNote = (string) ($payload['context'] ?? '');
 
         $issueComments = [];
         $reviewComments = [];
@@ -148,6 +197,13 @@ class AuditDiffController extends Controller
             'source' => $source,
             'repo' => $repo !== '' ? $repo : null,
             'pr_number' => $prNumber !== '' ? $prNumber : null,
+            'compare_type' => $compareType !== '' ? $compareType : null,
+            'base_branch' => $baseBranch !== '' ? $baseBranch : null,
+            'head_branch' => $headBranch !== '' ? $headBranch : null,
+            'pr_title' => $prTitle !== '' ? $prTitle : null,
+            'pr_description' => $prDescription !== '' ? $prDescription : null,
+            'linked_issues' => $linkedIssues !== '' ? $linkedIssues : null,
+            'context' => $contextNote !== '' ? $contextNote : null,
             'file_name' => $payload['file_name'] ?? null,
             'changed_lines' => $changedLines,
             'issue_comments' => $issueComments,
@@ -159,6 +215,13 @@ class AuditDiffController extends Controller
             'source' => $source,
             'repo' => $repo !== '' ? $repo : null,
             'pr_number' => $prNumber !== '' ? $prNumber : null,
+            'compare_type' => $compareType !== '' ? $compareType : null,
+            'base_branch' => $baseBranch !== '' ? $baseBranch : null,
+            'head_branch' => $headBranch !== '' ? $headBranch : null,
+            'pr_title' => $prTitle !== '' ? $prTitle : null,
+            'pr_description' => $prDescription !== '' ? $prDescription : null,
+            'linked_issues' => $linkedIssues !== '' ? $linkedIssues : null,
+            'context' => $contextNote !== '' ? $contextNote : null,
             'file_name' => $payload['file_name'] ?? null,
             'changed_lines' => $changedLines,
             'issue_comments' => $issueComments,
@@ -168,7 +231,7 @@ class AuditDiffController extends Controller
 
         $systemPrompt = (string) config('audit_ai.system_prompt');
 
-        return response()->stream(function () use ($source, $repo, $prNumber, $payload, $diffText, $issueComments, $reviewComments, $systemPrompt, $userPrompt, $selectedModel): void {
+        return response()->stream(function () use ($source, $repo, $prNumber, $compareType, $baseBranch, $headBranch, $prTitle, $prDescription, $linkedIssues, $contextNote, $payload, $diffText, $issueComments, $reviewComments, $systemPrompt, $userPrompt, $selectedModel): void {
             @ini_set('output_buffering', 'off');
             @ini_set('zlib.output_compression', '0');
             @set_time_limit(0);
@@ -217,6 +280,13 @@ class AuditDiffController extends Controller
                 'source' => $source,
                 'repo' => $repo !== '' ? $repo : null,
                 'pr_number' => $prNumber !== '' ? $prNumber : null,
+                'compare_type' => $compareType !== '' ? $compareType : null,
+                'base_branch' => $baseBranch !== '' ? $baseBranch : null,
+                'head_branch' => $headBranch !== '' ? $headBranch : null,
+                'pr_title' => $prTitle !== '' ? $prTitle : null,
+                'pr_description' => $prDescription !== '' ? $prDescription : null,
+                'linked_issues' => $linkedIssues !== '' ? $linkedIssues : null,
+                'context' => $contextNote !== '' ? $contextNote : null,
                 'file_name' => $payload['file_name'] ?? null,
                 'diff_text' => $diffText,
                 'issue_comments' => $issueComments,

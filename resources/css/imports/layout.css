@@ -52,6 +52,30 @@
     color: var(--text-soft);
 }
 
+.imports-import-status {
+    font-size: 12px;
+    color: var(--text-soft);
+    min-height: 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.imports-import-status.is-loading::after {
+    content: "";
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-top-color: var(--accent, #0085ff);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+html[data-theme="dark"] .imports-import-status.is-loading::after {
+    border-color: rgba(255, 255, 255, 0.25);
+    border-top-color: #c5b9da;
+}
+
 @media (max-width: 1100px) {
     .imports-workspace {
         grid-template-columns: 1fr;

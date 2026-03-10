@@ -124,6 +124,14 @@
     margin: 2px 0;
 }
 
+.msg.ai ul ul,
+.msg.ai ol ul,
+.msg.ai ul ol,
+.msg.ai ol ol {
+    margin: 4px 0 4px 18px;
+}
+
+
 .msg.ai ol li::marker {
     color: #2d3f67;
     font-weight: 600;
@@ -238,6 +246,82 @@
     background: transparent;
     padding: 0;
     border-radius: 0;
+}
+
+.msg.ai pre.mermaid {
+    max-width: 100%;
+    margin: 6px 0 8px;
+    font-size: 11px;
+}
+
+.msg.ai pre.mermaid svg {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+}
+
+.msg.ai .msg-details {
+    margin: 8px 0 10px;
+    border: 1px solid rgba(160, 176, 210, 0.3);
+    border-radius: 10px;
+    padding: 6px 8px;
+    background: rgba(246, 249, 255, 0.65);
+}
+
+.msg.ai .msg-details summary {
+    cursor: pointer;
+    font-weight: 700;
+    color: #233e73;
+    outline: none;
+}
+
+.msg.ai .msg-details[open] summary {
+    margin-bottom: 6px;
+}
+
+html[data-theme="light"] .msg.ai .mermaid svg .node rect,
+html[data-theme="light"] .msg.ai .mermaid svg .node circle,
+html[data-theme="light"] .msg.ai .mermaid svg .node polygon,
+html[data-theme="light"] .msg.ai .mermaid svg .node path {
+    fill: #f5f8ff !important;
+    stroke: #3f66c5 !important;
+}
+
+html[data-theme="light"] .msg.ai .mermaid svg .label,
+html[data-theme="light"] .msg.ai .mermaid svg text {
+    fill: #233e73 !important;
+    color: #233e73 !important;
+}
+
+html[data-theme="light"] .msg.ai .mermaid svg .edgePath path,
+html[data-theme="light"] .msg.ai .mermaid svg .flowchart-link {
+    stroke: #3b64c2 !important;
+}
+
+html[data-theme="light"] .msg.ai .mermaid svg .edgeLabel rect {
+    fill: #ffffff !important;
+    opacity: 0.9;
+}
+
+.msg.ai .msg-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 10px;
+    font-size: 12px;
+}
+
+.msg.ai .msg-table th,
+.msg.ai .msg-table td {
+    border: 1px solid rgba(160, 176, 210, 0.3);
+    padding: 6px 8px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.msg.ai .msg-table th {
+    background: rgba(236, 242, 255, 0.7);
+    color: #233e73;
+    font-weight: 700;
 }
 
 .chat-status-line {
@@ -401,122 +485,130 @@
     display: block;
 }
 
-.meta-pill {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 999px;
-    border: 1px solid transparent;
-    padding: 4px 10px;
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.meta-pill.is-upgrade {
-    color: #166534;
-    background: #dcfce7;
-    border-color: #86efac;
-}
-
-.meta-pill.is-downgrade {
-    color: #991b1b;
-    background: #fee2e2;
-    border-color: #fca5a5;
-}
-
-.meta-pill.is-neutral {
-    color: #1d4ed8;
-    background: #dbeafe;
-    border-color: #93c5fd;
-}
-
-.meta-pill.is-risk {
-    color: #1f2b44;
-    background: #eef2ff;
-    border-color: #c7d2fe;
-}
-
-.meta-pill.is-risk-low {
-    color: #14532d;
-    background: #dcfce7;
-    border-color: #86efac;
-}
-
-.meta-pill.is-risk-medium {
-    color: #854d0e;
-    background: #fef9c3;
-    border-color: #fde047;
-}
-
-.meta-pill.is-risk-high {
-    color: #991b1b;
-    background: #fee2e2;
-    border-color: #fca5a5;
-}
-
-.meta-pill.is-risk-critical {
-    color: #ffffff;
-    background: #5f0f17;
-    border-color: #7f1d1d;
-}
-
-.meta-pill.is-suggestion {
-    color: #1e3a8a;
-    background: #e0e7ff;
-    border-color: #a5b4fc;
-}
-
 .audit-scorecard {
     width: min(92%, 560px);
     margin-top: -4px;
-    padding: 11px 13px;
-    border-radius: 12px;
-    border: 1px solid rgba(216, 225, 240, 0.65);
-    background: rgba(248, 251, 255, 0.62);
-    backdrop-filter: blur(2px);
+    padding: 14px 15px;
+    border-radius: 14px;
+    border: 1px solid rgba(207, 217, 235, 0.7);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(244, 248, 255, 0.76));
+    box-shadow:
+        0 16px 32px rgba(24, 38, 74, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(6px);
 }
 
-.audit-scorecard-top {
+.audit-scorecard-header {
     display: flex;
     flex-wrap: wrap;
-    gap: 7px;
-    margin-bottom: 8px;
+    gap: 8px;
+    margin-bottom: 10px;
 }
 
-.audit-score-track {
+.audit-chip {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    border: 1px solid rgba(167, 181, 210, 0.45);
+    padding: 3px 9px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #223764;
+    background: rgba(240, 244, 255, 0.7);
+}
+
+.audit-chip.is-upgrade {
+    color: #166534;
+    background: rgba(220, 252, 231, 0.7);
+}
+
+.audit-chip.is-downgrade {
+    color: #991b1b;
+    background: rgba(254, 226, 226, 0.7);
+}
+
+.audit-chip.is-neutral {
+    color: #1d4ed8;
+    background: rgba(219, 234, 254, 0.7);
+}
+
+.audit-chip.is-suggestion {
+    color: #1e3a8a;
+    background: rgba(224, 231, 255, 0.7);
+}
+
+.audit-score-table {
     width: 100%;
-    height: 8px;
-    border-radius: 999px;
-    background: #e4ebf8;
-    overflow: hidden;
-}
-
-.audit-score-fill {
-    height: 100%;
-    border-radius: 999px;
-    transition: width 0.35s ease;
-}
-
-.audit-score-fill.is-risk-low {
-    background: #22c55e;
-}
-
-.audit-score-fill.is-risk-medium {
-    background: #facc15;
-}
-
-.audit-score-fill.is-risk-high {
-    background: #ef4444;
-}
-
-.audit-score-fill.is-risk-critical {
-    background: #7f1d1d;
-}
-
-.audit-score-caption {
-    margin-top: 6px;
+    border-collapse: collapse;
     font-size: 12px;
-    color: #445575;
-    font-weight: 600;
+}
+
+.audit-score-table th,
+.audit-score-table td {
+    text-align: left;
+    padding: 6px 4px;
+    border-bottom: 1px solid rgba(170, 184, 214, 0.3);
+}
+
+.audit-score-table th {
+    color: #3b4f7a;
+    font-weight: 700;
+    width: 40%;
+}
+
+.audit-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #1f2b44;
+    background: rgba(231, 236, 248, 0.8);
+}
+
+.audit-pill.is-risk-low {
+    background: rgba(220, 252, 231, 0.8);
+    color: #14532d;
+}
+
+.audit-pill.is-risk-medium {
+    background: rgba(254, 249, 195, 0.85);
+    color: #854d0e;
+}
+
+.audit-pill.is-risk-high {
+    background: rgba(254, 226, 226, 0.9);
+    color: #991b1b;
+}
+
+.audit-pill.is-risk-critical {
+    background: rgba(95, 15, 23, 0.92);
+    color: #ffffff;
+}
+
+.audit-risk-footer {
+    margin-top: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #1f2b44;
+}
+
+.audit-risk-footer.is-risk-low {
+    color: #166534;
+}
+
+.audit-risk-footer.is-risk-medium {
+    color: #854d0e;
+}
+
+.audit-risk-footer.is-risk-high {
+    color: #991b1b;
+}
+
+.audit-risk-footer.is-risk-critical {
+    color: #7f1d1d;
 }
 
 .chat-input {

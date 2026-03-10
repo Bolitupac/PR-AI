@@ -10,6 +10,13 @@ class AuditPromptComposer
         $source = (string) ($input['source'] ?? 'unknown');
         $repo = (string) ($input['repo'] ?? 'N/A');
         $prNumber = (string) ($input['pr_number'] ?? 'N/A');
+        $compareType = (string) ($input['compare_type'] ?? 'N/A');
+        $baseBranch = (string) ($input['base_branch'] ?? 'N/A');
+        $headBranch = (string) ($input['head_branch'] ?? 'N/A');
+        $prTitle = (string) ($input['pr_title'] ?? 'N/A');
+        $prDescription = (string) ($input['pr_description'] ?? 'N/A');
+        $linkedIssues = (string) ($input['linked_issues'] ?? 'N/A');
+        $context = (string) ($input['context'] ?? 'N/A');
         $fileName = (string) ($input['file_name'] ?? 'N/A');
         $changedLines = (array) ($input['changed_lines'] ?? []);
         $issueComments = (array) ($input['issue_comments'] ?? []);
@@ -17,9 +24,18 @@ class AuditPromptComposer
         $diffText = (string) ($input['diff_text'] ?? '');
 
         $parts = [];
+        $parts[] = 'PR Title: '.$prTitle;
+        $parts[] = 'PR Description: '.$prDescription;
+        $parts[] = 'Linked Issues: '.$linkedIssues;
+        $parts[] = 'Context: '.$context;
+        $parts[] = 'Diff Data:';
+        $parts[] = '';
         $parts[] = 'SOURCE: '.$source;
         $parts[] = 'REPO: '.$repo;
         $parts[] = 'PR NUMBER: '.$prNumber;
+        $parts[] = 'COMPARE TYPE: '.$compareType;
+        $parts[] = 'BASE BRANCH: '.$baseBranch;
+        $parts[] = 'HEAD BRANCH: '.$headBranch;
         $parts[] = 'FILE NAME: '.$fileName;
         $parts[] = '';
         $parts[] = 'CHANGED LINES (file | type | side line | content):';
@@ -74,6 +90,10 @@ class AuditPromptComposer
         $parts[] = '';
         $parts[] = 'RAW DIFF:';
         $parts[] = $diffText;
+        $parts[] = '';
+        $parts[] = 'OUTPUT REQUIREMENT: Include one Mermaid diagram in a ```mermaid``` code block.';
+        $parts[] = 'Choose the best type for the change (sequenceDiagram, flowchart TD, or classDiagram).';
+        $parts[] = 'The diagram must show the impact of this change and indicate whether this is a branch vs main compare or a pull request audit.';
 
         return implode(PHP_EOL, $parts);
     }
@@ -84,15 +104,29 @@ class AuditPromptComposer
         $source = (string) ($input['source'] ?? 'unknown');
         $repo = (string) ($input['repo'] ?? 'N/A');
         $prNumber = (string) ($input['pr_number'] ?? 'N/A');
+        $compareType = (string) ($input['compare_type'] ?? 'N/A');
+        $baseBranch = (string) ($input['base_branch'] ?? 'N/A');
+        $headBranch = (string) ($input['head_branch'] ?? 'N/A');
+        $prTitle = (string) ($input['pr_title'] ?? 'N/A');
+        $prDescription = (string) ($input['pr_description'] ?? 'N/A');
+        $linkedIssues = (string) ($input['linked_issues'] ?? 'N/A');
+        $context = (string) ($input['context'] ?? 'N/A');
         $fileName = (string) ($input['file_name'] ?? 'N/A');
         $changedLines = (array) ($input['changed_lines'] ?? []);
         $issueComments = (array) ($input['issue_comments'] ?? []);
         $reviewComments = (array) ($input['review_comments'] ?? []);
 
         $parts = [];
+        $parts[] = "PR Title: {$prTitle}";
+        $parts[] = "PR Description: {$prDescription}";
+        $parts[] = "Linked Issues: {$linkedIssues}";
+        $parts[] = "Context: {$context}";
         $parts[] = "SOURCE: {$source}";
         $parts[] = "REPO: {$repo}";
         $parts[] = "PR: {$prNumber}";
+        $parts[] = "COMPARE: {$compareType}";
+        $parts[] = "BASE: {$baseBranch}";
+        $parts[] = "HEAD: {$headBranch}";
         $parts[] = "FILE: {$fileName}";
         $parts[] = '';
         $parts[] = 'CHANGED LINES (sample):';
