@@ -204,6 +204,7 @@ export function initChatInput() {
             const decoder = new TextDecoder('utf-8');
             let fullReply = '';
             let buffer = '';
+            let lastMermaidRender = 0;
 
             while (true) {
                 const { done, value } = await reader.read();
@@ -230,6 +231,14 @@ export function initChatInput() {
                             fullReply += token;
                             if (requestState.replyNode) {
                                 requestState.replyNode.innerHTML = renderChatMarkdown(fullReply);
+                                
+                                // Time-based throttle for Mermaid rendering during streaming
+                                const now = Date.now();
+                                if (fullReply.includes('```mermaid') && (now - lastMermaidRender > 800)) {
+                                    renderMermaidIn(requestState.replyNode);
+                                    lastMermaidRender = now;
+                                }
+                                
                                 responseArea.scrollTop = responseArea.scrollHeight;
                             }
                         }
@@ -257,8 +266,11 @@ export function initChatInput() {
                 fullReply = 'No response from AI.';
                 if (requestState.replyNode) {
                     requestState.replyNode.innerHTML = renderChatMarkdown(fullReply);
-                    renderMermaidIn(requestState.replyNode);
                 }
+            }
+
+            if (requestState.replyNode) {
+                renderMermaidIn(requestState.replyNode);
             }
 
             chatContextStore.push('assistant', fullReply);

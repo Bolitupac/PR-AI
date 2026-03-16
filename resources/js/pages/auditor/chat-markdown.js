@@ -63,7 +63,7 @@ export function renderChatMarkdown(markdownText) {
         const codeText = codeBuffer.join('\n');
         const escapedCode = escapeHtml(codeText);
         if (codeFenceLang === 'mermaid') {
-            html.push(`<pre class="mermaid">${escapedCode}</pre>`);
+            html.push(`<pre class="mermaid" data-mermaid-src="${escapedCode}">${escapedCode}</pre>`);
         } else {
             html.push(`<pre><code>${escapedCode}</code></pre>`);
         }

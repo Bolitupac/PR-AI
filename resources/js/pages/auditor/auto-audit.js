@@ -174,6 +174,7 @@ export function initAutoAudit() {
             let fullReply = '';
             let doneMeta = null;
             let buffer = '';
+            let lastMermaidRender = 0;
 
             while (true) {
                 const { done, value } = await reader.read();
@@ -197,6 +198,13 @@ export function initAutoAudit() {
                         if (token) {
                             fullReply += token;
                             replyNode.innerHTML = renderChatMarkdown(stripAuditMeta(fullReply));
+                            
+                            const now = Date.now();
+                            if (fullReply.includes('```mermaid') && (now - lastMermaidRender > 800)) {
+                                renderMermaidIn(replyNode);
+                                lastMermaidRender = now;
+                            }
+                            
                             responseArea.scrollTop = responseArea.scrollHeight;
                         }
                     } else if (eventName === 'done') {
