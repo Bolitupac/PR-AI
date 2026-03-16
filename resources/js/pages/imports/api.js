@@ -3,7 +3,11 @@
  */
 export async function fetchRepos() {
     const response = await fetch('/api/github/repos');
-    if (!response.ok) throw new Error('Failed to fetch repositories');
+    if (!response.ok) {
+        const err = new Error('Failed to fetch repositories');
+        err.status = response.status;
+        throw err;
+    }
     const data = await response.json();
     return data.repos || [];
 }
