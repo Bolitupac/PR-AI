@@ -4,6 +4,8 @@ import * as API from './api';
 import * as Renderers from './renderers';
 
 const PAGE_SIZE = 20;
+const METADATA_START_DELAY_MS = 1200;
+const METADATA_ITEM_DELAY_MS = 250;
 
 export async function initImportsPage() {
     const page = document.getElementById('imports-page');
@@ -23,6 +25,76 @@ export async function initImportsPage() {
     let allRepos = [];
     let shownCount = 0;
     const repoElements = []; // { repo, element }
+
+    // ── metadata queue (deferred until after initial paint) ──────────────────
+    let metadataStarted = false;
+    let metadataProcessing = false;
+    const metadataQueue = [];
+
+    const enqueueMetadata = (items) => {
+        items.forEach(({ repo, element }) => {
+            if (!repo?.full_name || !element) return;
+            if (element.dataset.metadataQueued === 'true') return;
+            element.dataset.metadataQueued = 'true';
+            metadataQueue.push({ repo, element });
+        });
+
+        if (metadataStarted) {
+            processMetadataQueue();
+        }
+    };
+
+    const processMetadataQueue = async () => {
+        if (metadataProcessing) return;
+        metadataProcessing = true;
+
+        while (metadataQueue.length > 0) {
+            if (document.visibilityState === 'hidden') break;
+
+            const { repo, element } = metadataQueue.shift();
+            const details = element.querySelector('.imports-repo-details');
+            if (!details || details.open || details.dataset.loaded === 'true') {
+                continue;
+            }
+
+            if (element.dataset.metadataLoaded === 'true') {
+                continue;
+            }
+
+            try {
+                const metadata = await API.fetchRepoMetadata(repo.full_name);
+                const branchPh = element.querySelector('.branch-count-placeholder');
+                const pullPh = element.querySelector('.pull-count-placeholder');
+                const issuePh = element.querySelector('.issue-count-placeholder');
+                if (branchPh) branchPh.textContent = metadata.branch_count ?? '--';
+                if (pullPh) pullPh.textContent = metadata.pull_count ?? '--';
+                if (issuePh) {
+                    issuePh.textContent = metadata.pull_count === null
+                        ? '--'
+                        : Math.max(0, repo.open_issues_count - metadata.pull_count);
+                }
+                element.dataset.metadataLoaded = 'true';
+            } catch (err) {
+                console.warn(`Metadata failed for ${repo.full_name}`, err);
+            }
+
+            await new Promise(r => setTimeout(r, METADATA_ITEM_DELAY_MS));
+        }
+
+        metadataProcessing = false;
+    };
+
+    const startMetadataAfterInitialPaint = () => {
+        // Defer metadata calls so the page becomes interactive quickly.
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    metadataStarted = true;
+                    enqueueMetadata(repoElements.slice(0, shownCount));
+                }, METADATA_START_DELAY_MS);
+            });
+        });
+    };
 
     // ── helpers ──────────────────────────────────────────────────────────────
 
@@ -78,6 +150,7 @@ export async function initImportsPage() {
 
     // Renders the next PAGE_SIZE repos from allRepos
     const renderNextPage = () => {
+        const startIndex = shownCount;
         const end = Math.min(shownCount + PAGE_SIZE, allRepos.length);
         for (let i = shownCount; i < end; i++) {
             const { repo, element } = repoElements[i];
@@ -93,6 +166,8 @@ export async function initImportsPage() {
         }
         shownCount = end;
         updateLoadMoreBar();
+
+        enqueueMetadata(repoElements.slice(startIndex, end));
     };
 
     loadMoreBtn?.addEventListener('click', renderNextPage);
@@ -201,31 +276,7 @@ export async function initImportsPage() {
 
         // Show first page immediately
         renderNextPage();
-
-        // Background loader for metadata (Branch/PR counts)
-        // Sequential with small delay to keep below GitHub rate limit
-        (async () => {
-            for (const { repo, element } of repoElements) {
-                const details = element.querySelector('.imports-repo-details');
-                if (details?.dataset.loaded === 'true') continue;
-                try {
-                    await new Promise(r => setTimeout(r, 300));
-                    const metadata = await API.fetchRepoMetadata(repo.full_name);
-                    const branchPh = element.querySelector('.branch-count-placeholder');
-                    const pullPh = element.querySelector('.pull-count-placeholder');
-                    const issuePh = element.querySelector('.issue-count-placeholder');
-                    if (branchPh) branchPh.textContent = metadata.branch_count ?? '--';
-                    if (pullPh) pullPh.textContent = metadata.pull_count ?? '--';
-                    if (issuePh) {
-                        issuePh.textContent = metadata.pull_count === null
-                            ? '--'
-                            : Math.max(0, repo.open_issues_count - metadata.pull_count);
-                    }
-                } catch (err) {
-                    console.warn(`Background metadata failed for ${repo.full_name}`, err);
-                }
-            }
-        })();
+        startMetadataAfterInitialPaint();
 
     } catch (error) {
         console.error('Error initializing imports:', error);
@@ -249,4 +300,3 @@ export async function initImportsPage() {
         }
     }
 }
-
