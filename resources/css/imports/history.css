@@ -208,6 +208,7 @@
 }
 
 .imports-commit-author,
+.imports-commit-repo,
 .imports-commit-time {
     white-space: nowrap;
     overflow: hidden;

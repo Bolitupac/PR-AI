@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GitHubOAuthController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\GitHubRepositoryController;
+use App\Http\Controllers\ImportsController;
 use App\Http\Controllers\Ai\SimpleChatController;
 use App\Http\Controllers\Ai\AuditDiffController;
 use App\Http\Controllers\Ai\Voice\TranscriptionController;
@@ -19,9 +20,7 @@ Route::get('/auditor', function () {
     return view('auditor');
 });
 
-Route::get('/imports', function () {
-    return view('imports');
-})->name('imports.index');
+Route::get('/imports', [ImportsController::class, 'index'])->name('imports.index');
 
 Route::get('/auth/github', [GitHubOAuthController::class, 'redirect'])->name('github.redirect');
 Route::get('/auth/github/callback', [GitHubOAuthController::class, 'callback'])->name('github.callback');

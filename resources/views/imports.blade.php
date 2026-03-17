@@ -19,44 +19,6 @@
 </head>
 
 <body>
-    @php
-    $chatHistory = [
-    ['title' => 'Audit for billing service PR', 'time' => '2 min ago', 'preview' => 'Risk: medium, 3 change requests.'],
-    ['title' => 'Review edge API branch', 'time' => '11 min ago', 'preview' => 'Null checks missing in 2 files.'],
-    ['title' => 'Frontend lint cleanup', 'time' => '45 min ago', 'preview' => 'Low-risk formatting updates only.'],
-    ['title' => 'Repository sync checklist', 'time' => '1 hr ago', 'preview' => 'Branch protections and labels
-    reviewed.'],
-    ['title' => 'Testing out the ai system for the user', 'time' => '59 min ago', 'preview' => 'Risk: medium, 3 change
-    requests.'],
-    ];
-
-    $recentCommits = [
-    ['hash' => '7f3a2b1', 'message' => 'feat: add user authentication', 'author' => 'bolitupac', 'time' => '10m ago'],
-    ['hash' => 'ac8d4e2', 'message' => 'fix: resolver bug in AI service', 'author' => 'carlos', 'time' => '1h ago'],
-    ['hash' => '9b2c1f5', 'message' => 'docs: update readme with new API', 'author' => 'bolitupac', 'time' => '3h ago'],
-    ['hash' => 'd5e6f7g', 'message' => 'refactor: simplify database queries', 'author' => 'maria', 'time' => '5h ago'],
-    ['hash' => 'e1f2g3h', 'message' => 'chore: upgrade dependencies', 'author' => 'bolitupac', 'time' => '6h ago'],
-    ['hash' => 'f3g4h5i', 'message' => 'style: improve mobile responsive layout', 'author' => 'carlos', 'time' => '1d ago'],
-    ['hash' => 'g5h6i7j', 'message' => 'test: add unit tests for workspace module', 'author' => 'maria', 'time' => '1d ago'],
-    ['hash' => 'h7i8j9k', 'message' => 'feat: implement real-time notifications', 'author' => 'bolitupac', 'time' => '2d ago'],
-    ['hash' => 'i9j0k1l', 'message' => 'fix: memory leak in stream processor', 'author' => 'carlos', 'time' => '2d ago'],
-    ['hash' => 'j1k2l3m', 'message' => 'refactor: cleanup unused assets', 'author' => 'maria', 'time' => '3d ago'],
-    ['hash' => 'k2l3m4n', 'message' => 'docs: add architecture diagram', 'author' => 'bolitupac', 'time' => '3d ago'],
-    ['hash' => 'l3m4n5o', 'message' => 'feat: support multi-repository sync', 'author' => 'carlos', 'time' => '4d ago'],
-    ['hash' => 'm4n5o6p', 'message' => 'fix: escape html in chat logs', 'author' => 'maria', 'time' => '4d ago'],
-    ['hash' => 'n5o6p7q', 'message' => 'chore: add linting rules for blade', 'author' => 'bolitupac', 'time' => '5d ago'],
-    ];
-
-    $vcsProviders = [
-    ['name' => 'GitHub', 'state' => 'Connected'],
-    ['name' => 'GitLab', 'state' => 'Available'],
-    ['name' => 'Bitbucket', 'state' => 'Available'],
-    ['name' => 'Azure DevOps', 'state' => 'Available'],
-    ];
-
-
-    @endphp
-
     <div class="app-shell sidebar-expanded imports-shell" id="imports-page"
         data-repos-url="{{ route('github.repos') }}"
         data-branches-url="{{ route('github.branches') }}"
@@ -80,14 +42,18 @@
                         </button>
                     </header>
                     <ul class="imports-history-list" style="overflow-y: auto;">
-                        @foreach ($chatHistory as $chat)
-                        <li class="imports-history-item">
-                            <div class="imports-history-flex">
-                                <h4 class="imports-history-title">{{ $chat['title'] }}</h4>
-                                <div class="imports-history-meta">{{ $chat['time'] }}</div>
-                            </div>
-                        </li>
-                        @endforeach
+                        @forelse ($chatHistory ?? [] as $chat)
+                            <li class="imports-history-item">
+                                <div class="imports-history-flex">
+                                    <h4 class="imports-history-title">{{ $chat['title'] ?? 'Untitled' }}</h4>
+                                    <div class="imports-history-meta">{{ $chat['time'] ?? '' }}</div>
+                                </div>
+                            </li>
+                        @empty
+                            <li class="imports-history-item" style="color: var(--text-soft); font-size: 12px;">
+                                No history yet.
+                            </li>
+                        @endforelse
                     </ul>
                 </article>
 
@@ -97,23 +63,28 @@
                         <h2 class="imports-panel__title" style="margin: 0;">Recent Commits</h2>
                     </header>
                     <ul class="imports-history-list imports-commit-list" style="overflow-y: auto;">
-                        @foreach ($recentCommits as $commit)
+                        @forelse ($recentCommits ?? [] as $commit)
                             <li class="imports-history-item imports-commit-item">
                                 <div class="imports-commit-flex">
                                     <div class="imports-commit-main">
-                                        <code class="imports-commit-hash">{{ $commit['hash'] }}</code>
-                                        <span class="imports-commit-msg">{{ $commit['message'] }}</span>
+                                        <code class="imports-commit-hash">{{ $commit['hash'] ?? '—' }}</code>
+                                        <span class="imports-commit-msg">{{ $commit['message'] ?? '' }}</span>
                                     </div>
                                     <div class="imports-commit-meta">
-                                        <span class="imports-commit-author">{{ $commit['author'] }}</span>
-                                        <span class="imports-commit-time">{{ $commit['time'] }}</span>
+                                        <span class="imports-commit-author">{{ $commit['author'] ?? '' }}</span>
+                                        <span class="imports-commit-repo">{{ $commit['repo'] ?? '' }}</span>
+                                        <span class="imports-commit-time">{{ $commit['time'] ?? '' }}</span>
                                     </div>
-                                    <button class="imports-commit-import-btn" aria-label="Import commit">
-                                        Import
+                                    <button class="imports-commit-import-btn" aria-label="Audit commit">
+                                        Audit
                                     </button>
                                 </div>
                             </li>
-                        @endforeach
+                        @empty
+                            <li class="imports-history-item" style="color: var(--text-soft); font-size: 12px;">
+                                No commits available.
+                            </li>
+                        @endforelse
                     </ul>
                 </article>
             </section>

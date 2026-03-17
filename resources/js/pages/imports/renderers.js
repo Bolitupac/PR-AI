@@ -137,7 +137,7 @@ export function createBranchItem(branch, pullRequests, defaultBranch = 'main') {
                 </div>
                 ${branch.name !== defaultBranch ? `
                 <button type="button" class="imports-action-btn" data-action="import-branch" data-branch="${branch.name}">
-                    <span>Import</span>
+                    <span>Audit</span>
                 </button>` : ''}
                 <span class="imports-chevron" aria-hidden="true">
                     <svg viewBox="0 0 24 24" width="20" height="20"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -194,7 +194,7 @@ export function createPrItem(pr) {
                     </span>
                 </div>
                 <button type="button" class="imports-action-btn" data-action="import-pr" data-pr="${pr.number}" data-title="${pr.title}">
-                    <span>Import</span>
+                    <span>Audit</span>
                 </button>
             </div>
         </div>
