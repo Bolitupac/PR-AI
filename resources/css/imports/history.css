@@ -12,7 +12,8 @@
     display: grid;
     gap: 8px;
     max-height: 520px;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .imports-history-new-btn {
@@ -86,6 +87,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+    min-width: 0;
 }
 
 .imports-history-title {
@@ -96,6 +98,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    min-width: 0;
 }
 
 .imports-history-meta {
@@ -103,6 +106,7 @@
     color: var(--text-soft);
     white-space: nowrap;
     opacity: 0.8;
+    flex-shrink: 0;
 }
 
 .imports-vcs-list {
@@ -144,4 +148,101 @@
     border: 1px solid var(--panel-stroke);
     border-radius: 999px;
     padding: 2px 8px;
+}
+
+/* Commit List Styles */
+.imports-commit-flex {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    column-gap: 10px;
+    row-gap: 2px;
+    align-items: center;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.imports-commit-main {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    max-width: 100%;
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.imports-commit-hash {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 10px;
+    color: #0085ff;
+    background: rgba(0, 133, 255, 0.1);
+    padding: 1px 4px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.imports-commit-msg {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    flex: 1; /* Allow message to shrink */
+}
+
+.imports-commit-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 10px;
+    color: var(--text-soft);
+    opacity: 0.7;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.imports-commit-author,
+.imports-commit-time {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+.imports-commit-import-btn {
+    position: static;
+    transform: none;
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    justify-self: end;
+    align-self: center;
+    background: #0085ff;
+    color: #fff;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease, background 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 133, 255, 0.3);
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.imports-commit-import-btn:hover {
+    background: #0066cc;
+}
+
+.imports-history-item:hover .imports-commit-import-btn {
+    opacity: 1;
+    pointer-events: auto;
 }
