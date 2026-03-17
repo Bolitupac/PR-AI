@@ -43,6 +43,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 16px;
+    min-width: 0;
 }
 
 .imports-repo-summary::-webkit-details-marker,
@@ -58,6 +59,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    min-width: 0;
 }
 
 .imports-repo-main h4 {
@@ -66,6 +68,10 @@
     font-weight: 600;
     color: #0969da;
     /* GitHub blue */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
 }
 
 .repo-icon {
@@ -87,6 +93,7 @@
     flex-grow: 1;
     text-align: right;
     margin-right: 16px;
+    min-width: 0;
 }
 
 /* The expanding Chevron */
@@ -127,7 +134,7 @@ details[open]>summary>.imports-chevron {
 }
 
 .imports-branch-summary {
-    padding: 12px 16px 12px 40px;
+    padding: 8px 16px 8px 40px;
     /* indent */
     background: #ffffff;
 }
@@ -140,8 +147,16 @@ details[open]>summary>.imports-chevron {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 14px;
+    font-size: 13px;
     color: var(--text-main);
+    min-width: 0;
+}
+
+.imports-branch-main strong {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
 }
 
 .branch-icon {
@@ -153,11 +168,12 @@ details[open]>summary>.imports-chevron {
     display: flex;
     justify-content: flex-end;
     margin-right: 16px;
+    min-width: 0;
 }
 
 .imports-tag {
-    font-size: 12px;
-    padding: 2px 8px;
+    font-size: 11px;
+    padding: 1px 7px;
     border-radius: 999px;
     background: #ddf4ff;
     color: #0969da;
@@ -180,12 +196,12 @@ details[open]>summary>.imports-chevron {
 }
 
 .imports-pr-item {
-    padding: 12px 16px 12px 64px;
+    padding: 8px 16px 8px 64px;
     /* deeper indent */
     border-bottom: 1px solid var(--panel-stroke);
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
 }
 
 .imports-pr-item:last-child {
@@ -204,20 +220,22 @@ details[open]>summary>.imports-chevron {
 
 .imports-pr-title {
     margin: 0;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--text-main);
     line-height: 1.2;
+    min-width: 0;
 }
 
 .imports-pr-meta {
-    padding-left: 24px;
+    padding-left: 22px;
     /* align with text, bypassing icon */
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-soft);
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
+    min-width: 0;
 }
 
 .imports-pr-meta span {
@@ -280,9 +298,9 @@ details[open]>summary>.imports-chevron {
     background: linear-gradient(130deg, #009eff 0%, #2f86ff 34%, #5d74ff 60%, #9360ff 100%);
     color: #ffffff;
     border: none;
-    padding: 6px 14px;
+    padding: 4px 10px;
     border-radius: 6px;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -291,7 +309,7 @@ details[open]>summary>.imports-chevron {
     align-items: center;
     gap: 6px;
     z-index: 10;
-    margin: 0 10px;
+    margin: 0 6px;
     flex-shrink: 0;
 }
 

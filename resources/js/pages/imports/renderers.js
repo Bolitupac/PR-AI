@@ -128,9 +128,9 @@ export function createBranchItem(branch, pullRequests, defaultBranch = 'main') {
                     <svg class="branch-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" title="Branch"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm-2.25.75a2.25 2.25 0 113 2.122V6A2.5 2.5 0 0110 8.5H6a1 1 0 00-1 1v1.128a2.251 2.251 0 11-1.5 0V5.372a2.25 2.25 0 111.5 0v1.836A2.492 2.492 0 016 7h4a1 1 0 001-1v-.628A2.25 2.25 0 019.5 3.25zM4.25 12a.75.75 0 100 1.5.75.75 0 000-1.5zM3.5 3.25a.75.75 0 111.5 0 .75.75 0 01-1.5 0z" fill="currentColor"></path></svg>
                     <strong>${branch.name}</strong>
                 </div>
-                <div class="imports-branch-meta" style="display: flex; align-items: center; gap: 12px;">
+                <div class="imports-branch-meta" style="display: flex; align-items: center; gap: 10px;">
                     <span style="font-size: 11px; color: var(--text-soft);">Updated ${latestUpdate}</span>
-                    <span class="imports-tag" title="Pull requests in this branch" style="display: flex; align-items: center; gap: 4px; padding: 2px 10px; cursor: help;">
+                    <span class="imports-tag" title="Pull requests in this branch" style="display: flex; align-items: center; gap: 4px; padding: 1px 7px; cursor: help; font-size: 11px;">
                         <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" style="color: #1a7f37;"><path fill-rule="evenodd" d="M7.177 3.073L9.573.677A.25.25 0 0110 .854v4.792a.25.25 0 01-.427.177L7.177 3.427a.25.25 0 010-.354zM3.75 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm-2.25.75a2.25 2.25 0 113 2.122v5.256a2.251 2.251 0 11-1.5 0V5.372A2.25 2.25 0 011.5 3.25zM11 2.5h-1V4h1a1 1 0 011 1v5.628a2.251 2.251 0 101.5 0V5A2.5 2.5 0 0011 2.5zm1 10.25a.75.75 0 111.5 0 .75.75 0 01-1.5 0zM3.75 12a.75.75 0 100 1.5.75.75 0 000-1.5z"></path></svg>
                         ${branchPrs.length}
                     </span>
@@ -185,7 +185,7 @@ export function createPrItem(pr) {
                     <h5 class="imports-pr-title" style="margin: 0; font-size: 13px; font-weight: 600; color: var(--text-main);">${pr.title}</h5>
                     <div style="display: flex; gap: 4px;">${labelsHtml}</div>
                 </div>
-                <div class="imports-pr-meta" style="font-size: 11px; color: var(--text-soft); margin-top: 1px; display: flex; align-items: center; gap: 12px;">
+                <div class="imports-pr-meta" style="font-size: 11px; color: var(--text-soft); margin-top: 1px; display: flex; align-items: center; gap: 10px;">
                     <span title="Pull Request ID">#${pr.number}</span>
                     <span title="Last updated ${timeAgo}">${timeAgo} by ${pr.author}</span>
                     <span title="Conversation and Review comments" style="display: flex; align-items: center; gap: 4px; cursor: help;">

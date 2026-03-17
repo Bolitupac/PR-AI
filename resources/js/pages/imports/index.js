@@ -3,7 +3,7 @@ import { initSidebar } from '../auditor/sidebar';
 import * as API from './api';
 import * as Renderers from './renderers';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 20;
 
 export async function initImportsPage() {
     const page = document.getElementById('imports-page');
@@ -249,5 +249,4 @@ export async function initImportsPage() {
         }
     }
 }
-
 
