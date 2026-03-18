@@ -2,6 +2,7 @@ import { createChatStatus } from './chat-status';
 import { renderChatMarkdown } from './chat-markdown';
 import { renderMermaidIn } from './mermaid';
 import { chatContextStore } from './chat-context-store';
+import { buildAuditMetadata, stripLeadingAuditTitle } from './audit-metadata';
 
 // Auto-runs AI audit whenever a diff is selected from any source.
 export function initAutoAudit() {
@@ -24,6 +25,25 @@ export function initAutoAudit() {
         responseArea.appendChild(message);
         responseArea.scrollTop = responseArea.scrollHeight;
         return message;
+    };
+
+    const appendAuditHeader = (auditMeta) => {
+        if (!auditMeta?.auditTitle) return null;
+        const node = document.createElement('div');
+        node.className = 'msg ai audit-run-header';
+        const title = document.createElement('h3');
+        title.textContent = auditMeta.auditTitle;
+        node.appendChild(title);
+
+        if (auditMeta.subtitle) {
+            const subtitle = document.createElement('p');
+            subtitle.textContent = auditMeta.subtitle;
+            node.appendChild(subtitle);
+        }
+
+        responseArea.appendChild(node);
+        responseArea.scrollTop = responseArea.scrollHeight;
+        return node;
     };
 
     const appendScoreCard = (meta = null) => {
@@ -123,6 +143,7 @@ export function initAutoAudit() {
         hideEmptyState();
 
         const source = detail.source || 'upload';
+        const auditMeta = buildAuditMetadata(detail);
         const model = modelSelect?.value || '';
         const anchor = appendMessage(`Auto-auditing ${source} diff...`, 'user');
         const status = createChatStatus({ container: responseArea, anchorNode: anchor });
@@ -147,6 +168,9 @@ export function initAutoAudit() {
                     compare_type: detail.compareType || null,
                     base_branch: detail.baseBranch || null,
                     head_branch: detail.headBranch || null,
+                    pr_title: detail.prTitle || auditMeta.prTitle || null,
+                    audit_title: auditMeta.auditTitle || null,
+                    audit_kind: auditMeta.auditKind || null,
                     file_name: detail.name || null,
                     diff_text: diffText,
                     model: model || undefined,
@@ -162,6 +186,7 @@ export function initAutoAudit() {
             }
 
             status.set('Rendering AI audit...');
+            appendAuditHeader(auditMeta);
             const reader = res.body?.getReader?.();
             if (!reader) {
                 status.markError('Audit failed.');
@@ -197,7 +222,9 @@ export function initAutoAudit() {
                         const token = String(payload?.text ?? payload?.choices?.[0]?.delta?.content ?? '');
                         if (token) {
                             fullReply += token;
-                            replyNode.innerHTML = renderChatMarkdown(stripAuditMeta(fullReply));
+                            replyNode.innerHTML = renderChatMarkdown(
+                                stripLeadingAuditTitle(stripAuditMeta(fullReply), auditMeta.auditTitle)
+                            );
                             
                             const now = Date.now();
                             if (fullReply.includes('```mermaid') && (now - lastMermaidRender > 800)) {
@@ -220,7 +247,10 @@ export function initAutoAudit() {
                 }
             }
 
-            const cleanReply = stripAuditMeta(fullReply || 'No audit response from AI.');
+            const cleanReply = stripLeadingAuditTitle(
+                stripAuditMeta(fullReply || 'No audit response from AI.'),
+                auditMeta.auditTitle
+            );
             replyNode.innerHTML = renderChatMarkdown(cleanReply);
             renderMermaidIn(replyNode);
             chatContextStore.push('assistant', `Audit summary:\n${cleanReply}`);

@@ -93,6 +93,23 @@
     color: #15803d;
 }
 
+.msg.ai.audit-run-header {
+    padding: 2px 0 0;
+}
+
+.msg.ai.audit-run-header h3 {
+    margin: 0 0 4px;
+    font-size: 18px;
+    font-weight: 800;
+    color: #17346b;
+}
+
+.msg.ai.audit-run-header p {
+    margin: 0;
+    font-size: 12px;
+    color: #61749b;
+}
+
 .ai-finding {
     margin-top: 6px;
 }

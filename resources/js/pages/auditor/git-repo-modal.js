@@ -22,6 +22,7 @@ export function initGitRepoModal() {
     const closeButtons = document.querySelectorAll('[data-close="repo-modal"]');
     let reposLoaded = false;
     let selectedPullNumber = null;
+    let selectedPullTitle = '';
     let loadingTicker = null;
     let repoLoadingTicker = null;
     let cueTimer = null;
@@ -138,6 +139,7 @@ export function initGitRepoModal() {
         });
         item.classList.add('is-selected');
         selectedPullNumber = pull.number ?? null;
+        selectedPullTitle = pull.title ?? '';
         repoModal.dataset.selectedPrNumber = selectedPullNumber ? String(selectedPullNumber) : '';
         setLoadButtonEnabled(Boolean(selectedPullNumber));
         setPrState(`Selected PR #${pull.number ?? ''}`, 'success');
@@ -146,6 +148,7 @@ export function initGitRepoModal() {
     const renderPullList = (pulls) => {
         clearPrList();
         selectedPullNumber = null;
+        selectedPullTitle = '';
         repoModal.dataset.selectedPrNumber = '';
         setLoadButtonEnabled(false);
         setLoadedBorder(false);
@@ -268,6 +271,9 @@ export function initGitRepoModal() {
                     source: 'github',
                     repo: repoFullName,
                     prNumber: selectedPullNumber,
+                    prTitle: selectedPullTitle,
+                    auditTitle: `${repoFullName} pull request audit ${selectedPullTitle || `#${selectedPullNumber}`}`.trim(),
+                    auditKind: 'pull_request_audit',
                     diffText,
                 },
             }));
@@ -331,4 +337,3 @@ export function initGitRepoModal() {
         if (event.key === 'Escape') closeModal();
     });
 }
-

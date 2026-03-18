@@ -13,6 +13,8 @@ class AuditPromptComposer
         $compareType = (string) ($input['compare_type'] ?? 'N/A');
         $baseBranch = (string) ($input['base_branch'] ?? 'N/A');
         $headBranch = (string) ($input['head_branch'] ?? 'N/A');
+        $auditTitle = (string) ($input['audit_title'] ?? 'N/A');
+        $auditKind = (string) ($input['audit_kind'] ?? 'N/A');
         $prTitle = (string) ($input['pr_title'] ?? 'N/A');
         $prDescription = (string) ($input['pr_description'] ?? 'N/A');
         $linkedIssues = (string) ($input['linked_issues'] ?? 'N/A');
@@ -24,6 +26,8 @@ class AuditPromptComposer
         $diffText = (string) ($input['diff_text'] ?? '');
 
         $parts = [];
+        $parts[] = 'AUDIT TITLE: '.$auditTitle;
+        $parts[] = 'AUDIT KIND: '.$auditKind;
         $parts[] = 'PR Title: '.$prTitle;
         $parts[] = 'PR Description: '.$prDescription;
         $parts[] = 'Linked Issues: '.$linkedIssues;
@@ -92,6 +96,8 @@ class AuditPromptComposer
         $parts[] = $diffText;
         $parts[] = '';
         $parts[] = 'OUTPUT REQUIREMENT: Include one Mermaid diagram in a ```mermaid``` code block.';
+        $parts[] = 'Use the audit title and audit kind as the canonical label for this review.';
+        $parts[] = 'Start the response with the exact audit title as the first heading.';
         $parts[] = 'Choose the best type for the change (sequenceDiagram, flowchart TD, or classDiagram).';
         $parts[] = 'The diagram must show the impact of this change and indicate whether this is a branch vs main compare or a pull request audit.';
 
@@ -107,6 +113,8 @@ class AuditPromptComposer
         $compareType = (string) ($input['compare_type'] ?? 'N/A');
         $baseBranch = (string) ($input['base_branch'] ?? 'N/A');
         $headBranch = (string) ($input['head_branch'] ?? 'N/A');
+        $auditTitle = (string) ($input['audit_title'] ?? 'N/A');
+        $auditKind = (string) ($input['audit_kind'] ?? 'N/A');
         $prTitle = (string) ($input['pr_title'] ?? 'N/A');
         $prDescription = (string) ($input['pr_description'] ?? 'N/A');
         $linkedIssues = (string) ($input['linked_issues'] ?? 'N/A');
@@ -117,6 +125,8 @@ class AuditPromptComposer
         $reviewComments = (array) ($input['review_comments'] ?? []);
 
         $parts = [];
+        $parts[] = "AUDIT TITLE: {$auditTitle}";
+        $parts[] = "AUDIT KIND: {$auditKind}";
         $parts[] = "PR Title: {$prTitle}";
         $parts[] = "PR Description: {$prDescription}";
         $parts[] = "Linked Issues: {$linkedIssues}";
