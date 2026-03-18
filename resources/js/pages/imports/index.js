@@ -2,6 +2,8 @@ import { initThemeToggle } from '../auditor/theme-toggle';
 import { initSidebar } from '../auditor/sidebar';
 import * as API from './api';
 import * as Renderers from './renderers';
+import { buildBranchAuditPayload, buildCommitAuditPayload, buildPullRequestAuditPayload, startAuditSession } from './audit-session';
+import { initRecentPullRequestsPanel } from './recent-pulls';
 
 const PAGE_SIZE = 20;
 const METADATA_START_DELAY_MS = 1200;
@@ -179,6 +181,40 @@ export async function initImportsPage() {
         importStatus.classList.toggle('is-loading', Boolean(isLoading));
     };
 
+    initRecentPullRequestsPanel(setImportStatus);
+
+    const commitList = document.querySelector('.imports-commit-list');
+
+    commitList?.addEventListener('click', async (event) => {
+        const button = event.target.closest('.imports-commit-import-btn');
+        if (!button) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const commitHash = button.dataset.commit;
+        const title = button.dataset.title || 'Commit audit';
+        const repo = button.dataset.repo || 'repo';
+
+        if (!commitHash) return;
+
+        button.classList.add('is-loading');
+        setImportStatus('Preparing audit in Auditor...', true);
+
+        try {
+            startAuditSession(buildCommitAuditPayload({
+                repo,
+                commitHash,
+                title,
+            }));
+        } catch (err) {
+            console.error('Commit import failed:', err);
+            alert(`Commit import failed: ${err.message || 'Check console for details'}`);
+            button.classList.remove('is-loading');
+            setImportStatus('', false);
+        }
+    });
+
     const handleImportClick = async (event) => {
         const btn = event.target.closest('.imports-action-btn');
         if (!btn) return;
@@ -197,12 +233,7 @@ export async function initImportsPage() {
         setImportStatus('Preparing audit in Auditor...', true);
 
         try {
-            let name = '';
-            let source = 'upload';
-            let prNumber = null;
-            let branchName = null;
-            let baseBranch = null;
-            let compareType = 'upload';
+            let payload = null;
 
             if (action === 'import-branch') {
                 const head = btn.dataset.branch;
@@ -212,35 +243,26 @@ export async function initImportsPage() {
                     setImportStatus('', false);
                     return;
                 }
-                name = `${repo} (${head})`;
-                source = 'upload';
-                compareType = 'branch_vs_main';
-                branchName = head;
-                baseBranch = defaultBranch;
+                payload = buildBranchAuditPayload({
+                    repo,
+                    branchName: head,
+                    baseBranch: defaultBranch,
+                });
             } else if (action === 'import-pr') {
                 const prNum = btn.dataset.pr;
                 const prTitle = btn.dataset.title;
-                name = `${repo} PR#${prNum}: ${prTitle}`;
-                source = 'github';
-                prNumber = prNum;
-                compareType = 'pull_request';
+                payload = buildPullRequestAuditPayload({
+                    repo,
+                    prNumber: prNum,
+                    title: prTitle,
+                });
             }
 
-            // Store for Auditor page
-            sessionStorage.setItem('pending_audit', JSON.stringify({
-                source: source,
-                repo: repo,
-                prNumber: prNumber,
-                name: name,
-                branch: branchName,
-                base: baseBranch,
-                compareType: compareType
-            }));
+            if (!payload) {
+                throw new Error('Unsupported import action.');
+            }
 
-            // Redirect
-            setTimeout(() => {
-                window.location.href = '/auditor';
-            }, 120);
+            startAuditSession(payload);
 
         } catch (err) {
             console.error('Import failed:', err);

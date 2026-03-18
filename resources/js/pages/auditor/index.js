@@ -49,6 +49,11 @@ export function initAuditorPage() {
             if (!res.ok) throw new Error('Failed to fetch pull request diff');
             return await res.text();
         }
+        if (pending?.commitHash) {
+            const res = await fetch(`/api/git/commit-diff?commit=${encodeURIComponent(pending.commitHash)}`);
+            if (!res.ok) throw new Error('Failed to fetch commit diff');
+            return await res.text();
+        }
         if (pending?.branch && pending?.base) {
             const res = await fetch(`/api/github/branch-diff?repo=${encodeURIComponent(pending.repo)}&base=${encodeURIComponent(pending.base)}&head=${encodeURIComponent(pending.branch)}`);
             if (!res.ok) throw new Error('Failed to fetch branch diff');
@@ -68,7 +73,7 @@ export function initAuditorPage() {
             setTimeout(() => {
                 const dispatchDiff = (diffText) => {
                     const compareType = data?.compareType
-                        || (data?.prNumber ? 'pull_request' : (data?.branch && data?.base ? 'branch_vs_main' : 'upload'));
+                        || (data?.prNumber ? 'pull_request' : (data?.commitHash ? 'commit' : (data?.branch && data?.base ? 'branch_vs_main' : 'upload')));
                     document.dispatchEvent(new CustomEvent('auditor:diff-selected', {
                         detail: {
                             ...data,
@@ -76,6 +81,9 @@ export function initAuditorPage() {
                             compareType: compareType,
                             baseBranch: data?.base || null,
                             headBranch: data?.branch || null,
+                            prTitle: data?.prTitle || null,
+                            auditTitle: data?.auditTitle || null,
+                            auditKind: data?.auditKind || null,
                         }
                     }));
                 };
@@ -89,7 +97,7 @@ export function initAuditorPage() {
                     const status = createChatStatus({ container: responseArea, anchorNode: null });
                     const progress = createLoadingProgress({
                         onUpdate: (text) => status.set(text),
-                        label: 'Fetching diff from GitHub'
+                        label: data?.commitHash ? 'Fetching commit diff' : 'Fetching diff from GitHub'
                     });
                     fetchPendingDiff(data)
                         .then((diffText) => {

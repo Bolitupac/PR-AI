@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class GitHubApiService
 {
@@ -122,6 +123,88 @@ class GitHubApiService
             ->all();
 
         return ['ok' => true, 'status' => 200, 'data' => $pulls];
+    }
+
+    // Fetches the most recently updated pull requests for a repository.
+    public function getRecentPullRequests(string $encryptedToken, string $repo, int $limit = 3): array
+    {
+        $limit = max(1, min(20, $limit));
+
+        $response = $this->client($encryptedToken)->get("https://api.github.com/repos/{$repo}/pulls", [
+            'state' => 'all',
+            'per_page' => $limit,
+            'sort' => 'updated',
+            'direction' => 'desc',
+        ]);
+
+        if ($response->failed()) {
+            return ['ok' => false, 'status' => $response->status(), 'data' => []];
+        }
+
+        $pulls = collect($response->json())
+            ->map(fn($pr) => [
+                'number' => $pr['number'] ?? null,
+                'title' => $pr['title'] ?? '',
+                'state' => $pr['state'] ?? '',
+                'draft' => $pr['draft'] ?? false,
+                'merged_at' => $pr['merged_at'] ?? null,
+                'updated_at' => $pr['updated_at'] ?? null,
+                'author' => $pr['user']['login'] ?? '',
+            ])
+            ->values()
+            ->all();
+
+        return ['ok' => true, 'status' => 200, 'data' => $pulls];
+    }
+
+    public function getRecentAccountPullRequests(string $encryptedToken, string $username, int $limit = 10): array
+    {
+        $limit = max(1, min(20, $limit));
+
+        $response = $this->client($encryptedToken)->get('https://api.github.com/search/issues', [
+            'q' => sprintf('is:pr author:%s', $username),
+            'sort' => 'updated',
+            'order' => 'desc',
+            'per_page' => $limit,
+        ]);
+
+        if ($response->failed()) {
+            return ['ok' => false, 'status' => $response->status(), 'data' => []];
+        }
+
+        $items = collect($response->json('items') ?? []);
+
+        $pulls = $items->map(function (array $item) {
+            $repo = $this->extractRepoFullName($item['repository_url'] ?? '');
+
+            return [
+                'repo' => $repo,
+                'number' => $item['number'] ?? null,
+                'title' => $item['title'] ?? '',
+                'state' => $item['state'] ?? '',
+                'updated_at' => $item['updated_at'] ?? null,
+                'author' => $item['user']['login'] ?? '',
+            ];
+        })
+            ->filter(fn (array $pr) => !empty($pr['repo']) && !empty($pr['number']))
+            ->values()
+            ->all();
+
+        return ['ok' => true, 'status' => 200, 'data' => $pulls];
+    }
+
+    private function extractRepoFullName(string $repositoryUrl): string
+    {
+        if ($repositoryUrl === '') {
+            return '';
+        }
+
+        $prefix = 'https://api.github.com/repos/';
+        if (!Str::startsWith($repositoryUrl, $prefix)) {
+            return '';
+        }
+
+        return trim(Str::after($repositoryUrl, $prefix), '/');
     }
 
     // Fetches unified diff text for a pull request.

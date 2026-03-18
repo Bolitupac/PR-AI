@@ -8,6 +8,10 @@ use Symfony\Component\Process\Process;
 
 class RecentCommitsService
 {
+    public function __construct(private readonly RepoContextService $repoContextService)
+    {
+    }
+
     /**
      * @return array<int, array{hash:string,message:string,author:string,repo:string,time:string}>
      */
@@ -20,7 +24,7 @@ class RecentCommitsService
                 return [];
             }
 
-            $repoName = $this->resolveRepoName();
+            $repoName = $this->repoContextService->resolveRepoName();
 
             $process = new Process([
                 'git',
@@ -59,57 +63,15 @@ class RecentCommitsService
                 }
 
                 $commits[] = [
-                    'hash' => $hash,
-                    'message' => $message,
-                    'author' => $author,
-                    'repo' => $repoName,
+                'hash' => $hash,
+                'message' => $message,
+                'author' => $author,
+                'repo' => $repoName,
                     'time' => $time,
                 ];
             }
 
             return $commits;
-        });
-    }
-
-    private function resolveRepoName(): string
-    {
-        return Cache::remember('imports.repo_name', now()->addMinutes(10), function () {
-            $fallback = basename((string) base_path()) ?: 'repo';
-
-            if (!is_dir(base_path('.git'))) {
-                return $fallback;
-            }
-
-            $process = new Process(['git', 'remote', 'get-url', 'origin']);
-            $process->setWorkingDirectory(base_path());
-            $process->setTimeout(2);
-            $process->run();
-
-            if (!$process->isSuccessful()) {
-                return $fallback;
-            }
-
-            $url = trim($process->getOutput());
-            if ($url === '') {
-                return $fallback;
-            }
-
-            // Examples:
-            // - git@github.com:Owner/Repo.git
-            // - https://github.com/Owner/Repo.git
-            // - https://github.com/Owner/Repo
-            $normalized = preg_replace('/\\.git$/', '', $url) ?? $url;
-
-            if (str_contains($normalized, ':') && !str_contains($normalized, '://')) {
-                // SSH style: git@host:Owner/Repo
-                $normalized = explode(':', $normalized, 2)[1] ?? $normalized;
-            }
-
-            $normalized = trim($normalized, '/');
-            $parts = preg_split('#/#', $normalized) ?: [];
-            $repo = end($parts);
-
-            return $repo ? (string) $repo : $fallback;
         });
     }
 }

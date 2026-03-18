@@ -27,55 +27,40 @@
         @include('partials.sidebar')
 
         <main class="imports-workspace">
-            <section class="imports-left" style="display: flex; flex-direction: column; min-height: 0; gap: 8px;">
-                <article class="imports-panel" style="flex: 1; display: flex; flex-direction: column; min-height: 0;">
-                    <header class="imports-panel__head"
-                        style="display: flex; justify-content: space-between; align-items: center;">
-                        <h2 class="imports-panel__title" style="margin: 0;">Chat History</h2>
-                        <button class="imports-history-new-btn" aria-label="New chat">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"
-                                height="16">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                </path>
-                            </svg>
-                        </button>
+            <section class="imports-left">
+                <article class="imports-panel imports-side-panel">
+                    <header class="imports-panel__head">
+                        <h2 class="imports-panel__title" style="margin: 0;">Recent Pull Requests</h2>
                     </header>
-                    <ul class="imports-history-list" style="overflow-y: auto;">
-                        @forelse ($chatHistory ?? [] as $chat)
-                            <li class="imports-history-item">
-                                <div class="imports-history-flex">
-                                    <h4 class="imports-history-title">{{ $chat['title'] ?? 'Untitled' }}</h4>
-                                    <div class="imports-history-meta">{{ $chat['time'] ?? '' }}</div>
-                                </div>
-                            </li>
-                        @empty
-                            <li class="imports-history-item" style="color: var(--text-soft); font-size: 12px;">
-                                No history yet.
-                            </li>
-                        @endforelse
+                    <ul class="imports-history-list imports-activity-list" id="recent-pull-requests-list">
+                        <li class="imports-history-item" style="color: var(--text-soft); font-size: 12px;">
+                            Loading recent pull requests...
+                        </li>
                     </ul>
                 </article>
 
-                <article class="imports-panel imports-panel--commits"
-                    style="flex: 1; display: flex; flex-direction: column; min-height: 0;">
+                <article class="imports-panel imports-side-panel imports-panel--commits">
                     <header class="imports-panel__head">
                         <h2 class="imports-panel__title" style="margin: 0;">Recent Commits</h2>
                     </header>
-                    <ul class="imports-history-list imports-commit-list" style="overflow-y: auto;">
+                    <ul class="imports-history-list imports-activity-list imports-commit-list">
                         @forelse ($recentCommits ?? [] as $commit)
-                            <li class="imports-history-item imports-commit-item">
-                                <div class="imports-commit-flex">
-                                    <div class="imports-commit-main">
-                                        <code class="imports-commit-hash">{{ $commit['hash'] ?? '—' }}</code>
-                                        <span class="imports-commit-msg">{{ $commit['message'] ?? '' }}</span>
+                            <li class="imports-history-item imports-activity-item imports-commit-item">
+                                <div class="imports-activity-flex imports-commit-flex">
+                                    <div class="imports-activity-main imports-commit-main">
+                                        <code class="imports-activity-badge imports-commit-hash">{{ $commit['hash'] ?? '—' }}</code>
+                                        <span class="imports-activity-title imports-commit-msg">{{ $commit['message'] ?? '' }}</span>
                                     </div>
-                                    <div class="imports-commit-meta">
+                                    <div class="imports-activity-meta imports-commit-meta">
                                         <span class="imports-commit-author">{{ $commit['author'] ?? '' }}</span>
                                         <span class="imports-commit-repo">{{ $commit['repo'] ?? '' }}</span>
-                                        <span class="imports-commit-time">{{ $commit['time'] ?? '' }}</span>
+                                        <span class="imports-activity-time imports-commit-time">{{ $commit['time'] ?? '' }}</span>
                                     </div>
-                                    <button class="imports-commit-import-btn" aria-label="Audit commit">
+                                    <button class="imports-activity-action-btn imports-commit-import-btn" type="button"
+                                        data-commit="{{ $commit['hash'] ?? '' }}"
+                                        data-title="{{ $commit['message'] ?? '' }}"
+                                        data-repo="{{ $commit['repo'] ?? '' }}"
+                                        aria-label="Audit commit">
                                         Audit
                                     </button>
                                 </div>

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GitHubOAuthController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\GitHubRepositoryController;
+use App\Http\Controllers\GitCommitController;
 use App\Http\Controllers\ImportsController;
 use App\Http\Controllers\Ai\SimpleChatController;
 use App\Http\Controllers\Ai\AuditDiffController;
@@ -36,12 +37,17 @@ Route::get('/api/github/metadata', [GitHubRepositoryController::class, 'metadata
 Route::get('/api/github/pulls', [GitHubRepositoryController::class, 'pullRequests'])
     ->middleware('auth')
     ->name('github.pulls');
+Route::get('/api/github/recent-pulls', [GitHubRepositoryController::class, 'recentPullRequests'])
+    ->middleware('auth')
+    ->name('github.recent-pulls');
 Route::get('/api/github/pull-diff', [GitHubRepositoryController::class, 'pullDiff'])
     ->middleware('auth')
     ->name('github.pull-diff');
 Route::get('/api/github/branch-diff', [GitHubRepositoryController::class, 'branchDiff'])
     ->middleware('auth')
     ->name('github.branch-diff');
+Route::get('/api/git/commit-diff', [GitCommitController::class, 'diff'])
+    ->name('git.commit-diff');
 Route::post('/api/ai/chat', [SimpleChatController::class, 'chat'])->name('ai.chat');
 Route::post('/api/ai/chat-stream', [SimpleChatController::class, 'chatStream'])->name('ai.chat.stream');
 Route::post('/api/ai/transcribe', [TranscriptionController::class, 'transcribe'])->name('ai.transcribe');

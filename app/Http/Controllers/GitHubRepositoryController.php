@@ -73,6 +73,27 @@ class GitHubRepositoryController extends Controller
         return response()->json(['pulls' => $result['data']]);
     }
 
+    public function recentPullRequests(): JsonResponse
+    {
+        $user = Auth::user();
+
+        if (!$user || !$user->github_access_token || !$user->github_username) {
+            return response()->json(['pulls' => []], 401);
+        }
+
+        $result = $this->githubApiService->getRecentAccountPullRequests(
+            $user->github_access_token,
+            $user->github_username,
+            10,
+        );
+
+        if (!$result['ok']) {
+            return response()->json(['pulls' => []], $result['status']);
+        }
+
+        return response()->json(['pulls' => $result['data']]);
+    }
+
     // Returns lightweight metadata (branch + PR counts) for a repository.
     public function metadata(): JsonResponse
     {

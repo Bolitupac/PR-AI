@@ -23,11 +23,7 @@ export function initLoadingInteractions() {
             event.preventDefault();
             const text = link.dataset.loadingText || 'Loading';
             setButtonLoading(link, true, text);
-
-            window.setTimeout(() => {
-                window.location.href = href;
-            }, 90);
+            window.location.href = href;
         });
     });
 }
-
