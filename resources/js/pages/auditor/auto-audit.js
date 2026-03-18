@@ -46,7 +46,7 @@ export function initAutoAudit() {
         return node;
     };
 
-    const appendScoreCard = (meta = null) => {
+    const appendScoreCard = (meta = null, auditMeta = null) => {
         if (!meta) return;
         const scoreToRiskClass = (score) => {
             if (!Number.isInteger(score)) return 'is-risk';
@@ -63,11 +63,18 @@ export function initAutoAudit() {
         const scalabilityScore = Number.isInteger(meta.scalability_score) ? Math.max(0, Math.min(100, meta.scalability_score)) : null;
         const reliabilityScore = Number.isInteger(meta.reliability_score) ? Math.max(0, Math.min(100, meta.reliability_score)) : null;
         const suggestion = String(meta.suggestion || 'review_then_merge').toLowerCase();
+        const auditKind = String(meta.audit_kind || auditMeta?.auditKind || '').toLowerCase();
+        const auditStatus = String(meta.audit_status || auditMeta?.auditStatus || '').toLowerCase();
         const toneClass = changeType === 'upgrade' ? 'is-upgrade' : (changeType === 'downgrade' ? 'is-downgrade' : 'is-neutral');
         const riskClass = ['low', 'medium', 'high', 'critical'].includes(riskLevel) ? `is-risk-${riskLevel}` : 'is-risk-medium';
-        const suggestionText = suggestion === 'merge'
-            ? 'Merge'
-            : (suggestion === 'dont_merge' ? "Don't merge" : 'Review then merge');
+        const isHistoricalAudit = auditKind === 'commit_audit' || auditStatus === 'merged';
+        const isBranchAudit = auditKind === 'branch_audit';
+        const suggestionLabel = isHistoricalAudit ? 'Assessment' : (isBranchAudit ? 'Recommendation' : 'Suggestion');
+        const suggestionText = isHistoricalAudit
+            ? (suggestion === 'merge' ? 'Stable after review' : (suggestion === 'dont_merge' ? 'Follow-up required' : 'Monitor and review'))
+            : isBranchAudit
+                ? (suggestion === 'merge' ? 'Ready for merge' : (suggestion === 'dont_merge' ? 'Revise before merge' : 'Review before merge'))
+                : (suggestion === 'merge' ? 'Merge' : (suggestion === 'dont_merge' ? "Don\'t merge" : 'Review then merge'));
         const scoreWidth = riskScore === null ? 0 : riskScore;
         const securityClass = scoreToRiskClass(securityScore);
         const scalabilityClass = scoreToRiskClass(scalabilityScore);
@@ -78,7 +85,7 @@ export function initAutoAudit() {
         card.innerHTML = `
             <div class="audit-scorecard-header">
                 <span class="audit-chip ${toneClass}">Change: ${changeType}</span>
-                <span class="audit-chip is-suggestion">Suggestion: ${suggestionText}</span>
+                <span class="audit-chip is-suggestion">${suggestionLabel}: ${suggestionText}</span>
             </div>
             <table class="audit-score-table">
                 <tbody>
@@ -171,6 +178,7 @@ export function initAutoAudit() {
                     pr_title: detail.prTitle || auditMeta.prTitle || null,
                     audit_title: auditMeta.auditTitle || null,
                     audit_kind: auditMeta.auditKind || null,
+                    audit_status: auditMeta.auditStatus || null,
                     file_name: detail.name || null,
                     diff_text: diffText,
                     model: model || undefined,
@@ -254,7 +262,7 @@ export function initAutoAudit() {
             replyNode.innerHTML = renderChatMarkdown(cleanReply);
             renderMermaidIn(replyNode);
             chatContextStore.push('assistant', `Audit summary:\n${cleanReply}`);
-            appendScoreCard(doneMeta);
+            appendScoreCard(doneMeta, auditMeta);
             status.markSuccess('Audit complete.');
             status.remove(700);
         } catch (error) {

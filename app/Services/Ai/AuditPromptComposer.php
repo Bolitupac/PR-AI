@@ -15,6 +15,7 @@ class AuditPromptComposer
         $headBranch = (string) ($input['head_branch'] ?? 'N/A');
         $auditTitle = (string) ($input['audit_title'] ?? 'N/A');
         $auditKind = (string) ($input['audit_kind'] ?? 'N/A');
+        $auditStatus = (string) ($input['audit_status'] ?? 'N/A');
         $prTitle = (string) ($input['pr_title'] ?? 'N/A');
         $prDescription = (string) ($input['pr_description'] ?? 'N/A');
         $linkedIssues = (string) ($input['linked_issues'] ?? 'N/A');
@@ -28,6 +29,7 @@ class AuditPromptComposer
         $parts = [];
         $parts[] = 'AUDIT TITLE: '.$auditTitle;
         $parts[] = 'AUDIT KIND: '.$auditKind;
+        $parts[] = 'AUDIT STATUS: '.$auditStatus;
         $parts[] = 'PR Title: '.$prTitle;
         $parts[] = 'PR Description: '.$prDescription;
         $parts[] = 'Linked Issues: '.$linkedIssues;
@@ -95,6 +97,10 @@ class AuditPromptComposer
         $parts[] = 'RAW DIFF:';
         $parts[] = $diffText;
         $parts[] = '';
+        foreach ($this->buildAuditModeInstructions($auditKind, $auditStatus) as $instruction) {
+            $parts[] = $instruction;
+        }
+        $parts[] = '';
         $parts[] = 'OUTPUT REQUIREMENT: Include one Mermaid diagram in a ```mermaid``` code block.';
         $parts[] = 'Use the audit title and audit kind as the canonical label for this review.';
         $parts[] = 'Start the response with the exact audit title as the first heading.';
@@ -115,6 +121,7 @@ class AuditPromptComposer
         $headBranch = (string) ($input['head_branch'] ?? 'N/A');
         $auditTitle = (string) ($input['audit_title'] ?? 'N/A');
         $auditKind = (string) ($input['audit_kind'] ?? 'N/A');
+        $auditStatus = (string) ($input['audit_status'] ?? 'N/A');
         $prTitle = (string) ($input['pr_title'] ?? 'N/A');
         $prDescription = (string) ($input['pr_description'] ?? 'N/A');
         $linkedIssues = (string) ($input['linked_issues'] ?? 'N/A');
@@ -127,6 +134,7 @@ class AuditPromptComposer
         $parts = [];
         $parts[] = "AUDIT TITLE: {$auditTitle}";
         $parts[] = "AUDIT KIND: {$auditKind}";
+        $parts[] = "AUDIT STATUS: {$auditStatus}";
         $parts[] = "PR Title: {$prTitle}";
         $parts[] = "PR Description: {$prDescription}";
         $parts[] = "Linked Issues: {$linkedIssues}";
@@ -180,5 +188,41 @@ class AuditPromptComposer
 
         // Keep session payload small enough for reliable storage.
         return mb_substr($context, 0, 28000);
+    }
+
+    private function buildAuditModeInstructions(string $auditKind, string $auditStatus): array
+    {
+        $instructions = [
+            'Keep the output structure consistent across all audit types: Review Status, Summary, Impact Map, Logic Flow, Walkthrough, Key Findings.',
+        ];
+
+        if ($auditKind === 'commit_audit') {
+            $instructions[] = 'This is a historical commit audit. Treat it as a post-change review, not a merge decision.';
+            $instructions[] = 'Focus on regression risk, hidden side effects, rollback concerns, and follow-up fixes.';
+            $instructions[] = 'In prose, do not tell the user to merge or not merge this commit.';
+            return $instructions;
+        }
+
+        if ($auditKind === 'branch_audit') {
+            $instructions[] = 'This is a branch audit before integration.';
+            $instructions[] = 'Focus on branch readiness, missing checks, integration risk against the base branch, and what should change before merge.';
+            return $instructions;
+        }
+
+        if ($auditKind === 'pull_request_audit' && $auditStatus === 'merged') {
+            $instructions[] = 'This pull request is already merged. Treat it as a post-merge review.';
+            $instructions[] = 'Focus on production impact, regression risk, rollout concerns, and follow-up actions.';
+            $instructions[] = 'In prose, do not frame the conclusion as merge or do-not-merge.';
+            return $instructions;
+        }
+
+        if ($auditKind === 'pull_request_audit') {
+            $instructions[] = 'This is a pull request audit before or during review.';
+            $instructions[] = 'Focus on merge readiness, correctness, risk, and what should be fixed before approval.';
+            return $instructions;
+        }
+
+        $instructions[] = 'Treat this as a general diff audit and focus on correctness, risk, and next actions.';
+        return $instructions;
     }
 }

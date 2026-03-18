@@ -34,6 +34,7 @@ class AuditDiffController extends Controller
             'head_branch' => ['nullable', 'string', 'max:255'],
             'audit_title' => ['nullable', 'string', 'max:255'],
             'audit_kind' => ['nullable', 'string', 'max:120'],
+            'audit_status' => ['nullable', 'string', 'max:120'],
             'pr_title' => ['nullable', 'string', 'max:255'],
             'pr_description' => ['nullable', 'string', 'max:4000'],
             'linked_issues' => ['nullable', 'string', 'max:4000'],
@@ -51,6 +52,7 @@ class AuditDiffController extends Controller
         $headBranch = (string) ($payload['head_branch'] ?? '');
         $auditTitle = (string) ($payload['audit_title'] ?? '');
         $auditKind = (string) ($payload['audit_kind'] ?? '');
+        $auditStatus = (string) ($payload['audit_status'] ?? '');
         $diffText = (string) $payload['diff_text'];
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
         $prTitle = (string) ($payload['pr_title'] ?? '');
@@ -60,10 +62,22 @@ class AuditDiffController extends Controller
 
         $issueComments = [];
         $reviewComments = [];
+        $pullDetails = [];
 
         if ($source === 'github' && $repo !== '' && $prNumber !== '') {
             $user = Auth::user();
             if ($user?->github_access_token) {
+                $pullDetailsResult = $this->gitHubApiService->getPullDetails($user->github_access_token, $repo, $prNumber);
+                if ($pullDetailsResult['ok']) {
+                    $pullDetails = $pullDetailsResult['data'];
+                    if ($prTitle === '') {
+                        $prTitle = (string) ($pullDetails['title'] ?? '');
+                    }
+                    if ($prDescription === '') {
+                        $prDescription = (string) ($pullDetails['body'] ?? '');
+                    }
+                }
+
                 $issueResult = $this->gitHubApiService->getPullIssueComments($user->github_access_token, $repo, $prNumber);
                 if ($issueResult['ok']) {
                     $issueComments = $issueResult['data'];
@@ -76,6 +90,10 @@ class AuditDiffController extends Controller
             }
         }
 
+        $auditKind = $this->resolveAuditKind($auditKind, $source, $compareType, $prNumber);
+        $auditStatus = $this->resolveAuditStatus($auditStatus, $auditKind, $source, $compareType, $pullDetails);
+        $auditTitle = $this->resolveAuditTitle($auditTitle, $auditKind, $repo, $prNumber, $prTitle, $headBranch, (string) ($payload['file_name'] ?? ''), (string) ($payload['commit_hash'] ?? ''));
+
         $changedLines = $this->auditSnapshotWriter->extractChangedLines($diffText);
         $chatContext = $this->auditPromptComposer->composeChatContext([
             'source' => $source,
@@ -86,6 +104,7 @@ class AuditDiffController extends Controller
             'head_branch' => $headBranch !== '' ? $headBranch : null,
             'audit_title' => $auditTitle !== '' ? $auditTitle : null,
             'audit_kind' => $auditKind !== '' ? $auditKind : null,
+            'audit_status' => $auditStatus !== '' ? $auditStatus : null,
             'pr_title' => $prTitle !== '' ? $prTitle : null,
             'pr_description' => $prDescription !== '' ? $prDescription : null,
             'linked_issues' => $linkedIssues !== '' ? $linkedIssues : null,
@@ -106,6 +125,7 @@ class AuditDiffController extends Controller
             'head_branch' => $headBranch !== '' ? $headBranch : null,
             'audit_title' => $auditTitle !== '' ? $auditTitle : null,
             'audit_kind' => $auditKind !== '' ? $auditKind : null,
+            'audit_status' => $auditStatus !== '' ? $auditStatus : null,
             'pr_title' => $prTitle !== '' ? $prTitle : null,
             'pr_description' => $prDescription !== '' ? $prDescription : null,
             'linked_issues' => $linkedIssues !== '' ? $linkedIssues : null,
@@ -119,7 +139,11 @@ class AuditDiffController extends Controller
 
         $systemPrompt = (string) config('audit_ai.system_prompt');
         $reply = $this->openAiSimpleChatService->replyWithPrompt($systemPrompt, $userPrompt, $selectedModel, Auth::user());
-        $meta = $this->extractMeta($reply);
+        $meta = array_merge($this->extractMeta($reply), [
+            'audit_kind' => $auditKind,
+            'audit_status' => $auditStatus,
+            'audit_title' => $auditTitle,
+        ]);
 
         $debugText = $this->auditSnapshotWriter->buildContent([
             'source' => $source,
@@ -130,6 +154,7 @@ class AuditDiffController extends Controller
             'head_branch' => $headBranch !== '' ? $headBranch : null,
             'audit_title' => $auditTitle !== '' ? $auditTitle : null,
             'audit_kind' => $auditKind !== '' ? $auditKind : null,
+            'audit_status' => $auditStatus !== '' ? $auditStatus : null,
             'pr_title' => $prTitle !== '' ? $prTitle : null,
             'pr_description' => $prDescription !== '' ? $prDescription : null,
             'linked_issues' => $linkedIssues !== '' ? $linkedIssues : null,
@@ -164,6 +189,7 @@ class AuditDiffController extends Controller
             'head_branch' => ['nullable', 'string', 'max:255'],
             'audit_title' => ['nullable', 'string', 'max:255'],
             'audit_kind' => ['nullable', 'string', 'max:120'],
+            'audit_status' => ['nullable', 'string', 'max:120'],
             'pr_title' => ['nullable', 'string', 'max:255'],
             'pr_description' => ['nullable', 'string', 'max:4000'],
             'linked_issues' => ['nullable', 'string', 'max:4000'],
@@ -181,6 +207,7 @@ class AuditDiffController extends Controller
         $headBranch = (string) ($payload['head_branch'] ?? '');
         $auditTitle = (string) ($payload['audit_title'] ?? '');
         $auditKind = (string) ($payload['audit_kind'] ?? '');
+        $auditStatus = (string) ($payload['audit_status'] ?? '');
         $diffText = (string) $payload['diff_text'];
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
         $prTitle = (string) ($payload['pr_title'] ?? '');
@@ -190,10 +217,22 @@ class AuditDiffController extends Controller
 
         $issueComments = [];
         $reviewComments = [];
+        $pullDetails = [];
 
         if ($source === 'github' && $repo !== '' && $prNumber !== '') {
             $user = Auth::user();
             if ($user?->github_access_token) {
+                $pullDetailsResult = $this->gitHubApiService->getPullDetails($user->github_access_token, $repo, $prNumber);
+                if ($pullDetailsResult['ok']) {
+                    $pullDetails = $pullDetailsResult['data'];
+                    if ($prTitle === '') {
+                        $prTitle = (string) ($pullDetails['title'] ?? '');
+                    }
+                    if ($prDescription === '') {
+                        $prDescription = (string) ($pullDetails['body'] ?? '');
+                    }
+                }
+
                 $issueResult = $this->gitHubApiService->getPullIssueComments($user->github_access_token, $repo, $prNumber);
                 if ($issueResult['ok']) {
                     $issueComments = $issueResult['data'];
@@ -206,6 +245,10 @@ class AuditDiffController extends Controller
             }
         }
 
+        $auditKind = $this->resolveAuditKind($auditKind, $source, $compareType, $prNumber);
+        $auditStatus = $this->resolveAuditStatus($auditStatus, $auditKind, $source, $compareType, $pullDetails);
+        $auditTitle = $this->resolveAuditTitle($auditTitle, $auditKind, $repo, $prNumber, $prTitle, $headBranch, (string) ($payload['file_name'] ?? ''), (string) ($payload['commit_hash'] ?? ''));
+
         $changedLines = $this->auditSnapshotWriter->extractChangedLines($diffText);
         $chatContext = $this->auditPromptComposer->composeChatContext([
             'source' => $source,
@@ -216,6 +259,7 @@ class AuditDiffController extends Controller
             'head_branch' => $headBranch !== '' ? $headBranch : null,
             'audit_title' => $auditTitle !== '' ? $auditTitle : null,
             'audit_kind' => $auditKind !== '' ? $auditKind : null,
+            'audit_status' => $auditStatus !== '' ? $auditStatus : null,
             'pr_title' => $prTitle !== '' ? $prTitle : null,
             'pr_description' => $prDescription !== '' ? $prDescription : null,
             'linked_issues' => $linkedIssues !== '' ? $linkedIssues : null,
@@ -236,6 +280,7 @@ class AuditDiffController extends Controller
             'head_branch' => $headBranch !== '' ? $headBranch : null,
             'audit_title' => $auditTitle !== '' ? $auditTitle : null,
             'audit_kind' => $auditKind !== '' ? $auditKind : null,
+            'audit_status' => $auditStatus !== '' ? $auditStatus : null,
             'pr_title' => $prTitle !== '' ? $prTitle : null,
             'pr_description' => $prDescription !== '' ? $prDescription : null,
             'linked_issues' => $linkedIssues !== '' ? $linkedIssues : null,
@@ -249,7 +294,7 @@ class AuditDiffController extends Controller
 
         $systemPrompt = (string) config('audit_ai.system_prompt');
 
-        return response()->stream(function () use ($source, $repo, $prNumber, $compareType, $baseBranch, $headBranch, $auditTitle, $auditKind, $prTitle, $prDescription, $linkedIssues, $contextNote, $payload, $diffText, $issueComments, $reviewComments, $systemPrompt, $userPrompt, $selectedModel): void {
+        return response()->stream(function () use ($source, $repo, $prNumber, $compareType, $baseBranch, $headBranch, $auditTitle, $auditKind, $auditStatus, $prTitle, $prDescription, $linkedIssues, $contextNote, $payload, $diffText, $issueComments, $reviewComments, $systemPrompt, $userPrompt, $selectedModel): void {
             @ini_set('output_buffering', 'off');
             @ini_set('zlib.output_compression', '0');
             @set_time_limit(0);
@@ -293,7 +338,11 @@ class AuditDiffController extends Controller
                 }
             );
 
-            $meta = $this->extractMeta($fullReply);
+            $meta = array_merge($this->extractMeta($fullReply), [
+                'audit_kind' => $auditKind,
+                'audit_status' => $auditStatus,
+                'audit_title' => $auditTitle,
+            ]);
             $debugText = $this->auditSnapshotWriter->buildContent([
                 'source' => $source,
                 'repo' => $repo !== '' ? $repo : null,
@@ -303,6 +352,7 @@ class AuditDiffController extends Controller
                 'head_branch' => $headBranch !== '' ? $headBranch : null,
                 'audit_title' => $auditTitle !== '' ? $auditTitle : null,
                 'audit_kind' => $auditKind !== '' ? $auditKind : null,
+                'audit_status' => $auditStatus !== '' ? $auditStatus : null,
                 'pr_title' => $prTitle !== '' ? $prTitle : null,
                 'pr_description' => $prDescription !== '' ? $prDescription : null,
                 'linked_issues' => $linkedIssues !== '' ? $linkedIssues : null,
@@ -334,6 +384,81 @@ class AuditDiffController extends Controller
     }
 
     // Extracts risk score and change type markers from model response.
+    private function resolveAuditKind(string $auditKind, string $source, string $compareType, string $prNumber): string
+    {
+        if ($auditKind !== '') {
+            return $auditKind;
+        }
+
+        if ($prNumber !== '') {
+            return 'pull_request_audit';
+        }
+
+        return match ($compareType) {
+            'branch_vs_main' => 'branch_audit',
+            'commit' => 'commit_audit',
+            default => match ($source) {
+                'editor' => 'editor_diff_audit',
+                'paste' => 'pasted_diff_audit',
+                default => 'diff_audit',
+            },
+        };
+    }
+
+    private function resolveAuditStatus(string $auditStatus, string $auditKind, string $source, string $compareType, array $pullDetails): string
+    {
+        if ($auditKind === 'pull_request_audit' && !empty($pullDetails)) {
+            if (!empty($pullDetails['merged_at'])) {
+                return 'merged';
+            }
+
+            if (!empty($pullDetails['draft'])) {
+                return 'draft';
+            }
+
+            $state = strtolower((string) ($pullDetails['state'] ?? ''));
+            if (in_array($state, ['open', 'closed'], true)) {
+                return $state;
+            }
+        }
+
+        if ($auditStatus !== '') {
+            return $auditStatus;
+        }
+
+        if ($auditKind === 'commit_audit' || $compareType === 'commit' || $source === 'import') {
+            return 'historical';
+        }
+
+        if ($auditKind === 'branch_audit' || $compareType === 'branch_vs_main') {
+            return 'active';
+        }
+
+        return 'adhoc';
+    }
+
+    private function resolveAuditTitle(
+        string $auditTitle,
+        string $auditKind,
+        string $repo,
+        string $prNumber,
+        string $prTitle,
+        string $headBranch,
+        string $fileName,
+        string $commitHash
+    ): string {
+        if ($auditTitle !== '') {
+            return $auditTitle;
+        }
+
+        return match ($auditKind) {
+            'pull_request_audit' => trim("{$repo} pull request audit ".($prTitle !== '' ? $prTitle : "#{$prNumber}")),
+            'branch_audit' => trim("{$repo} branch audit {$headBranch}"),
+            'commit_audit' => trim("{$repo} commit audit {$commitHash}"),
+            default => trim($fileName !== '' ? "{$fileName} {$auditKind}" : "{$repo} audit"),
+        };
+    }
+
     private function extractMeta(string $reply): array
     {
         $changeType = 'neutral';

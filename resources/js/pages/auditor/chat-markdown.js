@@ -78,7 +78,7 @@ export function renderChatMarkdown(markdownText) {
         if (line.toLowerCase().startsWith('<details')) {
             closeLists();
             flushTable();
-            html.push('<details class="msg-details">');
+            html.push('<details class="msg-details" open>');
             continue;
         }
 

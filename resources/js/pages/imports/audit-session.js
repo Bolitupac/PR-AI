@@ -3,13 +3,14 @@ export function startAuditSession(payload) {
     window.location.href = '/auditor';
 }
 
-export function buildPullRequestAuditPayload({ repo, prNumber, title }) {
+export function buildPullRequestAuditPayload({ repo, prNumber, title, auditStatus = null }) {
     const safeTitle = String(title || '').trim();
     return {
         source: 'github',
         repo,
         prNumber,
         prTitle: safeTitle,
+        auditStatus: auditStatus || null,
         name: `${repo} PR#${prNumber}: ${safeTitle}`,
         auditTitle: `${repo} pull request audit ${safeTitle || `#${prNumber}`}`.trim(),
         auditKind: 'pull_request_audit',
@@ -26,6 +27,7 @@ export function buildBranchAuditPayload({ repo, branchName, baseBranch }) {
         repo,
         prNumber: null,
         prTitle: null,
+        auditStatus: 'active',
         name: `${repo} (${safeBranch})`,
         auditTitle: `${repo} branch audit ${safeBranch}`.trim(),
         auditKind: 'branch_audit',
@@ -42,6 +44,7 @@ export function buildCommitAuditPayload({ repo, commitHash, title }) {
         repo,
         prNumber: null,
         prTitle: null,
+        auditStatus: 'historical',
         commitHash,
         name: `${repo} commit ${commitHash}: ${safeTitle}`.trim(),
         auditTitle: `${repo} commit audit ${commitHash}${safeTitle ? ` ${safeTitle}` : ''}`.trim(),

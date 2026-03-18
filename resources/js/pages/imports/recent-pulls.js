@@ -81,6 +81,7 @@ function renderPullRequests(panel, pullRequests) {
                         type="button"
                         data-repo="${escapeHtml(pullRequest.repo || '')}"
                         data-pr="${escapeHtml(pullRequest.number || '')}"
+                        data-status="${escapeHtml(status)}"
                         data-title="${escapeHtml(pullRequest.title || '')}"
                         aria-label="Audit pull request"
                     >
@@ -115,6 +116,7 @@ export async function initRecentPullRequestsPanel(setImportStatus) {
 
         const repo = button.dataset.repo;
         const prNumber = button.dataset.pr;
+        const auditStatus = button.dataset.status || null;
         const title = button.dataset.title || 'Untitled pull request';
 
         if (!repo || !prNumber) return;
@@ -126,6 +128,7 @@ export async function initRecentPullRequestsPanel(setImportStatus) {
             repo,
             prNumber,
             title,
+            auditStatus,
         }));
     });
 }

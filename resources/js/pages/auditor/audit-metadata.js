@@ -9,6 +9,7 @@ export function buildAuditMetadata(detail = {}) {
     const compareType = normalizeText(detail.compareType ?? detail.compare_type);
     const headBranch = normalizeText(detail.headBranch ?? detail.head_branch ?? detail.branch);
     const baseBranch = normalizeText(detail.baseBranch ?? detail.base_branch ?? detail.base);
+    const auditStatus = normalizeText(detail.auditStatus ?? detail.audit_status);
     const fileName = normalizeText(detail.name ?? detail.file_name);
     const source = normalizeText(detail.source) || 'upload';
 
@@ -53,6 +54,7 @@ export function buildAuditMetadata(detail = {}) {
         repo,
         prNumber,
         compareType,
+        auditStatus,
         headBranch,
         baseBranch,
         fileName,

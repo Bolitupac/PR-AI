@@ -241,6 +241,8 @@ class GitHubApiService
                 'title' => $data['title'] ?? '',
                 'body' => $data['body'] ?? '',
                 'state' => $data['state'] ?? '',
+                'draft' => $data['draft'] ?? false,
+                'merged_at' => $data['merged_at'] ?? null,
                 'author' => $data['user']['login'] ?? '',
                 'changed_files' => $data['changed_files'] ?? 0,
                 'additions' => $data['additions'] ?? 0,

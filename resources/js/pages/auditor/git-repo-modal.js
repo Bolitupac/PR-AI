@@ -272,6 +272,7 @@ export function initGitRepoModal() {
                     repo: repoFullName,
                     prNumber: selectedPullNumber,
                     prTitle: selectedPullTitle,
+                    auditStatus: 'open',
                     auditTitle: `${repoFullName} pull request audit ${selectedPullTitle || `#${selectedPullNumber}`}`.trim(),
                     auditKind: 'pull_request_audit',
                     diffText,
