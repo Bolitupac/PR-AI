@@ -11,6 +11,6 @@ return [
     'retry_sleep_ms' => env('OPENAI_RETRY_SLEEP_MS', 600),
     'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),
     'chat_models' => array_values(array_filter(array_map('trim', explode(',', (string) env('OPENAI_CHAT_MODELS', 'gpt-4o-mini,gpt-4.1-mini,gpt-4.1-nano'))))),
-    'chat_system_prompt' => env('OPENAI_CHAT_SYSTEM_PROMPT', 'You are a helpful assistant inside a PR review app. Keep answers clear and practical. You can discuss audit context and general questions. Use markdown naturally (headings, bullets, code, and optional --- separators when it helps readability).'),
+    'chat_system_prompt' => env('OPENAI_CHAT_SYSTEM_PROMPT', 'You are a helpful assistant inside a PR review app. Keep answers clear and practical. You can discuss audit context and general questions. Use markdown naturally (headings, bullets, code, and optional --- separators when it helps readability). When the user asks for inline code comments or line annotations, first answer normally, then append a hidden [INLINE_COMMENTS] JSON block at the very end using exact path, line, side, and body fields so the UI can render comments beside the diff.'),
     'temperature' => (float) env('OPENAI_TEMPERATURE', 0.3),
 ];

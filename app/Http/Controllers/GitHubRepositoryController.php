@@ -94,6 +94,57 @@ class GitHubRepositoryController extends Controller
         return response()->json(['pulls' => $result['data']]);
     }
 
+    public function pullComments(): JsonResponse
+    {
+        $user = Auth::user();
+        $repo = request()->query('repo');
+        $prNumber = request()->query('pr_number');
+
+        if (!$user || !$user->github_access_token) {
+            return response()->json(['comments' => []], 401);
+        }
+
+        if (!$repo || !str_contains($repo, '/')) {
+            return response()->json(['comments' => []], 422);
+        }
+
+        if (!$prNumber || !is_numeric((string) $prNumber)) {
+            return response()->json(['comments' => []], 422);
+        }
+
+        $issueResult = $this->githubApiService->getPullIssueComments($user->github_access_token, $repo, (string) $prNumber);
+        $reviewResult = $this->githubApiService->getPullReviewComments($user->github_access_token, $repo, (string) $prNumber);
+
+        $comments = collect($issueResult['ok'] ? ($issueResult['data'] ?? []) : [])
+            ->map(fn (array $comment) => [
+                'kind' => 'discussion',
+                'author' => $comment['author'] ?? '',
+                'body' => $comment['body'] ?? '',
+                'updated_at' => $comment['updated_at'] ?? null,
+                'path' => null,
+                'line' => null,
+            ])
+            ->concat(
+                collect($reviewResult['ok'] ? ($reviewResult['data'] ?? []) : [])
+                    ->map(fn (array $comment) => [
+                        'kind' => 'review',
+                        'author' => $comment['author'] ?? '',
+                        'body' => $comment['body'] ?? '',
+                        'updated_at' => $comment['updated_at'] ?? null,
+                        'path' => $comment['path'] ?? null,
+                        'line' => $comment['original_side'] === 'LEFT'
+                            ? ($comment['original_line'] ?? $comment['line'] ?? null)
+                            : ($comment['line'] ?? $comment['original_line'] ?? null),
+                        'side' => $comment['original_side'] ?? $comment['side'] ?? 'RIGHT',
+                    ])
+            )
+            ->sortByDesc(fn (array $comment) => $comment['updated_at'] ?? '')
+            ->values()
+            ->all();
+
+        return response()->json(['comments' => $comments]);
+    }
+
     // Returns lightweight metadata (branch + PR counts) for a repository.
     public function metadata(): JsonResponse
     {

@@ -297,6 +297,9 @@ class GitHubApiService
                 'author' => $comment['user']['login'] ?? '',
                 'path' => $comment['path'] ?? '',
                 'line' => $comment['line'] ?? null,
+                'original_line' => $comment['original_line'] ?? null,
+                'side' => $comment['side'] ?? null,
+                'original_side' => $comment['original_side'] ?? null,
                 'body' => $comment['body'] ?? '',
                 'updated_at' => $comment['updated_at'] ?? null,
             ])

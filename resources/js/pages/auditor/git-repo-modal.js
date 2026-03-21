@@ -1,6 +1,7 @@
 import { fetchGitRepos } from './git-repos-api';
 import { fetchGitPullRequests } from './git-pulls-api';
 import { fetchGitPullDiff } from './git-diff-api';
+import { fetchGitPullComments } from './diff-comments/api';
 import { setButtonLoading } from './button-loading';
 
 // Controls repo modal open/close, PR selection, and loading diff from GitHub.
@@ -265,7 +266,10 @@ export function initGitRepoModal() {
         setButtonLoading(loadRepoButton, true, 'Loading');
 
         try {
-            const diffText = await fetchGitPullDiff(pullDiffUrl, repoFullName, selectedPullNumber);
+            const [diffText, comments] = await Promise.all([
+                fetchGitPullDiff(pullDiffUrl, repoFullName, selectedPullNumber),
+                fetchGitPullComments(repoFullName, selectedPullNumber),
+            ]);
             document.dispatchEvent(new CustomEvent('auditor:diff-selected', {
                 detail: {
                     source: 'github',
@@ -276,6 +280,7 @@ export function initGitRepoModal() {
                     auditTitle: `${repoFullName} pull request audit ${selectedPullTitle || `#${selectedPullNumber}`}`.trim(),
                     auditKind: 'pull_request_audit',
                     diffText,
+                    comments,
                 },
             }));
 

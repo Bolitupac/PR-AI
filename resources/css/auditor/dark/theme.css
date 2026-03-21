@@ -490,16 +490,29 @@ html[data-theme="dark"] .chat-scroll-bottom-btn {
         inset -10px 0 16px rgba(9, 16, 34, 0.28);
 }
 
-html[data-theme="dark"] *::-webkit-scrollbar-track {
+html[data-theme="dark"] .auto-hide-scrollbar.is-scrolling::-webkit-scrollbar-track {
     background: #0f1328;
 }
 
-html[data-theme="dark"] *::-webkit-scrollbar-thumb {
+html[data-theme="dark"] .auto-hide-scrollbar::-webkit-scrollbar-track:horizontal {
+    background: #0f1328;
+}
+
+html[data-theme="dark"] .auto-hide-scrollbar.is-scrolling::-webkit-scrollbar-thumb {
     background: rgba(0, 133, 255, 0.46);
     border: 2px solid #0f1328;
 }
 
-html[data-theme="dark"] *::-webkit-scrollbar-thumb:hover {
+html[data-theme="dark"] .auto-hide-scrollbar::-webkit-scrollbar-thumb:horizontal {
+    background: rgba(0, 133, 255, 0.46);
+    border: 2px solid #0f1328;
+}
+
+html[data-theme="dark"] .auto-hide-scrollbar.is-scrolling::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 133, 255, 0.62);
+}
+
+html[data-theme="dark"] .auto-hide-scrollbar::-webkit-scrollbar-thumb:hover:horizontal {
     background: rgba(0, 133, 255, 0.62);
 }
 

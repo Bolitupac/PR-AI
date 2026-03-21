@@ -13,6 +13,7 @@ import { initSidebar } from './sidebar';
 import { initChatScrollBottomButton } from './chat-scroll-bottom';
 import { createChatStatus } from './chat-status';
 import { createLoadingProgress } from './loading-progress';
+import { fetchGitPullComments } from './diff-comments/api';
 
 export function initAuditorPage() {
     if (!document.getElementById('ai-response-area')) return;
@@ -62,6 +63,14 @@ export function initAuditorPage() {
         return null;
     };
 
+    const fetchPendingComments = async (pending) => {
+        if (pending?.repo && pending?.prNumber) {
+            return await fetchGitPullComments(pending.repo, pending.prNumber);
+        }
+
+        return [];
+    };
+
     // Check for pending audit from Imports page
     const pending = sessionStorage.getItem('pending_audit');
     if (pending) {
@@ -71,13 +80,14 @@ export function initAuditorPage() {
 
             // Small delay to ensure all listeners (auto-audit.js) are ready
             setTimeout(() => {
-                const dispatchDiff = (diffText) => {
+                const dispatchDiff = (diffText, comments = []) => {
                     const compareType = data?.compareType
                         || (data?.prNumber ? 'pull_request' : (data?.commitHash ? 'commit' : (data?.branch && data?.base ? 'branch_vs_main' : 'upload')));
                     document.dispatchEvent(new CustomEvent('auditor:diff-selected', {
                         detail: {
                             ...data,
                             diffText: diffText || '',
+                            comments,
                             compareType: compareType,
                             baseBranch: data?.base || null,
                             headBranch: data?.branch || null,
@@ -89,7 +99,7 @@ export function initAuditorPage() {
                 };
 
                 if (data?.diffText) {
-                    dispatchDiff(data.diffText);
+                    dispatchDiff(data.diffText, data?.comments || []);
                     return;
                 }
 
@@ -99,8 +109,11 @@ export function initAuditorPage() {
                         onUpdate: (text) => status.set(text),
                         label: data?.commitHash ? 'Fetching commit diff' : 'Fetching diff from GitHub'
                     });
-                    fetchPendingDiff(data)
-                        .then((diffText) => {
+                    Promise.all([
+                        fetchPendingDiff(data),
+                        fetchPendingComments(data),
+                    ])
+                        .then(([diffText, comments]) => {
                             if (!diffText || !diffText.trim()) {
                                 progress.stop();
                                 status.markError('Diff is empty.');
@@ -108,7 +121,7 @@ export function initAuditorPage() {
                                 return;
                             }
                             progress.stop('Diff received. Starting audit...');
-                            dispatchDiff(diffText);
+                            dispatchDiff(diffText, comments);
                             status.remove(700);
                         })
                         .catch((error) => {

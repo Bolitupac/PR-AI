@@ -106,6 +106,12 @@ class AuditPromptComposer
         $parts[] = 'Start the response with the exact audit title as the first heading.';
         $parts[] = 'Choose the best type for the change (sequenceDiagram, flowchart TD, or classDiagram).';
         $parts[] = 'The diagram must show the impact of this change and indicate whether this is a branch vs main compare or a pull request audit.';
+        $parts[] = 'After the visible review, append an [INLINE_COMMENTS] JSON block and close it with [/INLINE_COMMENTS].';
+        $parts[] = 'The JSON block must be a valid array of up to 8 objects with exactly these keys: path, line, side, body.';
+        $parts[] = 'Use only exact file paths and line numbers from CHANGED LINES above.';
+        $parts[] = 'Use side RIGHT for new/current code comments and LEFT for old/removed code comments.';
+        $parts[] = 'If there are no strong inline suggestions, return an empty array in the INLINE_COMMENTS block.';
+        $parts[] = 'Do not mention the INLINE_COMMENTS block anywhere in the visible review prose.';
 
         return implode(PHP_EOL, $parts);
     }

@@ -2,6 +2,7 @@ import { createChatStatus } from './chat-status';
 import { renderChatMarkdown } from './chat-markdown';
 import { renderMermaidIn } from './mermaid';
 import { chatContextStore } from './chat-context-store';
+import { extractInlineComments, stripInlineCommentsBlock } from './ai-inline-comments';
 
 let chatApi = {
     sendTextToChat: async () => false,
@@ -72,7 +73,7 @@ export function initChatInput() {
         const message = document.createElement('div');
         message.className = `msg ${role}`;
         if (role === 'ai') {
-            message.innerHTML = renderChatMarkdown(text);
+            message.innerHTML = renderChatMarkdown(stripInlineCommentsBlock(text));
             renderMermaidIn(message);
         } else {
             message.textContent = text;
@@ -112,6 +113,44 @@ export function initChatInput() {
         if (!payload || typeof payload !== 'object') return '';
         const token = String(payload?.choices?.[0]?.delta?.content ?? '');
         return token;
+    };
+
+    const wantsInlineCommentsRequest = (text) => /\b(comment|inline comment|leave comments|annotate|review the code|point out lines|auto edit|suggest edits|fix this|what should change|high risk lines|risky lines)\b/i.test(String(text || ''));
+
+    const commitInlineComments = (replyText) => {
+        const strippedReply = stripInlineCommentsBlock(replyText);
+        const aiInlineComments = extractInlineComments(replyText);
+        document.dispatchEvent(new CustomEvent('auditor:ai-comments-updated', {
+            detail: { comments: aiInlineComments },
+        }));
+        return {
+            comments: aiInlineComments,
+            visibleReply: strippedReply,
+        };
+    };
+
+    const fetchInlineCommentFallback = async (text, historyBefore) => {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        const res = await fetch('/api/ai/inline-comments', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+            },
+            body: JSON.stringify({
+                message: text,
+                model: selectedModel || undefined,
+                history: historyBefore,
+            }),
+        });
+
+        if (!res.ok) {
+            return [];
+        }
+
+        const data = await res.json().catch(() => ({}));
+        return extractInlineComments(String(data?.reply || ''));
     };
 
     const sendTextInternal = async (rawText, { source = 'text' } = {}) => {
@@ -230,7 +269,7 @@ export function initChatInput() {
                         if (token !== '') {
                             fullReply += token;
                             if (requestState.replyNode) {
-                                requestState.replyNode.innerHTML = renderChatMarkdown(fullReply);
+                                requestState.replyNode.innerHTML = renderChatMarkdown(stripInlineCommentsBlock(fullReply));
                                 
                                 // Time-based throttle for Mermaid rendering during streaming
                                 const now = Date.now();
@@ -269,12 +308,43 @@ export function initChatInput() {
                 }
             }
 
+            const wantsInlineComments = wantsInlineCommentsRequest(text);
+            status.set('Stripping inline comment format from chat response...');
+            let { comments: inlineComments, visibleReply } = commitInlineComments(fullReply);
+            status.set('Converting inline comment data...');
+
+            if (wantsInlineComments && inlineComments.length === 0) {
+                status.set('No inline comments found in chat response.');
+                status.set('Requesting structured inline comments...');
+                inlineComments = await fetchInlineCommentFallback(text, historyBefore).catch(() => []);
+                status.set('Converting fallback comment data...');
+                document.dispatchEvent(new CustomEvent('auditor:ai-comments-updated', {
+                    detail: { comments: inlineComments },
+                }));
+            }
+
+            if (wantsInlineComments && inlineComments.length === 0) {
+                status.markError('No renderable inline comments were produced.');
+                if (requestState.replyNode) {
+                    requestState.replyNode.innerHTML = renderChatMarkdown(visibleReply);
+                    renderMermaidIn(requestState.replyNode);
+                }
+                chatContextStore.push('assistant', visibleReply);
+                return true;
+            }
+
             if (requestState.replyNode) {
+                status.set('Rendering chat response...');
+                requestState.replyNode.innerHTML = renderChatMarkdown(visibleReply);
                 renderMermaidIn(requestState.replyNode);
             }
 
-            chatContextStore.push('assistant', fullReply);
-            status.markSuccess('Request sent.');
+            if (inlineComments.length > 0) {
+                status.set(`Rendering ${inlineComments.length} inline comment${inlineComments.length === 1 ? '' : 's'} in diff viewer...`);
+            }
+
+            chatContextStore.push('assistant', visibleReply);
+            status.markSuccess(inlineComments.length > 0 ? 'Response and inline comments rendered.' : 'Response rendered.');
             status.remove(450);
             return true;
         } catch (error) {
@@ -283,7 +353,7 @@ export function initChatInput() {
                 requestState.replyNode?.remove();
                 status.markError('Response stopped.');
             } else {
-                status.markError('Request failed.');
+                status.markError(`Request failed: ${error?.message || 'Unknown error'}`);
                 appendMessage('Could not reach AI service.', 'ai');
             }
             return false;
