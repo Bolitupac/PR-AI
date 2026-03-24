@@ -1,7 +1,8 @@
 <div class="repo-modal" id="repo-modal" aria-hidden="true"
     data-repos-url="{{ route('github.repos') }}"
     data-pulls-url="{{ route('github.pulls') }}"
-    data-pull-diff-url="{{ route('github.pull-diff') }}">
+    data-pull-diff-url="{{ route('github.pull-diff') }}"
+    data-connect-url="{{ route('github.redirect') }}">
     <div class="repo-modal-backdrop" data-close="repo-modal"></div>
     <div class="repo-modal-card" role="dialog" aria-label="Import from GitHub">
         <button class="repo-modal-close" type="button" aria-label="Close" data-close="repo-modal">&times;</button>
@@ -15,6 +16,13 @@
         <select class="repo-import-select" id="repo-import-select">
             <option selected disabled>Loading repositories...</option>
         </select>
+        <div class="repo-import-help" id="repo-import-help"></div>
+        <div class="repo-import-actions-row" id="repo-import-actions-row" hidden>
+            <a class="repo-import-secondary-action" id="repo-connect-github-btn" href="{{ route('github.redirect') }}">
+                Connect GitHub
+            </a>
+            <button class="repo-import-secondary-action" id="repo-retry-btn" type="button">Retry</button>
+        </div>
 
         <div class="repo-pr-box" id="repo-pr-box">
             <div class="repo-pr-state" id="repo-pr-state">Select a repository to view pull requests.</div>

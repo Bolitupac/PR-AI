@@ -9,8 +9,20 @@ export async function fetchGitPullDiff(pullDiffUrl, repoFullName, pullNumber) {
     });
 
     if (!res.ok) {
-        const error = new Error(res.status === 401 ? 'Please sign in with GitHub again.' : 'Failed to load diff');
+        let message = res.status === 401 ? 'Please sign in with GitHub again.' : 'Failed to load diff';
+        let connectUrl = '';
+        let authRequired = false;
+        const contentType = res.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+            const data = await res.json().catch(() => ({}));
+            message = data?.message || message;
+            connectUrl = data?.connect_url || '';
+            authRequired = Boolean(data?.auth_required);
+        }
+        const error = new Error(message);
         error.status = res.status;
+        error.connectUrl = connectUrl;
+        error.authRequired = authRequired;
         throw error;
     }
 

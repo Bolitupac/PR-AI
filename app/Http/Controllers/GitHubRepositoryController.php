@@ -18,15 +18,23 @@ class GitHubRepositoryController extends Controller
     {
         $user = Auth::user();
         if (!$user || !$user->github_access_token) {
-            return response()->json(['repos' => []], 401);
+            return $this->githubAuthRequiredResponse('Log in with GitHub to load repositories.');
         }
 
         $result = $this->githubApiService->getRepos($user->github_access_token);
         if (!$result['ok']) {
-            return response()->json(['repos' => []], $result['status']);
+            return response()->json([
+                'repos' => [],
+                'message' => $this->githubFailureMessage($result['status'], 'Could not load repositories from GitHub.'),
+                'connect_url' => route('github.redirect'),
+                'github_status' => $result['status'],
+            ], $result['status']);
         }
 
-        return response()->json(['repos' => $result['data']]);
+        return response()->json([
+            'repos' => $result['data'],
+            'message' => empty($result['data']) ? 'No repositories found on this GitHub account.' : null,
+        ]);
     }
 
     // Returns branches for the selected repository.
@@ -36,16 +44,21 @@ class GitHubRepositoryController extends Controller
         $repo = request()->query('repo');
 
         if (!$user || !$user->github_access_token) {
-            return response()->json(['branches' => []], 401);
+            return $this->githubAuthRequiredResponse('Log in with GitHub to load branches.', 'branches');
         }
 
         if (!$repo || !str_contains($repo, '/')) {
-            return response()->json(['branches' => []], 422);
+            return response()->json(['branches' => [], 'message' => 'Select a valid repository first.'], 422);
         }
 
         $result = $this->githubApiService->getBranches($user->github_access_token, $repo);
         if (!$result['ok']) {
-            return response()->json(['branches' => []], $result['status']);
+            return response()->json([
+                'branches' => [],
+                'message' => $this->githubFailureMessage($result['status'], 'Could not load branches from GitHub.'),
+                'connect_url' => route('github.redirect'),
+                'github_status' => $result['status'],
+            ], $result['status']);
         }
 
         return response()->json(['branches' => $result['data']]);
@@ -58,16 +71,21 @@ class GitHubRepositoryController extends Controller
         $repo = request()->query('repo');
 
         if (!$user || !$user->github_access_token) {
-            return response()->json(['pulls' => []], 401);
+            return $this->githubAuthRequiredResponse('Log in with GitHub to load pull requests.', 'pulls');
         }
 
         if (!$repo || !str_contains($repo, '/')) {
-            return response()->json(['pulls' => []], 422);
+            return response()->json(['pulls' => [], 'message' => 'Select a valid repository first.'], 422);
         }
 
         $result = $this->githubApiService->getPullRequests($user->github_access_token, $repo);
         if (!$result['ok']) {
-            return response()->json(['pulls' => []], $result['status']);
+            return response()->json([
+                'pulls' => [],
+                'message' => $this->githubFailureMessage($result['status'], 'Could not load pull requests from GitHub.'),
+                'connect_url' => route('github.redirect'),
+                'github_status' => $result['status'],
+            ], $result['status']);
         }
 
         return response()->json(['pulls' => $result['data']]);
@@ -78,7 +96,7 @@ class GitHubRepositoryController extends Controller
         $user = Auth::user();
 
         if (!$user || !$user->github_access_token || !$user->github_username) {
-            return response()->json(['pulls' => []], 401);
+            return $this->githubAuthRequiredResponse('Log in with GitHub to load your recent pull requests.', 'pulls');
         }
 
         $result = $this->githubApiService->getRecentAccountPullRequests(
@@ -88,7 +106,12 @@ class GitHubRepositoryController extends Controller
         );
 
         if (!$result['ok']) {
-            return response()->json(['pulls' => []], $result['status']);
+            return response()->json([
+                'pulls' => [],
+                'message' => $this->githubFailureMessage($result['status'], 'Could not load recent pull requests from GitHub.'),
+                'connect_url' => route('github.redirect'),
+                'github_status' => $result['status'],
+            ], $result['status']);
         }
 
         return response()->json(['pulls' => $result['data']]);
@@ -101,15 +124,15 @@ class GitHubRepositoryController extends Controller
         $prNumber = request()->query('pr_number');
 
         if (!$user || !$user->github_access_token) {
-            return response()->json(['comments' => []], 401);
+            return $this->githubAuthRequiredResponse('Log in with GitHub to load pull request comments.', 'comments');
         }
 
         if (!$repo || !str_contains($repo, '/')) {
-            return response()->json(['comments' => []], 422);
+            return response()->json(['comments' => [], 'message' => 'Select a valid repository first.'], 422);
         }
 
         if (!$prNumber || !is_numeric((string) $prNumber)) {
-            return response()->json(['comments' => []], 422);
+            return response()->json(['comments' => [], 'message' => 'Choose a valid pull request first.'], 422);
         }
 
         $issueResult = $this->githubApiService->getPullIssueComments($user->github_access_token, $repo, (string) $prNumber);
@@ -152,11 +175,16 @@ class GitHubRepositoryController extends Controller
         $repo = request()->query('repo');
 
         if (!$user || !$user->github_access_token) {
-            return response()->json(['ok' => false], 401);
+            return response()->json([
+                'ok' => false,
+                'message' => 'Log in with GitHub to load repository metadata.',
+                'connect_url' => route('github.redirect'),
+                'auth_required' => true,
+            ], 401);
         }
 
         if (!$repo || !str_contains($repo, '/')) {
-            return response()->json(['ok' => false], 422);
+            return response()->json(['ok' => false, 'message' => 'Select a valid repository first.'], 422);
         }
 
         $branches = $this->githubApiService->getBranches($user->github_access_token, $repo);
@@ -179,7 +207,11 @@ class GitHubRepositoryController extends Controller
         $prNumber = request()->query('pr_number');
 
         if (!$user || !$user->github_access_token) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json([
+                'message' => 'Log in with GitHub to load pull request diffs.',
+                'connect_url' => route('github.redirect'),
+                'auth_required' => true,
+            ], 401);
         }
 
         if (!$repo || !str_contains($repo, '/')) {
@@ -192,7 +224,11 @@ class GitHubRepositoryController extends Controller
 
         $result = $this->githubApiService->getPullDiff($user->github_access_token, $repo, (string) $prNumber);
         if (!$result['ok']) {
-            return response()->json(['message' => 'Failed to load diff'], $result['status']);
+            return response()->json([
+                'message' => $this->githubFailureMessage($result['status'], 'Failed to load pull request diff from GitHub.'),
+                'connect_url' => route('github.redirect'),
+                'github_status' => $result['status'],
+            ], $result['status']);
         }
 
         return response($result['data'], 200, ['Content-Type' => 'text/plain; charset=utf-8']);
@@ -209,7 +245,11 @@ class GitHubRepositoryController extends Controller
         $head = request()->query('head');
 
         if (!$user || !$user->github_access_token) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json([
+                'message' => 'Log in with GitHub to load branch diffs.',
+                'connect_url' => route('github.redirect'),
+                'auth_required' => true,
+            ], 401);
         }
 
         if (!$repo || !str_contains($repo, '/')) {
@@ -222,9 +262,33 @@ class GitHubRepositoryController extends Controller
 
         $result = $this->githubApiService->getBranchDiff($user->github_access_token, $repo, $base, $head);
         if (!$result['ok']) {
-            return response()->json(['message' => 'Failed to load branch diff'], $result['status']);
+            return response()->json([
+                'message' => $this->githubFailureMessage($result['status'], 'Failed to load branch diff from GitHub.'),
+                'connect_url' => route('github.redirect'),
+                'github_status' => $result['status'],
+            ], $result['status']);
         }
 
         return response($result['data'], 200, ['Content-Type' => 'text/plain; charset=utf-8']);
+    }
+
+    private function githubAuthRequiredResponse(string $message, string $payloadKey = 'repos'): JsonResponse
+    {
+        return response()->json([
+            $payloadKey => [],
+            'message' => $message,
+            'connect_url' => route('github.redirect'),
+            'auth_required' => true,
+        ], 401);
+    }
+
+    private function githubFailureMessage(int $status, string $fallback): string
+    {
+        return match ($status) {
+            401 => 'GitHub authorization expired. Reconnect GitHub and try again.',
+            403 => 'GitHub temporarily refused the request. This can happen with rate limits or permission issues.',
+            404 => 'GitHub could not find that repository or pull request.',
+            default => $fallback,
+        };
     }
 }

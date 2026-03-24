@@ -25,30 +25,14 @@ Route::get('/imports', [ImportsController::class, 'index'])->name('imports.index
 
 Route::get('/auth/github', [GitHubOAuthController::class, 'redirect'])->name('github.redirect');
 Route::get('/auth/github/callback', [GitHubOAuthController::class, 'callback'])->name('github.callback');
-Route::get('/api/github/repos', [GitHubRepositoryController::class, 'repos'])
-    ->middleware('auth')
-    ->name('github.repos');
-Route::get('/api/github/branches', [GitHubRepositoryController::class, 'branches'])
-    ->middleware('auth')
-    ->name('github.branches');
-Route::get('/api/github/metadata', [GitHubRepositoryController::class, 'metadata'])
-    ->middleware('auth')
-    ->name('github.metadata');
-Route::get('/api/github/pulls', [GitHubRepositoryController::class, 'pullRequests'])
-    ->middleware('auth')
-    ->name('github.pulls');
-Route::get('/api/github/recent-pulls', [GitHubRepositoryController::class, 'recentPullRequests'])
-    ->middleware('auth')
-    ->name('github.recent-pulls');
-Route::get('/api/github/pull-comments', [GitHubRepositoryController::class, 'pullComments'])
-    ->middleware('auth')
-    ->name('github.pull-comments');
-Route::get('/api/github/pull-diff', [GitHubRepositoryController::class, 'pullDiff'])
-    ->middleware('auth')
-    ->name('github.pull-diff');
-Route::get('/api/github/branch-diff', [GitHubRepositoryController::class, 'branchDiff'])
-    ->middleware('auth')
-    ->name('github.branch-diff');
+Route::get('/api/github/repos', [GitHubRepositoryController::class, 'repos'])->name('github.repos');
+Route::get('/api/github/branches', [GitHubRepositoryController::class, 'branches'])->name('github.branches');
+Route::get('/api/github/metadata', [GitHubRepositoryController::class, 'metadata'])->name('github.metadata');
+Route::get('/api/github/pulls', [GitHubRepositoryController::class, 'pullRequests'])->name('github.pulls');
+Route::get('/api/github/recent-pulls', [GitHubRepositoryController::class, 'recentPullRequests'])->name('github.recent-pulls');
+Route::get('/api/github/pull-comments', [GitHubRepositoryController::class, 'pullComments'])->name('github.pull-comments');
+Route::get('/api/github/pull-diff', [GitHubRepositoryController::class, 'pullDiff'])->name('github.pull-diff');
+Route::get('/api/github/branch-diff', [GitHubRepositoryController::class, 'branchDiff'])->name('github.branch-diff');
 Route::get('/api/git/commit-diff', [GitCommitController::class, 'diff'])
     ->name('git.commit-diff');
 Route::post('/api/ai/chat', [SimpleChatController::class, 'chat'])->name('ai.chat');

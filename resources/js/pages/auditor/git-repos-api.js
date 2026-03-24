@@ -5,12 +5,15 @@ export async function fetchGitRepos(reposUrl) {
         credentials: 'same-origin',
     });
 
+    const data = await res.json().catch(() => ({}));
+
     if (!res.ok) {
-        const error = new Error(res.status === 401 ? 'Please sign in with GitHub again.' : 'Failed to load repos');
+        const error = new Error(data?.message || (res.status === 401 ? 'Please sign in with GitHub again.' : 'Failed to load repos'));
         error.status = res.status;
+        error.connectUrl = data?.connect_url || '';
+        error.authRequired = Boolean(data?.auth_required);
         throw error;
     }
 
-    const data = await res.json();
     return Array.isArray(data.repos) ? data.repos : [];
 }

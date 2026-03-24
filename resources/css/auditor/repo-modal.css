@@ -94,6 +94,48 @@
     box-shadow: 0 0 0 1px rgba(75, 126, 232, 0.1);
 }
 
+.repo-import-help {
+    min-height: 18px;
+    margin: -4px 0 12px;
+    font-size: 11px;
+    color: var(--text-soft);
+}
+
+.repo-import-help.is-error {
+    color: #dc2626;
+}
+
+.repo-import-help.is-success {
+    color: #15803d;
+}
+
+.repo-import-actions-row {
+    display: flex;
+    gap: 10px;
+    margin: -2px 0 12px;
+}
+
+.repo-import-secondary-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 0 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid #c9d4e8;
+    background: #fff;
+    color: #284166;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.repo-import-secondary-action:hover {
+    border-color: #9eb3d7;
+    background: #f7faff;
+}
+
 .repo-import-action {
     width: 100%;
     border: 1px solid #0085ff;

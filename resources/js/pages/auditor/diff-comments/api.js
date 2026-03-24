@@ -5,10 +5,15 @@ export async function fetchGitPullComments(repoFullName, pullNumber) {
 
     const response = await fetch(url.toString(), {
         headers: { Accept: 'application/json' },
+        credentials: 'same-origin',
     });
 
     if (!response.ok) {
-        throw new Error('Failed to load pull request comments');
+        const data = await response.json().catch(() => ({}));
+        const error = new Error(data?.message || 'Failed to load pull request comments');
+        error.status = response.status;
+        error.connectUrl = data?.connect_url || '';
+        throw error;
     }
 
     const data = await response.json();
