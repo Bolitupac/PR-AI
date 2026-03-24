@@ -221,7 +221,7 @@ export function initGitRepoModal() {
             setRepoSelectLoadedBorder(true);
         } catch (error) {
             stopRepoLoadingTicker();
-            setSingleOption('Failed to load repos');
+            setSingleOption(error?.message || 'Failed to load repos');
             setLoadButtonEnabled(false);
             setRepoSelectLoadedBorder(false);
         } finally {
@@ -249,7 +249,7 @@ export function initGitRepoModal() {
             const pulls = await fetchGitPullRequests(pullsUrl, repoFullName);
             renderPullList(pulls);
         } catch (error) {
-            setPrState('Failed to load pull requests.', 'error');
+            setPrState(error?.message || 'Failed to load pull requests.', 'error');
         }
     };
 
@@ -292,7 +292,7 @@ export function initGitRepoModal() {
                 closeModal();
             }, 520);
         } catch (error) {
-            setPrState('Failed to load pull request diff.', 'error');
+            setPrState(error?.message || 'Failed to load pull request diff.', 'error');
             setLoadedBorder(false);
         } finally {
             setButtonLoading(loadRepoButton, false);

@@ -5,10 +5,13 @@ export async function fetchGitPullDiff(pullDiffUrl, repoFullName, pullNumber) {
 
     const res = await fetch(url.toString(), {
         headers: { Accept: 'text/plain' },
+        credentials: 'same-origin',
     });
 
     if (!res.ok) {
-        throw new Error('Failed to load diff');
+        const error = new Error(res.status === 401 ? 'Please sign in with GitHub again.' : 'Failed to load diff');
+        error.status = res.status;
+        throw error;
     }
 
     return res.text();

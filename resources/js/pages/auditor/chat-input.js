@@ -143,6 +143,7 @@ export function initChatInput() {
                 model: selectedModel || undefined,
                 history: historyBefore,
             }),
+            credentials: 'same-origin',
         });
 
         if (!res.ok) {
@@ -151,6 +152,31 @@ export function initChatInput() {
 
         const data = await res.json().catch(() => ({}));
         return extractInlineComments(String(data?.reply || ''));
+    };
+
+    const fetchChatFallback = async (text, historyBefore) => {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        const res = await fetch(sendButton.dataset.chatUrl || '/api/ai/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+            },
+            body: JSON.stringify({
+                message: text,
+                model: selectedModel || undefined,
+                history: historyBefore,
+            }),
+            credentials: 'same-origin',
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            throw new Error(data?.message || data?.reply || 'Chat request failed.');
+        }
+
+        return String(data?.reply || '');
     };
 
     const sendTextInternal = async (rawText, { source = 'text' } = {}) => {
@@ -207,6 +233,7 @@ export function initChatInput() {
                     model: selectedModel || undefined,
                     history: historyBefore,
                 }),
+                credentials: 'same-origin',
                 signal: abortController.signal,
             });
             if (requestState.stopped) {
@@ -353,8 +380,27 @@ export function initChatInput() {
                 requestState.replyNode?.remove();
                 status.markError('Response stopped.');
             } else {
-                status.markError(`Request failed: ${error?.message || 'Unknown error'}`);
-                appendMessage('Could not reach AI service.', 'ai');
+                try {
+                    status.set('Streaming failed. Retrying without streaming...');
+                    const fallbackReply = await fetchChatFallback(text, historyBefore);
+                    const { comments: inlineComments, visibleReply } = commitInlineComments(fallbackReply);
+                    if (requestState.replyNode) {
+                        requestState.replyNode.innerHTML = renderChatMarkdown(visibleReply || 'No response from AI.');
+                        renderMermaidIn(requestState.replyNode);
+                    } else {
+                        requestState.replyNode = appendMessage(visibleReply || 'No response from AI.', 'ai');
+                    }
+                    document.dispatchEvent(new CustomEvent('auditor:ai-comments-updated', {
+                        detail: { comments: inlineComments },
+                    }));
+                    chatContextStore.push('assistant', visibleReply || 'No response from AI.');
+                    status.markSuccess('Response rendered via fallback.');
+                    status.remove(700);
+                    return true;
+                } catch (fallbackError) {
+                    status.markError(`Request failed: ${fallbackError?.message || error?.message || 'Unknown error'}`);
+                    appendMessage(String(fallbackError?.message || 'Could not reach AI service.'), 'ai');
+                }
             }
             return false;
         } finally {
