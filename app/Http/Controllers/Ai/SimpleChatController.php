@@ -147,13 +147,18 @@ class SimpleChatController extends Controller
             @ob_flush();
             flush();
 
-            $this->openAiSimpleChatService->streamRawWithHistory(
+            $fullReply = '';
+
+            $this->openAiSimpleChatService->streamReplyWithHistory(
                 $messageForModel,
                 $history,
                 $selectedModel,
                 Auth::user(),
-                function (string $chunk): void {
-                    echo $chunk;
+                function (string $token) use (&$fullReply): void {
+                    $fullReply .= $token;
+                    $json = json_encode(['text' => $token], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                    echo "event: token\n";
+                    echo 'data: '.($json ?: '{"text":""}')."\n\n";
                     @ob_flush();
                     flush();
                 },
@@ -165,6 +170,14 @@ class SimpleChatController extends Controller
                     flush();
                 }
             );
+
+            $donePayload = json_encode([
+                'reply' => $fullReply,
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            echo "event: done\n";
+            echo 'data: '.($donePayload ?: '{"reply":""}')."\n\n";
+            @ob_flush();
+            flush();
         }, 200, [
             'Content-Type' => 'text/event-stream',
             'Cache-Control' => 'no-cache, no-transform',

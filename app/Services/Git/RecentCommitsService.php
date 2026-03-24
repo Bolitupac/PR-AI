@@ -8,6 +8,8 @@ use Symfony\Component\Process\Process;
 
 class RecentCommitsService
 {
+    public const UNAVAILABLE_REASON_NO_GIT = 'Recent commits are unavailable in this deployment because the server does not have the repository .git history.';
+
     public function __construct(private readonly RepoContextService $repoContextService)
     {
     }
@@ -73,5 +75,14 @@ class RecentCommitsService
 
             return $commits;
         });
+    }
+
+    public function getUnavailableReason(): ?string
+    {
+        if (!is_dir(base_path('.git'))) {
+            return self::UNAVAILABLE_REASON_NO_GIT;
+        }
+
+        return null;
     }
 }

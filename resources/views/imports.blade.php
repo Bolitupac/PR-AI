@@ -67,7 +67,7 @@
                             </li>
                         @empty
                             <li class="imports-history-item" style="color: var(--text-soft); font-size: 12px;">
-                                No commits available.
+                                {{ $recentCommitsUnavailableReason ?? 'No commits available.' }}
                             </li>
                         @endforelse
                     </ul>

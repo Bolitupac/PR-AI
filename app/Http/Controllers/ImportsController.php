@@ -15,6 +15,7 @@ class ImportsController extends Controller
     {
         return view('imports', [
             'recentCommits' => $this->recentCommitsService->getRecentCommits(15),
+            'recentCommitsUnavailableReason' => $this->recentCommitsService->getUnavailableReason(),
         ]);
     }
 }
