@@ -8,9 +8,11 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/css/auditor-ui.css',
+                'resources/css/homepage.css',
                 'resources/css/imports-ui.css',
                 'resources/css/imports/skeleton.css',
                 'resources/js/app.js',
+                'resources/js/homepage.js',
             ],
             refresh: true,
         }),
