@@ -101,6 +101,8 @@
             </section>
         </main>
     </div>
+
+    @include('partials.settings-modal')
 </body>
 
 </html>

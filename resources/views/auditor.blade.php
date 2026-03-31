@@ -125,6 +125,7 @@
     @include('partials.import-monaco')
     @include('partials.import-paste')
     @include('partials.profile-modal')
+    @include('partials.settings-modal')
 
     <div class="voice-fab" id="voice-fab">
         <div class="voice-record-chip voice-record-chip--fab" id="voice-record-chip-fab">

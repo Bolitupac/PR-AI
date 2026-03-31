@@ -7,6 +7,9 @@ import { initVoiceInput } from './voice';
 import { initAutoAudit } from './auto-audit';
 import { initProfileModal } from './profile-modal';
 import { initProfileAiKey } from './profile-ai-key';
+import { initSettingsModal } from './settings-modal';
+import { initSettingsAiKey } from './settings-ai-key';
+import { initSettingsAiPreferences } from './settings-ai-preferences';
 import { initLoadingInteractions } from './loading-interactions';
 import { initThemeToggle } from './theme-toggle';
 import { initSidebar } from './sidebar';
@@ -29,6 +32,9 @@ export function initAuditorPage() {
     initAutoAudit();
     initProfileModal();
     initProfileAiKey();
+    initSettingsModal();
+    initSettingsAiKey();
+    initSettingsAiPreferences();
     initLoadingInteractions();
 
     const responseArea = document.getElementById('ai-response-area');

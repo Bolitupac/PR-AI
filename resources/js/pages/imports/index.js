@@ -1,5 +1,8 @@
 import { initThemeToggle } from '../auditor/theme-toggle';
 import { initSidebar } from '../auditor/sidebar';
+import { initSettingsModal } from '../auditor/settings-modal';
+import { initSettingsAiKey } from '../auditor/settings-ai-key';
+import { initSettingsAiPreferences } from '../auditor/settings-ai-preferences';
 import * as API from './api';
 import * as Renderers from './renderers';
 import { buildBranchAuditPayload, buildCommitAuditPayload, buildPullRequestAuditPayload, startAuditSession } from './audit-session';
@@ -15,6 +18,9 @@ export async function initImportsPage() {
 
     initSidebar();
     initThemeToggle();
+    initSettingsModal();
+    initSettingsAiKey();
+    initSettingsAiPreferences();
 
     const repoContainer = document.getElementById('repo-list-container');
     const loadMoreWrap = document.getElementById('load-more-wrap');

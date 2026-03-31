@@ -9,6 +9,7 @@
 @import './auditor/import.css';
 @import './auditor/repo-modal.css';
 @import './auditor/profile-modal.css';
+@import './auditor/settings-modal.css';
 @import './auditor/diff-upload-modal.css';
 @import './auditor/chat.css';
 @import './auditor/diff.css';
