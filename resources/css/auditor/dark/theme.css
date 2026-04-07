@@ -432,6 +432,19 @@ html[data-theme="dark"] .chat-tools-row #mic-btn .action-icon {
     opacity: 0.86;
 }
 
+html[data-theme="dark"] .input-send-btn.is-stop {
+    background: linear-gradient(180deg, rgba(56, 139, 253, 0.28) 0%, rgba(56, 139, 253, 0.18) 100%) !important;
+    color: #8ec5ff;
+    box-shadow:
+        0 10px 22px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+html[data-theme="dark"] .input-send-btn.is-stop:hover {
+    background: linear-gradient(180deg, rgba(86, 164, 255, 0.34) 0%, rgba(86, 164, 255, 0.24) 100%) !important;
+    color: #b7ddff;
+}
+
 html[data-theme="dark"] .import-plus-btn .plus-icon {
     color: #f9fafc;
     opacity: 0.88;

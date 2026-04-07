@@ -2,6 +2,7 @@ import { initGitRepoModal } from './git-repo-modal';
 import { initDiffUploadModal } from './diff-upload-modal';
 import { initDiffViewer } from './diff-viewer';
 import { initChatInput } from './chat-input';
+import { initChatPrelayout } from './chat-prelayout';
 import { initImportUi } from './import';
 import { initVoiceInput } from './voice';
 import { initAutoAudit } from './auto-audit';
@@ -26,6 +27,7 @@ export function initAuditorPage() {
     initImportUi();
     initGitRepoModal();
     initDiffUploadModal();
+    initChatPrelayout();
     initChatInput();
     initChatScrollBottomButton();
     initVoiceInput();

@@ -10,6 +10,12 @@ let chatApi = {
     getSelectedModel: () => '',
 };
 
+const STOP_ICON_HTML = `
+    <svg class="stop-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="7" y="7" width="10" height="10" rx="2.4" fill="currentColor"></rect>
+    </svg>
+`;
+
 export function sendTextToChat(text, options = {}) {
     return chatApi.sendTextToChat(text, options);
 }
@@ -212,7 +218,7 @@ export function initChatInput() {
         activeRequest = requestState;
         sendButton.classList.add('is-stop');
         sendButton.setAttribute('aria-label', 'Stop');
-        sendButton.textContent = 'Stop';
+        sendButton.innerHTML = STOP_ICON_HTML;
         status.startDots('Sending request to backend');
         let switchedToAwaiting = false;
         const awaitingTimer = setTimeout(() => {
