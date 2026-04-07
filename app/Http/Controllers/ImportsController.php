@@ -13,9 +13,14 @@ class ImportsController extends Controller
 
     public function index(): View
     {
+        $githubConnected = (bool) auth()->user()?->github_access_token;
+
         return view('imports', [
-            'recentCommits' => $this->recentCommitsService->getRecentCommits(15),
-            'recentCommitsUnavailableReason' => $this->recentCommitsService->getUnavailableReason(),
+            'githubConnected' => $githubConnected,
+            'recentCommits' => $githubConnected ? $this->recentCommitsService->getRecentCommits(15) : [],
+            'recentCommitsUnavailableReason' => $githubConnected
+                ? $this->recentCommitsService->getUnavailableReason()
+                : 'Log in with GitHub to load your recent commits.',
         ]);
     }
 }

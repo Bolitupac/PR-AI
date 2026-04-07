@@ -3,6 +3,7 @@ import { renderChatMarkdown } from './chat-markdown';
 import { renderMermaidIn } from './mermaid';
 import { chatContextStore } from './chat-context-store';
 import { extractInlineComments, stripInlineCommentsBlock } from './ai-inline-comments';
+import { attachFollowUpSuggestions, clearFollowUpSuggestions, fetchFollowUpSuggestions } from './chat-followups';
 
 let chatApi = {
     sendTextToChat: async () => false,
@@ -185,6 +186,31 @@ export function initChatInput() {
         return String(data?.reply || '');
     };
 
+    let followUpRequestId = 0;
+
+    const renderAiFollowUps = async (messageNode, assistantText, userText) => {
+        const requestId = ++followUpRequestId;
+        const suggestions = await fetchFollowUpSuggestions({
+            assistantText,
+            userText,
+            model: selectedModel,
+        }).catch(() => []);
+
+        if (requestId !== followUpRequestId) return;
+        if (!messageNode?.isConnected) return;
+
+        attachFollowUpSuggestions({
+            responseArea,
+            messageNode,
+            suggestions,
+            onSelect: handleFollowUpSelection,
+        });
+    };
+
+    const handleFollowUpSelection = (suggestion) => {
+        sendTextInternal(suggestion, { source: 'suggestion' });
+    };
+
     const sendTextInternal = async (rawText, { source = 'text' } = {}) => {
         if (activeRequest) return false;
         const text = String(rawText ?? '').trim();
@@ -197,6 +223,8 @@ export function initChatInput() {
         }
 
         hideEmptyState();
+        clearFollowUpSuggestions(responseArea);
+        followUpRequestId += 1;
         const previewAnchor = appendMessage(text, 'user');
         const historyBefore = chatContextStore.list();
         chatContextStore.push('user', text);
@@ -361,6 +389,7 @@ export function initChatInput() {
                 if (requestState.replyNode) {
                     requestState.replyNode.innerHTML = renderChatMarkdown(visibleReply);
                     renderMermaidIn(requestState.replyNode);
+                    await renderAiFollowUps(requestState.replyNode, visibleReply, text);
                 }
                 chatContextStore.push('assistant', visibleReply);
                 return true;
@@ -370,6 +399,7 @@ export function initChatInput() {
                 status.set('Rendering chat response...');
                 requestState.replyNode.innerHTML = renderChatMarkdown(visibleReply);
                 renderMermaidIn(requestState.replyNode);
+                await renderAiFollowUps(requestState.replyNode, visibleReply, text);
             }
 
             if (inlineComments.length > 0) {
@@ -396,6 +426,7 @@ export function initChatInput() {
                     } else {
                         requestState.replyNode = appendMessage(visibleReply || 'No response from AI.', 'ai');
                     }
+                    await renderAiFollowUps(requestState.replyNode, visibleReply || 'No response from AI.', text);
                     document.dispatchEvent(new CustomEvent('auditor:ai-comments-updated', {
                         detail: { comments: inlineComments },
                     }));

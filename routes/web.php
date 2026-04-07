@@ -38,6 +38,7 @@ Route::get('/api/git/commit-diff', [GitCommitController::class, 'diff'])
 Route::post('/api/ai/chat', [SimpleChatController::class, 'chat'])->name('ai.chat');
 Route::post('/api/ai/chat-stream', [SimpleChatController::class, 'chatStream'])->name('ai.chat.stream');
 Route::post('/api/ai/inline-comments', [SimpleChatController::class, 'inlineComments'])->name('ai.inline-comments');
+Route::post('/api/ai/followups', [SimpleChatController::class, 'followUps'])->name('ai.followups');
 Route::post('/api/ai/transcribe', [TranscriptionController::class, 'transcribe'])->name('ai.transcribe');
 Route::post('/api/ai/audit-diff', [AuditDiffController::class, 'audit'])->name('ai.audit-diff');
 Route::post('/api/ai/audit-diff-stream', [AuditDiffController::class, 'auditStream'])->name('ai.audit-diff.stream');

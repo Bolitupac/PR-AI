@@ -99,6 +99,39 @@ class SimpleChatController extends Controller
         ]);
     }
 
+    public function followUps(Request $request): JsonResponse
+    {
+        $allowedModels = (array) config('openai.chat_models', [config('openai.model', 'gpt-4o-mini')]);
+
+        $payload = $request->validate([
+            'user_message' => ['required', 'string', 'max:5000'],
+            'assistant_reply' => ['required', 'string', 'max:20000'],
+            'model' => ['nullable', 'string', Rule::in($allowedModels)],
+        ]);
+
+        $userMessage = trim((string) $payload['user_message']);
+        $assistantReply = trim((string) $payload['assistant_reply']);
+        $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
+        $activeAuditContext = trim((string) $request->session()->get('active_audit_context', ''));
+
+        if ($userMessage === '' || $assistantReply === '') {
+            return response()->json(['suggestions' => []]);
+        }
+
+        $reply = $this->openAiSimpleChatService->replyWithPrompt(
+            $this->followUpsSystemPrompt(),
+            $this->buildFollowUpsPrompt($userMessage, $assistantReply, $activeAuditContext),
+            $selectedModel,
+            Auth::user()
+        );
+
+        return response()->json([
+            'suggestions' => $this->extractFollowUps($reply),
+            'provider' => 'openai',
+            'model' => $selectedModel ?? (string) config('openai.model', 'gpt-4o-mini'),
+        ]);
+    }
+
     // Streams chat response in SSE chunks so frontend can render incrementally.
     public function chatStream(Request $request): StreamedResponse
     {
@@ -253,5 +286,68 @@ class SimpleChatController extends Controller
             ."[INLINE_COMMENTS]\n"
             ."[{\"path\":\"resources/js/app.js\",\"line\":42,\"side\":\"RIGHT\",\"body\":\"Guard this branch against null input before calling map().\"}]\n"
             ."[/INLINE_COMMENTS]";
+    }
+
+    private function followUpsSystemPrompt(): string
+    {
+        return "You generate short suggested next prompts for a coding assistant UI.\n"
+            ."Return only a JSON array of strings.\n"
+            ."Generate between 0 and 3 suggestions.\n"
+            ."Each suggestion must sound like the exact next thing the user would type.\n"
+            ."Keep each suggestion under 80 characters.\n"
+            ."Make them specific to the assistant reply, not generic.\n"
+            ."Do not repeat the user's original prompt.\n"
+            ."Do not include numbering, markdown, or explanation.\n"
+            ."If there is no useful next prompt, return an empty array [].";
+    }
+
+    private function buildFollowUpsPrompt(string $userMessage, string $assistantReply, string $activeAuditContext): string
+    {
+        $prompt = "USER MESSAGE:\n{$userMessage}\n\nASSISTANT REPLY:\n{$assistantReply}";
+
+        if ($activeAuditContext !== '') {
+            $prompt .= "\n\nACTIVE AUDIT CONTEXT IS AVAILABLE.\n"
+                ."Prefer suggestions that continue the current code audit when relevant.";
+        }
+
+        return $prompt;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function extractFollowUps(string $reply): array
+    {
+        $trimmed = trim($reply);
+        if ($trimmed === '') {
+            return [];
+        }
+
+        $decoded = json_decode($trimmed, true);
+        if (!is_array($decoded)) {
+            if (preg_match('/\[[\s\S]*\]/', $trimmed, $matches) === 1) {
+                $decoded = json_decode($matches[0], true);
+            }
+        }
+
+        if (!is_array($decoded)) {
+            return [];
+        }
+
+        $suggestions = [];
+        foreach ($decoded as $item) {
+            $text = trim((string) $item);
+            if ($text === '' || mb_strlen($text) > 80) {
+                continue;
+            }
+            if (!in_array($text, $suggestions, true)) {
+                $suggestions[] = $text;
+            }
+            if (count($suggestions) >= 3) {
+                break;
+            }
+        }
+
+        return $suggestions;
     }
 }

@@ -16,6 +16,9 @@ export async function initImportsPage() {
     const page = document.getElementById('imports-page');
     if (!page) return;
 
+    const isGitHubConnected = page.dataset.githubConnected === 'true';
+    const gitHubConnectUrl = page.dataset.githubConnectUrl || '/auth/github';
+
     initSidebar();
     initThemeToggle();
     initSettingsModal();
@@ -187,6 +190,45 @@ export async function initImportsPage() {
         importStatus.classList.toggle('is-loading', Boolean(isLoading));
     };
 
+    const renderGitHubLoginPrompt = (container, title, message) => {
+        if (!container) return;
+
+        container.innerHTML = `
+            <li style="padding: 40px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px;">
+                <div style="background: var(--brand-soft); color: var(--brand); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z" fill="currentColor" stroke="none"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 style="margin: 0 0 8px; color: var(--text-main); font-size: 18px;">${title}</h3>
+                    <p style="margin: 0; color: var(--text-soft); font-size: 14px; max-width: 320px;">${message}</p>
+                </div>
+                <a href="${gitHubConnectUrl}" class="imports-login-btn">Log in to GitHub</a>
+            </li>
+        `;
+    };
+
+    const renderDisconnectedText = (container, message = 'VCS not connected.') => {
+        if (!container) return;
+
+        container.innerHTML = `
+            <li class="imports-history-item" style="color: var(--text-soft); font-size: 12px;">
+                ${message}
+            </li>
+        `;
+    };
+
+    if (!isGitHubConnected) {
+        renderDisconnectedText(document.getElementById('recent-pull-requests-list'));
+        renderGitHubLoginPrompt(
+            repoContainer,
+            'GitHub not connected',
+            'Authorize your GitHub account to import repositories and pull requests.'
+        );
+        return;
+    }
+
     initRecentPullRequestsPanel(setImportStatus);
 
     const commitList = document.querySelector('.imports-commit-list');
@@ -309,20 +351,11 @@ export async function initImportsPage() {
     } catch (error) {
         console.error('Error initializing imports:', error);
         if (error.status === 401) {
-            repoContainer.innerHTML = `
-                <li style="padding: 40px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px;">
-                    <div style="background: var(--brand-soft); color: var(--brand); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                         <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z" fill="currentColor" stroke="none"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 style="margin: 0 0 8px; color: var(--text-main); font-size: 18px;">Connect GitHub</h3>
-                        <p style="margin: 0; color: var(--text-soft); font-size: 14px; max-width: 320px;">Authorize your GitHub account to import repositories and pull requests.</p>
-                    </div>
-                    <a href="/auth/github" class="action-btn" style="text-decoration: none; padding: 10px 24px;">Connect VSC</a>
-                </li>
-            `;
+            renderGitHubLoginPrompt(
+                repoContainer,
+                'GitHub not connected',
+                'Authorize your GitHub account to import repositories and pull requests.'
+            );
         } else {
             repoContainer.innerHTML = '<li style="padding: 20px; text-align: center; color: #ef4444;">Failed to load repositories. Please try again.</li>';
         }

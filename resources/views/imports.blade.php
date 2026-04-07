@@ -23,7 +23,9 @@
         data-repos-url="{{ route('github.repos') }}"
         data-branches-url="{{ route('github.branches') }}"
         data-pulls-url="{{ route('github.pulls') }}"
-        data-metadata-url="{{ route('github.metadata') }}">
+        data-metadata-url="{{ route('github.metadata') }}"
+        data-github-connected="{{ !empty($githubConnected) ? 'true' : 'false' }}"
+        data-github-connect-url="{{ route('github.redirect') }}">
         @include('partials.sidebar')
 
         <main class="imports-workspace">
@@ -44,6 +46,11 @@
                         <h2 class="imports-panel__title" style="margin: 0;">Recent Commits</h2>
                     </header>
                     <ul class="imports-history-list imports-activity-list imports-commit-list">
+                        @if (empty($githubConnected))
+                            <li class="imports-history-item" style="color: var(--text-soft); font-size: 12px;">
+                                VCS not connected.
+                            </li>
+                        @else
                         @forelse ($recentCommits ?? [] as $commit)
                             <li class="imports-history-item imports-activity-item imports-commit-item">
                                 <div class="imports-activity-flex imports-commit-flex">
@@ -70,6 +77,7 @@
                                 {{ $recentCommitsUnavailableReason ?? 'No commits available.' }}
                             </li>
                         @endforelse
+                        @endif
                     </ul>
                 </article>
             </section>

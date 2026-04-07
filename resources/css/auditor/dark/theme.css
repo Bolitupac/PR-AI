@@ -332,6 +332,25 @@ html[data-theme="dark"] .msg.ai .file-line-ref {
     color: #c5b9da;
 }
 
+html[data-theme="dark"] .msg-followups-label {
+    color: rgba(219, 229, 255, 0.62);
+}
+
+html[data-theme="dark"] .msg-followup-chip {
+    background: #1b2740;
+    color: #eef4ff;
+    box-shadow: 0 10px 22px rgba(0, 8, 25, 0.24);
+}
+
+html[data-theme="dark"] .msg-followup-chip:hover {
+    background: #223251;
+    box-shadow: 0 14px 28px rgba(0, 8, 25, 0.3);
+}
+
+html[data-theme="dark"] .msg-followup-chip:focus-visible {
+    box-shadow: 0 0 0 3px rgba(72, 138, 255, 0.22);
+}
+
 html[data-theme="dark"] .audit-scorecard {
     background: transparent;
     border-color: rgba(197, 185, 218, 0.18);

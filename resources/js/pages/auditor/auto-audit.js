@@ -4,6 +4,8 @@ import { renderMermaidIn } from './mermaid';
 import { chatContextStore } from './chat-context-store';
 import { buildAuditMetadata, stripLeadingAuditTitle } from './audit-metadata';
 import { extractInlineComments, stripInlineCommentsBlock } from './ai-inline-comments';
+import { attachFollowUpSuggestions, clearFollowUpSuggestions, fetchFollowUpSuggestions } from './chat-followups';
+import { sendTextToChat } from './chat-input';
 
 // Auto-runs AI audit whenever a diff is selected from any source.
 export function initAutoAudit() {
@@ -13,6 +15,7 @@ export function initAutoAudit() {
     if (!responseArea) return;
 
     const hideEmptyState = () => emptyState?.classList.add('is-hidden');
+    let followUpRequestId = 0;
 
     const appendMessage = (text, role) => {
         const message = document.createElement('div');
@@ -48,7 +51,7 @@ export function initAutoAudit() {
     };
 
     const appendScoreCard = (meta = null, auditMeta = null) => {
-        if (!meta) return;
+        if (!meta) return null;
         const scoreToRiskClass = (score) => {
             if (!Number.isInteger(score)) return 'is-risk';
             if (score >= 80) return 'is-risk-critical';
@@ -110,6 +113,7 @@ export function initAutoAudit() {
         `;
         responseArea.appendChild(card);
         responseArea.scrollTop = responseArea.scrollHeight;
+        return card;
     };
 
     const stripAuditMeta = (text) => {
@@ -151,6 +155,8 @@ export function initAutoAudit() {
         if (!diffText.trim()) return;
 
         hideEmptyState();
+        clearFollowUpSuggestions(responseArea);
+        followUpRequestId += 1;
 
         const source = detail.source || 'upload';
         const auditMeta = buildAuditMetadata(detail);
@@ -266,7 +272,24 @@ export function initAutoAudit() {
             replyNode.innerHTML = renderChatMarkdown(cleanReply);
             renderMermaidIn(replyNode);
             chatContextStore.push('assistant', `Audit summary:\n${cleanReply}`);
-            appendScoreCard(doneMeta, auditMeta);
+            const scoreCardNode = appendScoreCard(doneMeta, auditMeta);
+            const requestId = ++followUpRequestId;
+            const suggestions = await fetchFollowUpSuggestions({
+                assistantText: cleanReply,
+                userText: `Audit this ${source} diff`,
+                model,
+            }).catch(() => []);
+
+            if (requestId === followUpRequestId) {
+                attachFollowUpSuggestions({
+                    responseArea,
+                    messageNode: scoreCardNode || replyNode,
+                    suggestions,
+                    onSelect: (suggestion) => {
+                        sendTextToChat(suggestion, { source: 'suggestion' });
+                    },
+                });
+            }
             document.dispatchEvent(new CustomEvent('auditor:ai-comments-updated', {
                 detail: { comments: aiInlineComments },
             }));

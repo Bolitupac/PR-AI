@@ -76,6 +76,47 @@ html[data-theme="dark"] .imports-import-status.is-loading::after {
     border-top-color: #c5b9da;
 }
 
+.imports-login-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 180px;
+    min-height: 46px;
+    padding: 0 22px;
+    border-radius: 999px;
+    border: 1px solid rgba(11, 120, 255, 0.18);
+    background: linear-gradient(135deg, #0b84ff 0%, #5b8dff 100%);
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 14px 28px rgba(11, 120, 255, 0.2);
+    transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+}
+
+.imports-login-btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.03) saturate(1.04);
+    box-shadow: 0 18px 32px rgba(11, 120, 255, 0.24);
+}
+
+.imports-login-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(11, 120, 255, 0.16), 0 18px 32px rgba(11, 120, 255, 0.24);
+}
+
+html[data-theme="dark"] .imports-login-btn {
+    border-color: rgba(140, 190, 255, 0.22);
+    background: linear-gradient(135deg, #1f7dff 0%, #66a2ff 100%);
+    color: #f9fbff;
+    box-shadow: 0 16px 30px rgba(0, 12, 40, 0.42);
+}
+
+html[data-theme="dark"] .imports-login-btn:hover {
+    filter: brightness(1.05) saturate(1.02);
+    box-shadow: 0 20px 34px rgba(0, 12, 40, 0.5);
+}
+
 @media (max-width: 1100px) {
     .imports-workspace {
         grid-template-columns: 1fr;
