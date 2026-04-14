@@ -358,6 +358,88 @@ html[data-theme="dark"] .audit-scorecard {
     backdrop-filter: none;
 }
 
+html[data-theme="dark"] .reports-shell {
+    background:
+        radial-gradient(circle at 12% 14%, rgba(0, 133, 255, 0.18), transparent 28%),
+        linear-gradient(180deg, rgba(12, 16, 34, 0.92), rgba(8, 11, 24, 0.96)),
+        #090d18;
+}
+
+html[data-theme="dark"] .reports-topbar,
+html[data-theme="dark"] .reports-panel {
+    background: rgba(16, 20, 44, 0.78);
+    border-color: rgba(197, 185, 218, 0.18);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+}
+
+html[data-theme="dark"] .reports-repo-picker select,
+html[data-theme="dark"] .reports-draft-block,
+html[data-theme="dark"] .reports-action-card,
+html[data-theme="dark"] .reports-chat-composer textarea {
+    background: rgba(14, 19, 38, 0.9);
+    border-color: rgba(197, 185, 218, 0.14);
+    color: #eef4ff;
+}
+
+html[data-theme="dark"] .reports-draft-body {
+    background: linear-gradient(180deg, rgba(10, 14, 30, 0.92), rgba(8, 12, 24, 0.98));
+}
+
+html[data-theme="dark"] .reports-section-number,
+html[data-theme="dark"] .reports-add-btn,
+html[data-theme="dark"] .reports-chat-composer button,
+html[data-theme="dark"] .reports-action-card.is-primary,
+html[data-theme="dark"] .reports-action-icon {
+    background: rgba(0, 133, 255, 0.16);
+    color: #89beff;
+}
+
+html[data-theme="dark"] .reports-draft-heading,
+html[data-theme="dark"] .reports-draft-copy,
+html[data-theme="dark"] .reports-section-toggle {
+    color: #eef4ff;
+}
+
+html[data-theme="dark"] .reports-add-btn,
+html[data-theme="dark"] .reports-chat-composer button {
+    background: linear-gradient(135deg, #1f7dff 0%, #66a2ff 100%);
+    color: #f9fbff;
+}
+
+html[data-theme="dark"] .reports-status-badge,
+html[data-theme="dark"] .reports-chat-msg.ai {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(219, 229, 255, 0.78);
+}
+
+html[data-theme="dark"] .reports-chat-msg.user {
+    background: rgba(0, 133, 255, 0.18);
+    color: #a8d0ff;
+}
+
+html[data-theme="dark"] .reports-drag-handle,
+html[data-theme="dark"] .reports-panel-head p,
+html[data-theme="dark"] .reports-subtitle,
+html[data-theme="dark"] .reports-repo-picker span,
+html[data-theme="dark"] .reports-action-card span {
+    color: rgba(219, 229, 255, 0.62);
+}
+
+html[data-theme="dark"] .reports-action-card:hover {
+    border-color: rgba(104, 154, 255, 0.22);
+    box-shadow: 0 16px 28px rgba(0, 8, 25, 0.28);
+}
+
+html[data-theme="dark"] .reports-action-card.is-primary .reports-action-icon {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="dark"] .reports-chat-composer,
+html[data-theme="dark"] .reports-panel-head,
+html[data-theme="dark"] .reports-section-footer {
+    border-color: rgba(197, 185, 218, 0.14);
+}
+
 html[data-theme="dark"] .chat-container {
     background: rgba(16, 20, 44, 0.82);
     border-color: rgba(197, 185, 218, 0.22);

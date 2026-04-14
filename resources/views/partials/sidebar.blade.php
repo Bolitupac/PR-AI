@@ -42,6 +42,19 @@
             <span class="sidebar-label">Import</span>
         </a>
 
+        <a class="sidebar-item {{ request()->routeIs('reports.*') ? 'is-active' : '' }}"
+            href="{{ route('reports.index') }}" aria-label="Reports">
+            <span class="sidebar-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                    <path d="M6 4.5h8.8l3.2 3.2v11.8a1.8 1.8 0 0 1-1.8 1.8H6A1.8 1.8 0 0 1 4.2 19.5V6.3A1.8 1.8 0 0 1 6 4.5Z"
+                        fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+                    <path d="M14.8 4.5v3.2H18M8 10h8M8 13.5h8M8 17h5.2" fill="none" stroke="currentColor"
+                        stroke-width="1.5" stroke-linecap="round" />
+                </svg>
+            </span>
+            <span class="sidebar-label">Reports</span>
+        </a>
+
         @isset($vcsProviders)
             <div class="sidebar-vcs-group"
                 style="margin-top: 12px; border-top: 1px solid var(--panel-stroke); padding-top: 12px; display:flex; flex-direction:column; gap:4px;">
