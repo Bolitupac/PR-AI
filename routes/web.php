@@ -22,7 +22,7 @@ Route::get('/auditor', function () {
 });
 
 Route::get('/imports', [ImportsController::class, 'index'])->name('imports.index');
-Route::view('/reports', 'reports')->name('reports.index');
+
 
 Route::get('/auth/github', [GitHubOAuthController::class, 'redirect'])->name('github.redirect');
 Route::get('/auth/github/callback', [GitHubOAuthController::class, 'callback'])->name('github.callback');

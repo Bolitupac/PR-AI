@@ -16,8 +16,9 @@ import { initThemeToggle } from './theme-toggle';
 import { initSidebar } from './sidebar';
 import { initChatScrollBottomButton } from './chat-scroll-bottom';
 import { createChatStatus } from './chat-status';
-import { createLoadingProgress } from './loading-progress';
 import { fetchGitPullComments } from './diff-comments/api';
+import { initAppsModal } from './document-generator/apps-modal';
+import { initDocGenMode } from './document-generator/doc-gen-mode';
 
 export function initAuditorPage() {
     if (!document.getElementById('ai-response-area')) return;
@@ -38,6 +39,8 @@ export function initAuditorPage() {
     initSettingsAiKey();
     initSettingsAiPreferences();
     initLoadingInteractions();
+    initAppsModal();
+    initDocGenMode();
 
     const responseArea = document.getElementById('ai-response-area');
 

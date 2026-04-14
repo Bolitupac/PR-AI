@@ -42,18 +42,19 @@
             <span class="sidebar-label">Import</span>
         </a>
 
-        <a class="sidebar-item {{ request()->routeIs('reports.*') ? 'is-active' : '' }}"
-            href="{{ route('reports.index') }}" aria-label="Reports">
-            <span class="sidebar-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                    <path d="M6 4.5h8.8l3.2 3.2v11.8a1.8 1.8 0 0 1-1.8 1.8H6A1.8 1.8 0 0 1 4.2 19.5V6.3A1.8 1.8 0 0 1 6 4.5Z"
-                        fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
-                    <path d="M14.8 4.5v3.2H18M8 10h8M8 13.5h8M8 17h5.2" fill="none" stroke="currentColor"
-                        stroke-width="1.5" stroke-linecap="round" />
-                </svg>
-            </span>
-            <span class="sidebar-label">Reports</span>
-        </a>
+        <div class="sidebar-item-wrap install-apps-wrap" style="position: relative;">
+            <button class="sidebar-item" id="apps-trigger-btn" type="button" aria-label="Apps">
+                <span class="sidebar-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                        <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                        <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                        <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                        <path d="M3 16.5C3 14.567 4.567 13 6.5 13C8.433 13 10 14.567 10 16.5C10 18.433 8.433 20 6.5 20C4.567 20 3 18.433 3 16.5Z"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-label">Apps</span>
+            </button>
+        </div>
 
         @isset($vcsProviders)
             <div class="sidebar-vcs-group"

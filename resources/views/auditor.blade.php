@@ -16,6 +16,72 @@
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo 512 transp bg white color svg.svg') }}">
     <title>Git PULL Assistant | Auditor</title>
     @vite(['resources/css/auditor-ui.css', 'resources/js/app.js'])
+    <style>
+        .doc-gen-glass {
+            padding: 6px 14px; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 9999px; 
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            color: var(--text-main);
+            transition: all 0.2s ease;
+        }
+        [data-theme="dark"] .doc-gen-glass {
+            border-color: rgba(255, 255, 255, 0.15); 
+            background: rgba(255, 255, 255, 0.08);
+        }
+        [data-theme="light"] .doc-gen-glass {
+            border-color: rgba(0, 0, 0, 0.1); 
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(16px);
+        }
+        .doc-gen-text {
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .doc-gen-icon {
+            display: none;
+            width: 18px;
+            height: 18px;
+            opacity: 0.9;
+        }
+        .doc-gen-close-btn {
+            width: 24px; 
+            height: 24px; 
+            min-width: 24px; 
+            padding: 0; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            border-radius: 50%; 
+            background: transparent; 
+            border: none; 
+            cursor: pointer;
+            transition: background 0.2s;
+            color: inherit;
+        }
+        .doc-gen-close-btn:hover {
+            background: rgba(128, 128, 128, 0.2);
+        }
+        .doc-gen-close-svg {
+            width: 15px; 
+            height: 15px; 
+        }
+        @media (max-width: 768px) {
+            .doc-gen-text { display: none; }
+            .doc-gen-icon { display: block; }
+            .doc-gen-glass { padding: 8px; gap: 0; }
+            .doc-gen-close-btn { display: none; }
+            .doc-gen-glass:hover .doc-gen-close-btn { display: flex; }
+            .doc-gen-glass:hover .doc-gen-icon { display: none; }
+        }
+    </style>
 </head>
 
 <body>
@@ -89,6 +155,7 @@
                             </button>
                         </div>
                         <div class="chat-tools-row">
+
                             <div class="voice-record-chip-wrap">
                                 <div class="voice-record-chip" id="voice-record-chip">
                                     <button class="action-btn ghost" id="mic-btn" type="button" aria-label="Mic">
@@ -111,6 +178,23 @@
                                 <span class="tiny-action-hint" role="tooltip">Upload or import file/repo</span>
                                 @include('partials.import-hover-menu')
                             </div>
+                            <div id="doc-gen-chip-wrap" class="doc-gen-chip-wrap is-hidden" style="margin-left: 8px;">
+                                <div class="doc-gen-glass">
+                                    <svg class="doc-gen-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                                        <polyline points="10 9 9 9 8 9"></polyline>
+                                    </svg>
+                                    <span class="doc-gen-text">Document Generator</span>
+                                    <button id="doc-gen-close-btn" class="doc-gen-close-btn" type="button" aria-label="Close">
+                                        <svg class="doc-gen-close-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                                            <path d="M18 6L6 18M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -126,6 +210,7 @@
     @include('partials.import-paste')
     @include('partials.profile-modal')
     @include('partials.settings-modal')
+    @include('partials.apps-modal')
 
     <div class="voice-fab" id="voice-fab">
         <div class="voice-record-chip voice-record-chip--fab" id="voice-record-chip-fab">
