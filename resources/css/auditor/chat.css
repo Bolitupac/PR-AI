@@ -751,25 +751,40 @@ html[data-theme="light"] .msg.ai .mermaid svg .edgeLabel rect {
 
 .input-send-btn {
     position: absolute;
-    right: 2px;
+    right: 4px;
     top: 50%;
     transform: translateY(-50%);
-    width: 24px;
-    height: 24px;
+    width: 34px;
+    height: 34px;
     border-radius: 999px;
     z-index: 3;
     border: 0 !important;
-    background: transparent !important;
+    background: linear-gradient(180deg, #dff0ff 0%, #cfe7ff 100%) !important;
+    color: #2d6fd6;
+    display: grid;
+    place-items: center;
+    box-shadow:
+        0 8px 18px rgba(47, 134, 255, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.78);
     animation: none !important;
     padding: 0;
-    transition: top 0.24s cubic-bezier(0.22, 1, 0.36, 1), transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: all 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.input-send-btn:hover {
+    background: linear-gradient(180deg, #e9f5ff 0%, #d8edff 100%) !important;
+    color: #1759c2;
+    box-shadow:
+        0 10px 22px rgba(47, 134, 255, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.86);
 }
 
 .input-send-btn .action-icon {
-    width: 14px;
-    height: 14px;
-    filter: none;
-    opacity: 0.72;
+    width: 15px;
+    height: 15px;
+    filter: brightness(0) saturate(100%) invert(35%) sepia(43%) saturate(5451%) hue-rotate(205deg) brightness(97%) contrast(93%);
+    opacity: 0.95;
+    margin-right: 2px;
 }
 
 .chat-container:not(.is-active) .input-send-btn {

@@ -17,4 +17,29 @@ export function initDocGenMode() {
             chipWrap.classList.add('is-hidden');
         });
     }
+
+    const chatContainer = document.querySelector('.chat-container');
+    const chatInputWrap = document.querySelector('.chat-input-wrap');
+    const chatToolsRow = document.querySelector('.chat-tools-row');
+    const sendBtn = document.getElementById('send-btn');
+    
+    if (chatContainer && chatInputWrap && chatToolsRow && sendBtn) {
+        const observer = new MutationObserver(() => {
+            if (chatContainer.classList.contains('is-active')) {
+                if (chipWrap.parentElement !== chatToolsRow) {
+                    chatToolsRow.appendChild(chipWrap);
+                }
+            } else {
+                if (chipWrap.parentElement !== chatInputWrap) {
+                    chatInputWrap.insertBefore(chipWrap, sendBtn);
+                }
+            }
+        });
+        observer.observe(chatContainer, { attributes: true, attributeFilter: ['class'] });
+        
+        if (!chatContainer.classList.contains('is-active')) {
+            chatInputWrap.insertBefore(chipWrap, sendBtn);
+        }
+    }
 }
+

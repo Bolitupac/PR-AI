@@ -18,10 +18,10 @@
     @vite(['resources/css/auditor-ui.css', 'resources/js/app.js'])
     <style>
         .doc-gen-glass {
-            padding: 6px 14px; 
+            padding: 4px 10px; 
             display: flex; 
             align-items: center; 
-            gap: 12px;
+            gap: 4px;
             border: 1px solid rgba(255, 255, 255, 0.1); 
             border-radius: 9999px; 
             background: rgba(255, 255, 255, 0.05);
@@ -41,22 +41,30 @@
             backdrop-filter: blur(16px);
         }
         .doc-gen-text {
-            font-size: 14px;
+            font-size: 13.5px;
             font-weight: 500;
             transition: all 0.2s ease;
         }
+        .doc-gen-icon-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            margin-left: -2px;
+        }
         .doc-gen-icon {
-            display: none;
-            width: 18px;
-            height: 18px;
+            display: block;
+            width: 15px;
+            height: 15px;
             opacity: 0.9;
         }
         .doc-gen-close-btn {
-            width: 24px; 
-            height: 24px; 
-            min-width: 24px; 
+            display: none;
+            width: 22px; 
+            height: 22px; 
+            min-width: 22px; 
             padding: 0; 
-            display: flex; 
             align-items: center; 
             justify-content: center; 
             border-radius: 50%; 
@@ -70,16 +78,27 @@
             background: rgba(128, 128, 128, 0.2);
         }
         .doc-gen-close-svg {
-            width: 15px; 
-            height: 15px; 
+            width: 14px; 
+            height: 14px; 
         }
+
+        .doc-gen-glass:hover .doc-gen-icon { display: none; }
+        .doc-gen-glass:hover .doc-gen-close-btn { display: flex; }
+
+        .chat-input-wrap .doc-gen-chip-wrap {
+            position: absolute;
+            right: 44px;
+            top: 50%;
+            transform: translateY(-50%);
+            margin: 0 !important;
+            z-index: 10;
+        }
+        .chat-container:not(.is-active) .doc-gen-glass { padding: 4px; gap: 0; border-color: transparent; background: transparent; box-shadow: none; border-radius: 50%; justify-content: center; }
+        .chat-container:not(.is-active) .doc-gen-text { display: none; }
+
         @media (max-width: 768px) {
             .doc-gen-text { display: none; }
-            .doc-gen-icon { display: block; }
-            .doc-gen-glass { padding: 8px; gap: 0; }
-            .doc-gen-close-btn { display: none; }
-            .doc-gen-glass:hover .doc-gen-close-btn { display: flex; }
-            .doc-gen-glass:hover .doc-gen-icon { display: none; }
+            .doc-gen-glass { padding: 4px; gap: 0; justify-content: center; border-radius: 50%; }
         }
     </style>
 </head>
@@ -88,7 +107,7 @@
     @php
         $vcsProviders = [
             ['name' => 'GitHub', 'state' => 'Connected'],
-            ['name' => 'GitLab', 'state' => 'Available'],
+            ['name' => 'GitLab', 'state' => 'Unavailable'],
             ['name' => 'Bitbucket', 'state' => 'Available'],
             ['name' => 'Azure DevOps', 'state' => 'Available'],
         ];
@@ -180,19 +199,21 @@
                             </div>
                             <div id="doc-gen-chip-wrap" class="doc-gen-chip-wrap is-hidden" style="margin-left: 8px;">
                                 <div class="doc-gen-glass">
-                                    <svg class="doc-gen-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                        <polyline points="14 2 14 8 20 8"></polyline>
-                                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                                        <polyline points="10 9 9 9 8 9"></polyline>
-                                    </svg>
-                                    <span class="doc-gen-text">Document Generator</span>
-                                    <button id="doc-gen-close-btn" class="doc-gen-close-btn" type="button" aria-label="Close">
-                                        <svg class="doc-gen-close-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                                            <path d="M18 6L6 18M6 6l12 12"></path>
+                                    <div class="doc-gen-icon-container">
+                                        <svg class="doc-gen-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2-2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                                            <polyline points="10 9 9 9 8 9"></polyline>
                                         </svg>
-                                    </button>
+                                        <button id="doc-gen-close-btn" class="doc-gen-close-btn" type="button" aria-label="Close">
+                                            <svg class="doc-gen-close-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                                                <path d="M18 6L6 18M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <span class="doc-gen-text">DocGen</span>
                                 </div>
                             </div>
                         </div>

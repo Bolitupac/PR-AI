@@ -18,8 +18,8 @@
                                 </svg>
                             </span>
                             <div>
-                                <div class="settings-provider-name" style="font-weight: 500; font-size: 15px; color: var(--text-main);">Document Generator</div>
-                                <div class="settings-provider-sub" style="font-size: 13px; color: var(--text-sub);">Generate structured markdown reports from chat</div>
+                                <div class="settings-provider-name" style="font-weight: 500; font-size: 15px; color: var(--text-main);">DocGen</div>
+                                <div class="settings-provider-sub" style="font-size: 13px; color: var(--text-sub);">for generation documents</div>
                             </div>
                         </div>
                         <span class="settings-provider-pill">Activate</span>
