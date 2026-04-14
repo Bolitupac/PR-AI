@@ -11,7 +11,7 @@
                 <article class="settings-provider-item" id="doc-gen-toggle-btn" style="cursor: pointer; transition: background 0.2s;">
                     <div class="settings-provider-top">
                         <div class="settings-provider-brand">
-                            <span class="settings-provider-logo" aria-hidden="true" style="display:flex; align-items:center; justify-content:center; background:var(--panel-stroke); border-radius:8px; width:40px; height:40px;">
+                            <span class="settings-provider-logo" id="doc-gen-modal-icon" aria-hidden="true" style="display:flex; align-items:center; justify-content:center; background:var(--panel-stroke); border-radius:8px; width:40px; height:40px;">
                                 <svg viewBox="0 0 24 24" focusable="false" style="width:20px; height:20px; color:var(--text-main);">
                                     <path d="M7 4h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="1.8" />
                                     <path d="M7 8h10M7 12h10M7 16h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
@@ -19,10 +19,10 @@
                             </span>
                             <div>
                                 <div class="settings-provider-name" style="font-weight: 500; font-size: 15px; color: var(--text-main);">DocGen</div>
-                                <div class="settings-provider-sub" style="font-size: 13px; color: var(--text-sub);">for generation documents</div>
+                                <div class="settings-provider-sub" style="font-size: 13px; color: var(--text-sub);">For generating documents</div>
                             </div>
                         </div>
-                        <span class="settings-provider-pill">Activate</span>
+                        <span class="settings-provider-pill" id="doc-gen-modal-pill">Activate</span>
                     </div>
                 </article>
             </div>

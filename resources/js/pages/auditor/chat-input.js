@@ -1,4 +1,5 @@
 import { createChatStatus } from './chat-status';
+import { isDocGenModeEnabled } from './document-generator/doc-gen-mode';
 import { renderChatMarkdown } from './chat-markdown';
 import { renderMermaidIn } from './mermaid';
 import { chatContextStore } from './chat-context-store';
@@ -61,7 +62,7 @@ export function initChatInput() {
         const hasText = promptInput.value.trim().length > 0;
         const hasFocus = document.activeElement === promptInput;
         const isBusy = Boolean(activeRequest);
-        chatContainer.classList.toggle('is-active', hasText || hasFocus || isBusy);
+        chatContainer.classList.toggle('is-active', hasText || hasFocus || isBusy || isDocGenModeEnabled());
         if (isBusy !== lastBusyState) {
             document.dispatchEvent(new CustomEvent('auditor:chat-busy-changed', { detail: { busy: isBusy } }));
             lastBusyState = isBusy;
@@ -215,9 +216,6 @@ export function initChatInput() {
         if (activeRequest) return false;
         const text = String(rawText ?? '').trim();
         if (!text) {
-            const status = createChatStatus({ container: responseArea, anchorNode: null });
-            status.set('Validating message...');
-            status.markError('Message is empty.');
             syncComposerState();
             return false;
         }
@@ -496,4 +494,7 @@ export function initChatInput() {
 
     resizeInput();
     syncComposerState();
+
+    document.addEventListener('auditor:doc-gen-activated', syncComposerState);
+    document.addEventListener('auditor:doc-gen-deactivated', syncComposerState);
 }

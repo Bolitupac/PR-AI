@@ -754,9 +754,9 @@ html[data-theme="light"] .msg.ai .mermaid svg .edgeLabel rect {
     right: 4px;
     top: 50%;
     transform: translateY(-50%);
-    width: 34px;
-    height: 34px;
-    border-radius: 999px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50% !important;
     z-index: 3;
     border: 0 !important;
     background: linear-gradient(180deg, #dff0ff 0%, #cfe7ff 100%) !important;
@@ -784,7 +784,6 @@ html[data-theme="light"] .msg.ai .mermaid svg .edgeLabel rect {
     height: 15px;
     filter: brightness(0) saturate(100%) invert(35%) sepia(43%) saturate(5451%) hue-rotate(205deg) brightness(97%) contrast(93%);
     opacity: 0.95;
-    margin-right: 2px;
 }
 
 .chat-container:not(.is-active) .input-send-btn {

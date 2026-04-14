@@ -1,20 +1,44 @@
+import { createChatStatus } from '../chat-status';
+
+let isActive = false;
+
+export function isDocGenModeEnabled() {
+    return isActive;
+}
+
 export function initDocGenMode() {
     const chipWrap = document.getElementById('doc-gen-chip-wrap');
     if (!chipWrap) return;
 
-    let isDocGenActive = false;
+    const showStatus = (msg) => {
+        const responseArea = document.getElementById('ai-response-area');
+        if (!responseArea) return;
+        
+        const status = createChatStatus({ container: responseArea, anchorNode: null });
+        status.markSuccess(msg);
+        status.remove(3000);
+    };
+
+    const deactivate = () => {
+        isActive = false;
+        chipWrap.classList.add('is-hidden');
+        showStatus('DocGen Mode Disabled');
+    };
 
     document.addEventListener('auditor:doc-gen-activated', () => {
-        isDocGenActive = true;
+        isActive = true;
         chipWrap.classList.remove('is-hidden');
+        showStatus('DocGen Mode Enabled');
+        document.querySelector('.chat-container')?.classList.add('is-active');
     });
+
+    document.addEventListener('auditor:doc-gen-deactivated', deactivate);
 
     const closeBtn = document.getElementById('doc-gen-close-btn');
     if (closeBtn) {
         closeBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            isDocGenActive = false;
-            chipWrap.classList.add('is-hidden');
+            document.dispatchEvent(new CustomEvent('auditor:doc-gen-deactivated'));
         });
     }
 

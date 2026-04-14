@@ -22,23 +22,25 @@
             display: flex; 
             align-items: center; 
             gap: 4px;
-            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border: 1px solid rgba(250, 204, 21, 0.3); 
             border-radius: 9999px; 
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(250, 204, 21, 0.15);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            color: var(--text-main);
+            color: #eab308;
             transition: all 0.2s ease;
         }
         [data-theme="dark"] .doc-gen-glass {
-            border-color: rgba(255, 255, 255, 0.15); 
-            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(250, 204, 21, 0.35); 
+            background: rgba(250, 204, 21, 0.15);
+            color: #fde047;
         }
         [data-theme="light"] .doc-gen-glass {
-            border-color: rgba(0, 0, 0, 0.1); 
-            background: rgba(255, 255, 255, 0.6);
+            border-color: rgba(234, 179, 8, 0.3); 
+            background: rgba(253, 224, 71, 0.6);
             backdrop-filter: blur(16px);
+            color: #854d0e;
         }
         .doc-gen-text {
             font-size: 13.5px;
@@ -87,12 +89,17 @@
 
         .chat-input-wrap .doc-gen-chip-wrap {
             position: absolute;
-            right: 44px;
+            right: 48px;
             top: 50%;
             transform: translateY(-50%);
             margin: 0 !important;
             z-index: 10;
         }
+        
+        .doc-gen-chip-wrap.is-hidden {
+            display: none !important;
+        }
+
         .chat-container:not(.is-active) .doc-gen-glass { padding: 4px; gap: 0; border-color: transparent; background: transparent; box-shadow: none; border-radius: 50%; justify-content: center; }
         .chat-container:not(.is-active) .doc-gen-text { display: none; }
 
