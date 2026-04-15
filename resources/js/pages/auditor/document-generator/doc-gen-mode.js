@@ -1,4 +1,8 @@
 import { createChatStatus } from '../chat-status';
+import {
+    resetDocGenState,
+    setDocGenActive,
+} from './doc-gen-store';
 
 let isActive = false;
 
@@ -22,12 +26,15 @@ export function initDocGenMode() {
     const deactivate = () => {
         isActive = false;
         chipWrap.classList.add('is-hidden');
+        resetDocGenState();
         showStatus('DocGen Mode Disabled');
     };
 
     document.addEventListener('auditor:doc-gen-activated', () => {
         isActive = true;
         chipWrap.classList.remove('is-hidden');
+        resetDocGenState({ keepActive: true });
+        setDocGenActive(true);
         showStatus('DocGen Mode Enabled');
         document.querySelector('.chat-container')?.classList.add('is-active');
     });
@@ -66,4 +73,3 @@ export function initDocGenMode() {
         }
     }
 }
-

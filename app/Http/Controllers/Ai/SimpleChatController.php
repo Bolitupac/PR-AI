@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Ai;
 
 use App\Http\Controllers\Controller;
 use App\Services\Ai\OpenAiSimpleChatService;
+use App\Services\DocGen\DocGenIntentDetector;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,8 +13,10 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SimpleChatController extends Controller
 {
-    public function __construct(private readonly OpenAiSimpleChatService $openAiSimpleChatService)
-    {
+    public function __construct(
+        private readonly OpenAiSimpleChatService $openAiSimpleChatService,
+        private readonly DocGenIntentDetector $docGenIntentDetector,
+    ) {
     }
 
     // Accepts one message and returns one AI reply.
@@ -27,17 +30,28 @@ class SimpleChatController extends Controller
             'history' => ['nullable', 'array', 'max:20'],
             'history.*.role' => ['required_with:history', 'string', Rule::in(['user', 'assistant'])],
             'history.*.content' => ['required_with:history', 'string', 'max:8000'],
+            'docgen_mode_active' => ['nullable', 'boolean'],
         ]);
 
         $message = (string) $payload['message'];
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
         $history = isset($payload['history']) && is_array($payload['history']) ? $payload['history'] : [];
         $activeAuditContext = trim((string) $request->session()->get('active_audit_context', ''));
+        $docGenModeActive = (bool) ($payload['docgen_mode_active'] ?? false);
 
-        $messageForModel = $message;
+        if ($this->docGenIntentDetector->matches($message)) {
+            return response()->json([
+                'provider' => 'openai',
+                'model' => $selectedModel ?? (string) config('openai.model', 'gpt-4o-mini'),
+                'reply' => 'This looks like a document-generation request. Turn on DocGen mode in Apps, then send the prompt again so I can return it in document format.',
+            ]);
+        }
+
+        $messageForModel = $this->prependDocGenModeTag($message, $docGenModeActive);
         if ($activeAuditContext !== '') {
             $messageForModel =
-                "You have active code audit context below.\n"
+                $this->buildDocGenModeInstruction($docGenModeActive)
+                ."You have active code audit context below.\n"
                 ."Use it when relevant to the user's question. "
                 ."Answer naturally like a human, but when you mention code location include file and line.\n\n"
                 ."ACTIVE AUDIT CONTEXT:\n{$activeAuditContext}\n\n"
@@ -49,7 +63,8 @@ class SimpleChatController extends Controller
         $reply = $this->openAiSimpleChatService->replyWithHistory($messageForModel, $history, $selectedModel, Auth::user());
         if ($this->requiresEvidence($message) && !$this->hasEvidenceReference($reply)) {
             $strictMessage =
-                "Answer naturally and directly.\n"
+                $this->buildDocGenModeInstruction($docGenModeActive)
+                ."Answer naturally and directly.\n"
                 ."If available, include concrete code evidence like file:line and a short snippet.\n"
                 ."If not found in context, say that clearly.\n\n"
                 ."Question: {$message}";
@@ -78,18 +93,21 @@ class SimpleChatController extends Controller
             'history' => ['nullable', 'array', 'max:20'],
             'history.*.role' => ['required_with:history', 'string', Rule::in(['user', 'assistant'])],
             'history.*.content' => ['required_with:history', 'string', 'max:8000'],
+            'docgen_mode_active' => ['nullable', 'boolean'],
         ]);
 
         $message = (string) $payload['message'];
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
         $history = isset($payload['history']) && is_array($payload['history']) ? $payload['history'] : [];
         $activeAuditContext = trim((string) $request->session()->get('active_audit_context', ''));
+        $docGenModeActive = (bool) ($payload['docgen_mode_active'] ?? false);
 
         if ($activeAuditContext === '') {
             return response()->json(['reply' => '[INLINE_COMMENTS][][/INLINE_COMMENTS]']);
         }
 
-        $messageForModel = $this->buildInlineCommentOnlyPrompt($message, $activeAuditContext);
+        $messageForModel = $this->buildDocGenModeInstruction($docGenModeActive)
+            .$this->buildInlineCommentOnlyPrompt($message, $activeAuditContext);
         $reply = $this->openAiSimpleChatService->replyWithHistory($messageForModel, $history, $selectedModel, Auth::user());
 
         return response()->json([
@@ -107,19 +125,21 @@ class SimpleChatController extends Controller
             'user_message' => ['required', 'string', 'max:5000'],
             'assistant_reply' => ['required', 'string', 'max:20000'],
             'model' => ['nullable', 'string', Rule::in($allowedModels)],
+            'docgen_mode_active' => ['nullable', 'boolean'],
         ]);
 
         $userMessage = trim((string) $payload['user_message']);
         $assistantReply = trim((string) $payload['assistant_reply']);
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
         $activeAuditContext = trim((string) $request->session()->get('active_audit_context', ''));
+        $docGenModeActive = (bool) ($payload['docgen_mode_active'] ?? false);
 
         if ($userMessage === '' || $assistantReply === '') {
             return response()->json(['suggestions' => []]);
         }
 
         $reply = $this->openAiSimpleChatService->replyWithPrompt(
-            $this->followUpsSystemPrompt(),
+            $this->buildDocGenModeInstruction($docGenModeActive).$this->followUpsSystemPrompt(),
             $this->buildFollowUpsPrompt($userMessage, $assistantReply, $activeAuditContext),
             $selectedModel,
             Auth::user()
@@ -143,17 +163,39 @@ class SimpleChatController extends Controller
             'history' => ['nullable', 'array', 'max:20'],
             'history.*.role' => ['required_with:history', 'string', Rule::in(['user', 'assistant'])],
             'history.*.content' => ['required_with:history', 'string', 'max:8000'],
+            'docgen_mode_active' => ['nullable', 'boolean'],
         ]);
 
         $message = (string) $payload['message'];
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
         $history = isset($payload['history']) && is_array($payload['history']) ? $payload['history'] : [];
         $activeAuditContext = trim((string) $request->session()->get('active_audit_context', ''));
+        $docGenModeActive = (bool) ($payload['docgen_mode_active'] ?? false);
 
-        $messageForModel = $message;
+        if ($this->docGenIntentDetector->matches($message)) {
+            $reply = 'This looks like a document-generation request. Turn on DocGen mode in Apps, then send the prompt again so I can return it in document format.';
+
+            return response()->stream(function () use ($reply) {
+                echo ':' . str_repeat(' ', 1024) . "\n\n";
+                echo "event: token\n";
+                echo 'data: '.json_encode(['text' => $reply], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n\n";
+                echo "event: done\n";
+                echo 'data: '.json_encode(['reply' => $reply], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n\n";
+                @ob_flush();
+                flush();
+            }, 200, [
+                'Content-Type' => 'text/event-stream',
+                'Cache-Control' => 'no-cache, no-transform',
+                'Connection' => 'keep-alive',
+                'X-Accel-Buffering' => 'no',
+            ]);
+        }
+
+        $messageForModel = $this->prependDocGenModeTag($message, $docGenModeActive);
         if ($activeAuditContext !== '') {
             $messageForModel =
-                "You have active code audit context below.\n"
+                $this->buildDocGenModeInstruction($docGenModeActive)
+                ."You have active code audit context below.\n"
                 ."Use it when relevant to the user's question. "
                 ."Answer naturally like a human, but when you mention code location include file and line.\n\n"
                 ."ACTIVE AUDIT CONTEXT:\n{$activeAuditContext}\n\n"
@@ -227,6 +269,24 @@ class SimpleChatController extends Controller
     private function hasEvidenceReference(string $reply): bool
     {
         return (bool) preg_match('/[A-Za-z0-9_\/\.\-]+\.[A-Za-z0-9_+-]+:\d+(?:-\d+)?/', $reply);
+    }
+
+    private function prependDocGenModeTag(string $message, bool $docGenModeActive): string
+    {
+        return ($docGenModeActive ? "[DOCGEN_MODE:ACTIVE]\n" : "[DOCGEN_MODE:INACTIVE]\n").$message;
+    }
+
+    private function buildDocGenModeInstruction(bool $docGenModeActive): string
+    {
+        if (!$docGenModeActive) {
+            return "[DOCGEN_MODE:INACTIVE]\n"
+                ."DocGen mode is not active for this request. Answer normally unless the user explicitly enables document mode.\n\n";
+        }
+
+        return "[DOCGEN_MODE:ACTIVE]\n"
+            ."DocGen mode is active for this request.\n"
+            ."If the user asks for a document, report, proposal, spec, summary, plan, or other structured write-up, prefer long-form document generation over short chat answers.\n"
+            ."When generating such content, be more complete, structured, and detailed than usual.\n\n";
     }
 
     private function augmentForInlineComments(string $messageForModel, string $rawMessage, string $activeAuditContext): string

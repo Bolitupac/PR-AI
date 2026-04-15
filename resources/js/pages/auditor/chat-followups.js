@@ -41,6 +41,7 @@ export async function fetchFollowUpSuggestions({
     assistantText,
     userText = '',
     model = '',
+    docGenModeActive = false,
 }) {
     if (shouldSuppressSuggestions(assistantText)) {
         return [];
@@ -58,6 +59,7 @@ export async function fetchFollowUpSuggestions({
             user_message: userText,
             assistant_reply: assistantText,
             model: model || undefined,
+            docgen_mode_active: Boolean(docGenModeActive),
         }),
         credentials: 'same-origin',
     });

@@ -1,10 +1,19 @@
 import { createChatStatus } from './chat-status';
 import { isDocGenModeEnabled } from './document-generator/doc-gen-mode';
+import { parseDocGenMarkers } from './document-generator/doc-gen-markers';
 import { renderChatMarkdown } from './chat-markdown';
 import { renderMermaidIn } from './mermaid';
 import { chatContextStore } from './chat-context-store';
 import { extractInlineComments, stripInlineCommentsBlock } from './ai-inline-comments';
 import { attachFollowUpSuggestions, clearFollowUpSuggestions, fetchFollowUpSuggestions } from './chat-followups';
+import {
+    resetDocGenState,
+    setDocGenLastUserPrompt,
+    setDocGenPreview,
+    setDocGenQuestions,
+    setDocGenReady,
+} from './document-generator/doc-gen-store';
+import { renderDocGenMessage } from './document-generator/doc-gen-renderer';
 
 let chatApi = {
     sendTextToChat: async () => false,
@@ -150,6 +159,7 @@ export function initChatInput() {
                 message: text,
                 model: selectedModel || undefined,
                 history: historyBefore,
+                docgen_mode_active: isDocGenModeEnabled(),
             }),
             credentials: 'same-origin',
         });
@@ -164,7 +174,10 @@ export function initChatInput() {
 
     const fetchChatFallback = async (text, historyBefore) => {
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-        const res = await fetch(sendButton.dataset.chatUrl || '/api/ai/chat', {
+        const chatUrl = isDocGenModeEnabled()
+            ? '/api/ai/docgen/chat'
+            : (sendButton.dataset.chatUrl || '/api/ai/chat');
+        const res = await fetch(chatUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -175,6 +188,7 @@ export function initChatInput() {
                 message: text,
                 model: selectedModel || undefined,
                 history: historyBefore,
+                docgen_mode_active: isDocGenModeEnabled(),
             }),
             credentials: 'same-origin',
         });
@@ -189,12 +203,23 @@ export function initChatInput() {
 
     let followUpRequestId = 0;
 
+    const syncDocGenState = (replyText) => {
+        const parsed = parseDocGenMarkers(replyText);
+        if (parsed.previewMarkdown) {
+            setDocGenPreview(parsed.previewMarkdown);
+        }
+        setDocGenQuestions(parsed.questions);
+        setDocGenReady(parsed.ready);
+        return parsed;
+    };
+
     const renderAiFollowUps = async (messageNode, assistantText, userText) => {
         const requestId = ++followUpRequestId;
         const suggestions = await fetchFollowUpSuggestions({
             assistantText,
             userText,
             model: selectedModel,
+            docGenModeActive: isDocGenModeEnabled(),
         }).catch(() => []);
 
         if (requestId !== followUpRequestId) return;
@@ -212,7 +237,14 @@ export function initChatInput() {
         sendTextInternal(suggestion, { source: 'suggestion' });
     };
 
-    const sendTextInternal = async (rawText, { source = 'text' } = {}) => {
+    const sendTextInternal = async (
+        rawText,
+        {
+            source = 'text',
+            appendUserMessage = true,
+            recordUserMessage = true,
+        } = {}
+    ) => {
         if (activeRequest) return false;
         const text = String(rawText ?? '').trim();
         if (!text) {
@@ -223,9 +255,15 @@ export function initChatInput() {
         hideEmptyState();
         clearFollowUpSuggestions(responseArea);
         followUpRequestId += 1;
-        const previewAnchor = appendMessage(text, 'user');
+        if (isDocGenModeEnabled()) {
+            setDocGenLastUserPrompt(text);
+            resetDocGenState({ keepActive: true });
+        }
+        const previewAnchor = appendUserMessage ? appendMessage(text, 'user') : null;
         const historyBefore = chatContextStore.list();
-        chatContextStore.push('user', text);
+        if (recordUserMessage) {
+            chatContextStore.push('user', text);
+        }
         const status = createChatStatus({ container: responseArea, anchorNode: previewAnchor });
         status.set('Validating message...');
         status.set('Message validated.');
@@ -237,7 +275,9 @@ export function initChatInput() {
         }
         syncComposerState();
 
-        const chatUrl = sendButton.dataset.chatStreamUrl || '/api/ai/chat-stream';
+        const chatUrl = isDocGenModeEnabled()
+            ? '/api/ai/docgen/chat-stream'
+            : (sendButton.dataset.chatStreamUrl || '/api/ai/chat-stream');
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
         const abortController = new AbortController();
         const requestState = { abortController, status, stopped: false, replyNode: null };
@@ -264,6 +304,7 @@ export function initChatInput() {
                     message: text,
                     model: selectedModel || undefined,
                     history: historyBefore,
+                    docgen_mode_active: isDocGenModeEnabled(),
                 }),
                 credentials: 'same-origin',
                 signal: abortController.signal,
@@ -327,16 +368,26 @@ export function initChatInput() {
                         const token = extractOpenAiToken(payload) || String(payload?.text ?? '');
                         if (token !== '') {
                             fullReply += token;
+                            const parsed = syncDocGenState(fullReply);
                             if (requestState.replyNode) {
-                                requestState.replyNode.innerHTML = renderChatMarkdown(stripInlineCommentsBlock(fullReply));
-                                
-                                // Time-based throttle for Mermaid rendering during streaming
-                                const now = Date.now();
-                                if (fullReply.includes('```mermaid') && (now - lastMermaidRender > 800)) {
-                                    renderMermaidIn(requestState.replyNode);
-                                    lastMermaidRender = now;
+                                try {
+                                    if (parsed.previewMarkdown || parsed.questions.length > 0) {
+                                        const now = Date.now();
+                                        if (parsed.previewStreaming || now - lastMermaidRender > 160) {
+                                            await renderDocGenMessage(requestState.replyNode, parsed, responseArea);
+                                            lastMermaidRender = now;
+                                        }
+                                    } else {
+                                        requestState.replyNode.innerHTML = renderChatMarkdown(stripInlineCommentsBlock(parsed.visibleText));
+                                        const now = Date.now();
+                                        if (parsed.visibleText.includes('```mermaid') && (now - lastMermaidRender > 800)) {
+                                            renderMermaidIn(requestState.replyNode);
+                                            lastMermaidRender = now;
+                                        }
+                                    }
+                                } catch (renderError) {
+                                    console.error('DocGen stream render error:', renderError);
                                 }
-                                
                                 responseArea.scrollTop = responseArea.scrollHeight;
                             }
                         }
@@ -348,6 +399,9 @@ export function initChatInput() {
                         }
                         return false;
                     } else if (eventName === 'done') {
+                        if (typeof payload?.reply === 'string' && payload.reply.trim() !== '') {
+                            fullReply = payload.reply;
+                        }
                         break;
                     }
 
@@ -367,9 +421,11 @@ export function initChatInput() {
                 }
             }
 
+            const docGenPayload = syncDocGenState(fullReply);
+
             const wantsInlineComments = wantsInlineCommentsRequest(text);
             status.set('Stripping inline comment format from chat response...');
-            let { comments: inlineComments, visibleReply } = commitInlineComments(fullReply);
+            let { comments: inlineComments, visibleReply } = commitInlineComments(docGenPayload.visibleText);
             status.set('Converting inline comment data...');
 
             if (wantsInlineComments && inlineComments.length === 0) {
@@ -395,8 +451,12 @@ export function initChatInput() {
 
             if (requestState.replyNode) {
                 status.set('Rendering chat response...');
-                requestState.replyNode.innerHTML = renderChatMarkdown(visibleReply);
-                renderMermaidIn(requestState.replyNode);
+                if (docGenPayload.previewMarkdown || docGenPayload.questions.length > 0) {
+                    await renderDocGenMessage(requestState.replyNode, docGenPayload, responseArea);
+                } else {
+                    requestState.replyNode.innerHTML = renderChatMarkdown(visibleReply);
+                    renderMermaidIn(requestState.replyNode);
+                }
                 await renderAiFollowUps(requestState.replyNode, visibleReply, text);
             }
 
@@ -417,10 +477,15 @@ export function initChatInput() {
                 try {
                     status.set('Streaming failed. Retrying without streaming...');
                     const fallbackReply = await fetchChatFallback(text, historyBefore);
-                    const { comments: inlineComments, visibleReply } = commitInlineComments(fallbackReply);
+                    const parsed = syncDocGenState(fallbackReply);
+                    const { comments: inlineComments, visibleReply } = commitInlineComments(parsed.visibleText);
                     if (requestState.replyNode) {
-                        requestState.replyNode.innerHTML = renderChatMarkdown(visibleReply || 'No response from AI.');
-                        renderMermaidIn(requestState.replyNode);
+                        if (parsed.previewMarkdown || parsed.questions.length > 0) {
+                            await renderDocGenMessage(requestState.replyNode, parsed, responseArea);
+                        } else {
+                            requestState.replyNode.innerHTML = renderChatMarkdown(visibleReply || 'No response from AI.');
+                            renderMermaidIn(requestState.replyNode);
+                        }
                     } else {
                         requestState.replyNode = appendMessage(visibleReply || 'No response from AI.', 'ai');
                     }
@@ -497,4 +562,16 @@ export function initChatInput() {
 
     document.addEventListener('auditor:doc-gen-activated', syncComposerState);
     document.addEventListener('auditor:doc-gen-deactivated', syncComposerState);
+    document.addEventListener('auditor:doc-gen-answer-selected', (event) => {
+        const answer = String(event?.detail?.answer || '').trim();
+        if (!answer || activeRequest) return;
+        const status = createChatStatus({ container: responseArea, anchorNode: null });
+        status.set('User answered question.');
+        status.remove(900);
+        sendTextInternal(answer, {
+            source: 'docgen-question',
+            appendUserMessage: false,
+            recordUserMessage: true,
+        });
+    });
 }

@@ -319,6 +319,11 @@ class OpenAiSimpleChatService
         ], $selectedModel, $user);
     }
 
+    public function replyWithMessages(array $messages, ?string $selectedModel = null, ?User $user = null): string
+    {
+        return $this->sendMessages($messages, $selectedModel, $user);
+    }
+
     // Sends prepared messages array to OpenAI and returns plain text.
     private function sendMessages(array $messages, ?string $selectedModel = null, ?User $user = null): string
     {
