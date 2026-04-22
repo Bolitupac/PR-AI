@@ -5,7 +5,13 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
-        "test:docgen": "node --test tests-js/**/*.test.js"
+        "test:docgen": "node --test tests-js/**/*.test.js",
+        "test:js": "node --test tests-js/**/*.test.js",
+        "test:js:unit": "node --test tests-js/unit/**/*.test.js",
+        "test:js:integration": "node --test tests-js/integration/**/*.test.js",
+        "test:js:system": "node --test tests-js/system/**/*.test.js",
+        "test:js:functional": "node --test tests-js/**/functional/**/*.test.js",
+        "test:js:nonfunctional": "node --test tests-js/**/non-functional/**/*.test.js"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",

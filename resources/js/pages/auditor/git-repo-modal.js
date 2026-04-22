@@ -1,8 +1,8 @@
-import { fetchGitRepos } from './git-repos-api';
-import { fetchGitPullRequests } from './git-pulls-api';
-import { fetchGitPullDiff } from './git-diff-api';
-import { fetchGitPullComments } from './diff-comments/api';
-import { setButtonLoading } from './button-loading';
+import { fetchGitRepos } from './git-repos-api.js';
+import { fetchGitPullRequests } from './git-pulls-api.js';
+import { fetchGitPullDiff } from './git-diff-api.js';
+import { fetchGitPullComments } from './diff-comments/api.js';
+import { setButtonLoading } from './button-loading.js';
 
 // Controls repo modal open/close, PR selection, and loading diff from GitHub.
 export function initGitRepoModal() {

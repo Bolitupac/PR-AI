@@ -1,0 +1,97 @@
+JavaScript Test Overview
+========================
+
+This test suite is organized by both test level and test intent.
+
+Folder structure
+----------------
+- tests-js/unit/functional
+  Small, focused tests for isolated logic and parsing behavior.
+- tests-js/unit/non-functional
+  Focused performance-oriented checks for single modules.
+- tests-js/integration/functional
+  Tests that wire multiple modules together, usually DOM plus API helpers.
+- tests-js/integration/non-functional
+  Timing-oriented checks across real helper boundaries.
+- tests-js/system/functional
+  Higher-level flow tests that cover a user-facing path from start to finish.
+
+What the main test types mean
+-----------------------------
+- Unit tests
+  Test one small function or module in isolation.
+  Example here: markdown rendering and DocGen marker parsing.
+- Integration tests
+  Test several modules working together.
+  Example here: repo modal UI plus API helpers, or export flow plus DOM status updates.
+- System tests
+  Test a broader user flow end to end inside the app boundary.
+  Example here: opening the repo import modal, loading repos and pull requests, selecting one, and emitting the loaded diff event.
+
+What functional and non-functional mean
+---------------------------------------
+- Functional tests
+  Check whether a feature behaves correctly.
+  Example: the import modal shows repositories and pull requests.
+- Non-functional tests
+  Check qualities like speed and responsiveness rather than feature correctness alone.
+  Example: markdown reply rendering should stay fast, and mocked repo loading should stay within a timing budget.
+
+Test files and what they do
+---------------------------
+- tests-js/unit/functional/ai-replies.test.js
+  Checks that AI replies render into safe HTML and escape unsafe markup.
+- tests-js/unit/functional/chat-markup.test.js
+  Checks headings, lists, tables, and Mermaid code fences in chat markdown.
+- tests-js/unit/functional/doc-gen-markers.test.js
+  Checks standard DocGen marker parsing and visible text stripping.
+- tests-js/unit/functional/prai-doc-gen-markers-edge-cases.test.js
+  Checks DocGen edge cases like malformed blocks, normalized ids, and streamed prefixes.
+- tests-js/unit/functional/git-repos-api.test.js
+  Checks repo API success and auth-related failure handling.
+- tests-js/unit/functional/git-pulls-api.test.js
+  Checks pull request API URL building and failure handling.
+- tests-js/unit/non-functional/chat-reply-timing.test.js
+  Measures local client-side AI reply rendering speed.
+  Note: this does not measure real remote model latency; it measures how fast the frontend renders a reply once text is available.
+- tests-js/integration/functional/doc-gen-export.test.js
+  Checks export request payloads, download behavior, and error status handling.
+- tests-js/integration/functional/git-repo-modal.test.js
+  Checks that the import modal loads and displays repositories and pull requests.
+- tests-js/integration/non-functional/repo-loading-timing.test.js
+  Measures repo and pull request helper timing under controlled mocked latency.
+- tests-js/system/functional/repo-import-flow.test.js
+  Checks the broader repo import flow until the diff-selected event is dispatched.
+
+Timing tests
+------------
+- AI timing
+  The current timing test measures the local reply rendering path in the frontend.
+  It is useful for catching slow markdown formatting regressions.
+  It is not a live backend SLA test because these tests run in node:test with mocked dependencies.
+- Repo timing
+  The repo timing tests measure helper completion time under mocked latency.
+  They confirm that the app-side wrapper logic stays responsive and does not add unexpected delay.
+
+Commands to run
+---------------
+- Run all JavaScript tests:
+  npm run test:js
+
+- Run all unit tests:
+  npm run test:js:unit
+
+- Run all integration tests:
+  npm run test:js:integration
+
+- Run all system tests:
+  npm run test:js:system
+
+- Run all functional tests:
+  npm run test:js:functional
+
+- Run all non-functional tests:
+  npm run test:js:nonfunctional
+
+- Legacy all-tests command still supported:
+  npm run test:docgen
