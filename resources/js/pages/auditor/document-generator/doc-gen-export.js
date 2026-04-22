@@ -1,4 +1,4 @@
-import { createChatStatus } from '../chat-status';
+import { createChatStatus } from '../chat-status.js';
 
 export async function exportDocGenDocument({ format, title, markdown, responseArea }) {
     if (!markdown || !responseArea) return false;

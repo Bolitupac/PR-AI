@@ -1,4 +1,4 @@
-import { getDocGenState } from './doc-gen-store';
+import { getDocGenState } from './doc-gen-store.js';
 
 export function initDocGenQuestions() {
     const container = document.getElementById('doc-gen-questions');
