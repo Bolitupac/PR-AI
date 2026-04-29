@@ -19,6 +19,7 @@ import { createChatStatus } from './chat-status';
 import { fetchGitPullComments } from './diff-comments/api';
 import { initAppsModal } from './document-generator/apps-modal';
 import { initDocGenMode } from './document-generator/doc-gen-mode';
+import { appendRepoParams, buildVcsUrl } from '../../shared/vcs-repo-query.js';
 
 export function initAuditorPage() {
     if (!document.getElementById('ai-response-area')) return;
@@ -43,6 +44,7 @@ export function initAuditorPage() {
     initDocGenMode();
 
     const responseArea = document.getElementById('ai-response-area');
+    const vcsApiBase = '/api/vcs';
 
     const appendMessage = (text, role) => {
         if (!responseArea) return null;
@@ -56,8 +58,20 @@ export function initAuditorPage() {
 
     const fetchPendingDiff = async (pending) => {
         if (!pending?.repo) return null;
+        const provider = pending?.provider || pending?.source || 'github';
+        const repoPayload = {
+            full_name: pending.repo,
+            provider_repo_id: pending.repoId || null,
+            provider_project: pending.project || null,
+            provider_organization: pending.organization || null,
+            provider_workspace: pending.workspace || null,
+            provider_repo_slug: pending.repoSlug || null,
+        };
         if (pending?.prNumber) {
-            const res = await fetch(`/api/github/pull-diff?repo=${encodeURIComponent(pending.repo)}&pr_number=${pending.prNumber}`);
+            const url = new URL(buildVcsUrl(vcsApiBase, provider, 'pull-diff'), window.location.origin);
+            appendRepoParams(url, repoPayload);
+            url.searchParams.set('pr_number', pending.prNumber);
+            const res = await fetch(url.toString());
             if (!res.ok) throw new Error('Failed to fetch pull request diff');
             return await res.text();
         }
@@ -67,7 +81,11 @@ export function initAuditorPage() {
             return await res.text();
         }
         if (pending?.branch && pending?.base) {
-            const res = await fetch(`/api/github/branch-diff?repo=${encodeURIComponent(pending.repo)}&base=${encodeURIComponent(pending.base)}&head=${encodeURIComponent(pending.branch)}`);
+            const url = new URL(buildVcsUrl(vcsApiBase, provider, 'branch-diff'), window.location.origin);
+            appendRepoParams(url, repoPayload);
+            url.searchParams.set('base', pending.base);
+            url.searchParams.set('head', pending.branch);
+            const res = await fetch(url.toString());
             if (!res.ok) throw new Error('Failed to fetch branch diff');
             return await res.text();
         }
@@ -76,7 +94,14 @@ export function initAuditorPage() {
 
     const fetchPendingComments = async (pending) => {
         if (pending?.repo && pending?.prNumber) {
-            return await fetchGitPullComments(pending.repo, pending.prNumber);
+            return await fetchGitPullComments({
+                full_name: pending.repo,
+                provider_repo_id: pending.repoId || null,
+                provider_project: pending.project || null,
+                provider_organization: pending.organization || null,
+                provider_workspace: pending.workspace || null,
+                provider_repo_slug: pending.repoSlug || null,
+            }, pending.prNumber, pending?.provider || pending?.source || 'github', vcsApiBase);
         }
 
         return [];
@@ -118,7 +143,7 @@ export function initAuditorPage() {
                     const status = createChatStatus({ container: responseArea, anchorNode: null });
                     const progress = createLoadingProgress({
                         onUpdate: (text) => status.set(text),
-                        label: data?.commitHash ? 'Fetching commit diff' : 'Fetching diff from GitHub'
+                        label: data?.commitHash ? 'Fetching commit diff' : `Fetching diff from ${(data?.provider || data?.source || 'provider')}`
                     });
                     Promise.all([
                         fetchPendingDiff(data),
@@ -138,7 +163,7 @@ export function initAuditorPage() {
                         .catch((error) => {
                             progress.stop();
                             status.markError('Failed to fetch diff.');
-                            appendMessage(error?.message || 'Could not fetch diff from GitHub.', 'ai');
+                            appendMessage(error?.message || 'Could not fetch diff from the selected provider.', 'ai');
                         });
                     return;
                 }

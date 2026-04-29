@@ -3,11 +3,12 @@ import { fetchGitPullRequests } from './git-pulls-api.js';
 import { fetchGitPullDiff } from './git-diff-api.js';
 import { fetchGitPullComments } from './diff-comments/api.js';
 import { setButtonLoading } from './button-loading.js';
+import { buildVcsUrl } from '../../shared/vcs-repo-query.js';
 
-// Controls repo modal open/close, PR selection, and loading diff from GitHub.
 export function initGitRepoModal() {
     const repoSelectTrigger = document.getElementById('repo-select');
     const repoModal = document.getElementById('repo-modal');
+    const providerSelect = document.getElementById('repo-provider-select');
     const repoSelectModal = document.getElementById('repo-import-select');
     const repoImportHelp = document.getElementById('repo-import-help');
     const repoActionsRow = document.getElementById('repo-import-actions-row');
@@ -21,18 +22,28 @@ export function initGitRepoModal() {
 
     if (!repoModal || !repoSelectModal || !repoPrState || !repoPrList || !loadRepoButton) return;
 
-    const reposUrl = repoSelectTrigger?.dataset.reposUrl || repoModal.dataset.reposUrl || '';
-    const pullsUrl = repoSelectTrigger?.dataset.pullsUrl || repoModal.dataset.pullsUrl || '';
-    const pullDiffUrl = repoSelectTrigger?.dataset.pullDiffUrl || repoModal.dataset.pullDiffUrl || '';
-    const connectUrl = repoModal.dataset.connectUrl || '/auth/github';
+    const apiBase = repoModal.dataset.vcsApiBase || '/api/vcs';
+    const providerConfig = JSON.parse(repoModal.dataset.vcsProviders || '{}');
+    const legacyReposUrl = repoSelectTrigger?.dataset.reposUrl || repoModal.dataset.reposUrl || '';
+    const legacyPullsUrl = repoSelectTrigger?.dataset.pullsUrl || repoModal.dataset.pullsUrl || '';
+    const legacyPullDiffUrl = repoSelectTrigger?.dataset.pullDiffUrl || repoModal.dataset.pullDiffUrl || '';
+    const useLegacyGithubRoutes = !repoModal.dataset.vcsApiBase;
     const closeButtons = document.querySelectorAll('[data-close="repo-modal"]');
+    let currentProvider = providerSelect?.value || repoModal.dataset.defaultProvider || 'github';
     let reposLoaded = false;
     let selectedPullNumber = null;
     let selectedPullTitle = '';
+    let selectedRepo = null;
     let loadingTicker = null;
     let repoLoadingTicker = null;
     let cueTimer = null;
-    let lastRepoLoadFailed = false;
+    let repoIndex = new Map();
+
+    const providerLabel = () => providerConfig?.[currentProvider]?.label || currentProvider;
+    const connectUrl = () => currentProvider === 'github' ? '/auth/github' : '#settings-vcs';
+    const reposUrl = () => useLegacyGithubRoutes ? legacyReposUrl : buildVcsUrl(apiBase, currentProvider, 'repos');
+    const pullsUrl = () => useLegacyGithubRoutes ? legacyPullsUrl : buildVcsUrl(apiBase, currentProvider, 'pulls');
+    const pullDiffUrl = () => useLegacyGithubRoutes ? legacyPullDiffUrl : buildVcsUrl(apiBase, currentProvider, 'pull-diff');
 
     const setSingleOption = (text) => {
         repoSelectModal.innerHTML = '';
@@ -47,35 +58,41 @@ export function initGitRepoModal() {
         if (!repoImportHelp) return;
         repoImportHelp.textContent = text;
         repoImportHelp.classList.remove('is-error', 'is-success');
-        if (tone) {
-            repoImportHelp.classList.add(`is-${tone}`);
-        }
+        if (tone) repoImportHelp.classList.add(`is-${tone}`);
     };
 
-    const setActions = ({ show = false, showConnect = false, retryText = 'Retry', connectHref = connectUrl } = {}) => {
-        if (repoActionsRow) {
-            repoActionsRow.hidden = !show;
-        }
+    const setActions = ({ show = false, showConnect = false, retryText = 'Retry', connectHref = connectUrl() } = {}) => {
+        if (repoActionsRow) repoActionsRow.hidden = !show;
         if (repoConnectButton) {
             repoConnectButton.hidden = !showConnect;
-            repoConnectButton.href = connectHref || connectUrl;
+            repoConnectButton.href = connectHref || connectUrl();
         }
-        if (repoRetryButton) {
-            repoRetryButton.textContent = retryText;
-        }
+        if (repoRetryButton) repoRetryButton.textContent = retryText;
     };
 
-    const resetRepoUi = () => {
-        setHelp('');
-        setActions({ show: false });
-        clearPrList();
-        setPrState('Select a repository to view pull requests.', 'info');
-        setLoadedBorder(false);
-        setRepoSelectLoadedBorder(false);
-        setLoadButtonEnabled(false);
-        selectedPullNumber = null;
-        selectedPullTitle = '';
-        repoModal.dataset.selectedPrNumber = '';
+    const clearPrList = () => {
+        repoPrList.innerHTML = '';
+    };
+
+    const setPrState = (text, tone = 'info') => {
+        if (tone !== 'loading' && loadingTicker) {
+            clearInterval(loadingTicker);
+            loadingTicker = null;
+        }
+        repoPrState.textContent = text;
+        repoPrState.classList.remove('is-info', 'is-loading', 'is-success', 'is-empty', 'is-error');
+        repoPrState.classList.add(`is-${tone}`);
+    };
+
+    const startLoadingTicker = (baseText) => {
+        if (loadingTicker) clearInterval(loadingTicker);
+        const dots = ['.', '..', '...'];
+        let index = 0;
+        setPrState(`${baseText}${dots[index]}`, 'loading');
+        loadingTicker = setInterval(() => {
+            index = (index + 1) % dots.length;
+            setPrState(`${baseText}${dots[index]}`, 'loading');
+        }, 420);
     };
 
     const stopRepoLoadingTicker = () => {
@@ -96,47 +113,13 @@ export function initGitRepoModal() {
         }, 420);
     };
 
-    const setPrState = (text, tone = 'info') => {
-        if (tone !== 'loading' && loadingTicker) {
-            clearInterval(loadingTicker);
-            loadingTicker = null;
-        }
-        repoPrState.textContent = text;
-        repoPrState.classList.remove('is-info', 'is-loading', 'is-success', 'is-empty', 'is-error');
-        repoPrState.classList.add(`is-${tone}`);
-    };
-
-    // Shows a simple dot-loop while async requests run.
-    const startLoadingTicker = (baseText) => {
-        if (loadingTicker) {
-            clearInterval(loadingTicker);
-            loadingTicker = null;
-        }
-        const dots = ['.', '..', '...'];
-        let index = 0;
-        setPrState(`${baseText}${dots[index]}`, 'loading');
-        loadingTicker = setInterval(() => {
-            index = (index + 1) % dots.length;
-            setPrState(`${baseText}${dots[index]}`, 'loading');
-        }, 420);
-    };
-
-    const clearPrList = () => {
-        repoPrList.innerHTML = '';
-    };
-
     const flashLoadedCue = () => {
         if (!repoLoadCue) return;
-        if (cueTimer) {
-            clearTimeout(cueTimer);
-            cueTimer = null;
-        }
+        if (cueTimer) clearTimeout(cueTimer);
         repoLoadCue.classList.remove('is-show');
         void repoLoadCue.offsetWidth;
         repoLoadCue.classList.add('is-show');
-        cueTimer = setTimeout(() => {
-            repoLoadCue.classList.remove('is-show');
-        }, 1250);
+        cueTimer = setTimeout(() => repoLoadCue.classList.remove('is-show'), 1250);
     };
 
     const setLoadButtonEnabled = (enabled) => {
@@ -144,12 +127,26 @@ export function initGitRepoModal() {
     };
 
     const setLoadedBorder = (loaded) => {
-        if (!repoPrBox) return;
-        repoPrBox.classList.toggle('is-loaded', loaded);
+        repoPrBox?.classList.toggle('is-loaded', loaded);
     };
 
     const setRepoSelectLoadedBorder = (loaded) => {
         repoSelectModal.classList.toggle('is-loaded', loaded);
+    };
+
+    const resetRepoUi = () => {
+        setHelp('');
+        setActions({ show: false });
+        clearPrList();
+        setPrState('Select a repository to view pull requests.', 'info');
+        setLoadedBorder(false);
+        setRepoSelectLoadedBorder(false);
+        setLoadButtonEnabled(false);
+        selectedPullNumber = null;
+        selectedPullTitle = '';
+        selectedRepo = null;
+        repoModal.dataset.selectedPrNumber = '';
+        repoIndex = new Map();
     };
 
     const formatRelativeTime = (isoDate) => {
@@ -157,11 +154,9 @@ export function initGitRepoModal() {
         const then = new Date(isoDate).getTime();
         const now = Date.now();
         const diffMs = Math.max(0, now - then);
-
         const minute = 60 * 1000;
         const hour = 60 * minute;
         const day = 24 * hour;
-
         if (diffMs < minute) return 'just now';
         if (diffMs < hour) {
             const mins = Math.floor(diffMs / minute);
@@ -176,9 +171,7 @@ export function initGitRepoModal() {
     };
 
     const selectPullItem = (item, pull) => {
-        repoPrList.querySelectorAll('.repo-pr-item').forEach((node) => {
-            node.classList.remove('is-selected');
-        });
+        repoPrList.querySelectorAll('.repo-pr-item').forEach((node) => node.classList.remove('is-selected'));
         item.classList.add('is-selected');
         selectedPullNumber = pull.number ?? null;
         selectedPullTitle = pull.title ?? '';
@@ -201,7 +194,6 @@ export function initGitRepoModal() {
         }
 
         setPrState(`Open pull requests (${pulls.length})`, 'success');
-
         pulls.forEach((pull) => {
             const item = document.createElement('button');
             item.type = 'button';
@@ -210,40 +202,22 @@ export function initGitRepoModal() {
                 <div class="repo-pr-title">#${pull.number ?? ''} ${pull.title ?? ''}</div>
                 <div class="repo-pr-meta">@${pull.author || 'unknown'} - ${pull.state || ''} - updated ${formatRelativeTime(pull.updated_at)}</div>
             `;
-            item.addEventListener('click', function () {
-                selectPullItem(item, pull);
-            });
+            item.addEventListener('click', () => selectPullItem(item, pull));
             repoPrList.appendChild(item);
         });
     };
 
     const loadRepos = async () => {
-        if (reposLoaded) {
-            setHelp('Repositories are ready.', 'success');
-            setActions({ show: false });
-            return;
-        }
-        if (!reposUrl) {
-            setSingleOption('Repo URL is missing');
-            setLoadButtonEnabled(false);
-            setRepoSelectLoadedBorder(false);
-            setHelp('The repository endpoint is missing from this page.', 'error');
-            return;
-        }
-
-        if (repoSelectTrigger) {
-            setButtonLoading(repoSelectTrigger, true, 'Loading');
-        }
-        lastRepoLoadFailed = false;
+        reposLoaded = false;
         resetRepoUi();
         startRepoLoadingTicker('Loading repositories');
-        setHelp('Checking your GitHub connection...', '');
+        setHelp(useLegacyGithubRoutes ? 'Checking your GitHub connection...' : `Checking your ${providerLabel()} connection...`);
+        if (repoSelectTrigger) setButtonLoading(repoSelectTrigger, true, 'Loading');
 
         try {
-            const repos = await fetchGitRepos(reposUrl);
+            const repos = await fetchGitRepos(reposUrl());
             stopRepoLoadingTicker();
             repoSelectModal.innerHTML = '';
-
             const placeholder = document.createElement('option');
             placeholder.value = '';
             placeholder.textContent = 'Select a repository';
@@ -253,14 +227,13 @@ export function initGitRepoModal() {
 
             if (!repos.length) {
                 setSingleOption('No repositories found');
-                setLoadButtonEnabled(false);
-                setRepoSelectLoadedBorder(false);
-                setHelp('This GitHub account does not have any accessible repositories yet.', '');
+                setHelp(`This ${providerLabel()} connection does not have any accessible repositories yet.`);
                 setActions({ show: true, showConnect: false, retryText: 'Refresh' });
                 return;
             }
 
             repos.forEach((repo) => {
+                repoIndex.set(repo.full_name, repo);
                 const opt = document.createElement('option');
                 opt.value = repo.full_name || repo.name || '';
                 opt.textContent = repo.full_name || repo.name || 'Unnamed repo';
@@ -268,107 +241,84 @@ export function initGitRepoModal() {
             });
             reposLoaded = true;
             setRepoSelectLoadedBorder(true);
-            setHelp('Choose a repository to load its pull requests.', 'success');
+            setHelp(useLegacyGithubRoutes ? 'Choose a repository to load its pull requests.' : `Choose a ${providerLabel()} repository to load its pull requests.`, 'success');
             setActions({ show: true, showConnect: false, retryText: 'Refresh' });
         } catch (error) {
             stopRepoLoadingTicker();
-            lastRepoLoadFailed = true;
-            reposLoaded = false;
             setSingleOption('Repositories unavailable');
-            setLoadButtonEnabled(false);
-            setRepoSelectLoadedBorder(false);
             setHelp(error?.message || 'Failed to load repositories.', 'error');
             setActions({
                 show: true,
-                showConnect: Boolean(error?.authRequired || error?.connectUrl),
+                showConnect: true,
                 retryText: 'Retry',
-                connectHref: error?.connectUrl || connectUrl,
+                connectHref: error?.connectUrl || connectUrl(),
             });
-            setPrState('Repository loading is blocked until GitHub access is restored.', 'error');
+            setPrState(`Repository loading is blocked until ${providerLabel()} access is restored.`, 'error');
         } finally {
             stopRepoLoadingTicker();
-            if (repoSelectTrigger) {
-                setButtonLoading(repoSelectTrigger, false);
-            }
+            if (repoSelectTrigger) setButtonLoading(repoSelectTrigger, false);
         }
     };
 
     const loadPullRequests = async (repoFullName) => {
         clearPrList();
         selectedPullNumber = null;
+        selectedRepo = repoIndex.get(repoFullName) || null;
         repoModal.dataset.selectedPrNumber = '';
         setLoadButtonEnabled(false);
         setLoadedBorder(false);
         startLoadingTicker('Loading pull requests');
 
-        if (!pullsUrl) {
-            setPrState('Pull request URL is missing.', 'error');
-            return;
-        }
-
         try {
-            const pulls = await fetchGitPullRequests(pullsUrl, repoFullName);
+            const pulls = await fetchGitPullRequests(pullsUrl(), selectedRepo || repoFullName);
             renderPullList(pulls);
             setHelp(`Loaded pull requests for ${repoFullName}.`, 'success');
         } catch (error) {
             setPrState(error?.message || 'Failed to load pull requests.', 'error');
             setHelp(error?.message || 'Failed to load pull requests.', 'error');
-            setActions({
-                show: true,
-                showConnect: Boolean(error?.authRequired || error?.connectUrl),
-                retryText: 'Retry',
-                connectHref: error?.connectUrl || connectUrl,
-            });
+            setActions({ show: true, showConnect: true, retryText: 'Retry', connectHref: error?.connectUrl || connectUrl() });
         }
     };
 
     const loadSelectedPullDiff = async () => {
-        const repoFullName = repoSelectModal.value;
-        if (!repoFullName || !selectedPullNumber) return;
-        if (!pullDiffUrl) {
-            setPrState('Pull diff URL is missing.', 'error');
-            return;
-        }
-
+        if (!selectedRepo || !selectedPullNumber) return;
         startLoadingTicker('Loading selected pull request diff');
         setLoadButtonEnabled(false);
         setButtonLoading(loadRepoButton, true, 'Loading');
 
         try {
             const [diffText, comments] = await Promise.all([
-                fetchGitPullDiff(pullDiffUrl, repoFullName, selectedPullNumber),
-                fetchGitPullComments(repoFullName, selectedPullNumber),
+                fetchGitPullDiff(pullDiffUrl(), selectedRepo, selectedPullNumber),
+                fetchGitPullComments(selectedRepo, selectedPullNumber, currentProvider, useLegacyGithubRoutes ? '/api' : apiBase),
             ]);
+            const detail = {
+                source: currentProvider,
+                repo: selectedRepo.full_name,
+                prNumber: selectedPullNumber,
+                prTitle: selectedPullTitle,
+                auditStatus: 'open',
+                auditTitle: `${selectedRepo.full_name} pull request audit ${selectedPullTitle || `#${selectedPullNumber}`}`.trim(),
+                auditKind: 'pull_request_audit',
+                diffText,
+                comments,
+            };
+            if (selectedRepo.provider_repo_id) detail.repoId = selectedRepo.provider_repo_id;
+            if (selectedRepo.provider_project) detail.project = selectedRepo.provider_project;
+            if (selectedRepo.provider_organization) detail.organization = selectedRepo.provider_organization;
+            if (selectedRepo.provider_workspace) detail.workspace = selectedRepo.provider_workspace;
+            if (selectedRepo.provider_repo_slug) detail.repoSlug = selectedRepo.provider_repo_slug;
             document.dispatchEvent(new CustomEvent('auditor:diff-selected', {
-                detail: {
-                    source: 'github',
-                    repo: repoFullName,
-                    prNumber: selectedPullNumber,
-                    prTitle: selectedPullTitle,
-                    auditStatus: 'open',
-                    auditTitle: `${repoFullName} pull request audit ${selectedPullTitle || `#${selectedPullNumber}`}`.trim(),
-                    auditKind: 'pull_request_audit',
-                    diffText,
-                    comments,
-                },
+                detail,
             }));
 
             setPrState(`Loaded PR #${selectedPullNumber}. Auto audit started.`, 'success');
             setLoadedBorder(true);
             flashLoadedCue();
-
-            setTimeout(() => {
-                closeModal();
-            }, 520);
+            setTimeout(closeModal, 520);
         } catch (error) {
             setPrState(error?.message || 'Failed to load pull request diff.', 'error');
             setHelp(error?.message || 'Failed to load pull request diff.', 'error');
-            setActions({
-                show: true,
-                showConnect: Boolean(error?.authRequired || error?.connectUrl),
-                retryText: 'Retry',
-                connectHref: error?.connectUrl || connectUrl,
-            });
+            setActions({ show: true, showConnect: true, retryText: 'Retry', connectHref: error?.connectUrl || connectUrl() });
             setLoadedBorder(false);
         } finally {
             setButtonLoading(loadRepoButton, false);
@@ -379,7 +329,6 @@ export function initGitRepoModal() {
     const openModal = () => {
         repoModal.classList.add('is-open');
         repoModal.setAttribute('aria-hidden', 'false');
-        resetRepoUi();
         loadRepos();
     };
 
@@ -390,37 +339,27 @@ export function initGitRepoModal() {
         stopRepoLoadingTicker();
     };
 
-    repoSelectTrigger?.addEventListener('click', function (event) {
+    providerSelect?.addEventListener('change', () => {
+        currentProvider = providerSelect.value || repoModal.dataset.defaultProvider || 'github';
+        loadRepos();
+    });
+
+    repoSelectTrigger?.addEventListener('click', (event) => {
         event.preventDefault();
         openModal();
     });
-
-    document.addEventListener('auditor:open-repo-modal', function () {
-        openModal();
-    });
-
-    closeButtons.forEach((btn) => {
-        btn.addEventListener('click', closeModal);
-    });
-
-    repoSelectModal.addEventListener('change', function () {
+    document.addEventListener('auditor:open-repo-modal', openModal);
+    closeButtons.forEach((btn) => btn.addEventListener('click', closeModal));
+    repoSelectModal.addEventListener('change', () => {
         if (!repoSelectModal.value) return;
         setHelp(`Loading pull requests for ${repoSelectModal.value}...`);
         loadPullRequests(repoSelectModal.value);
     });
-
-    repoRetryButton?.addEventListener('click', function () {
-        reposLoaded = false;
-        loadRepos();
+    repoRetryButton?.addEventListener('click', loadRepos);
+    loadRepoButton.addEventListener('click', loadSelectedPullDiff);
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') closeModal();
     });
 
     setLoadButtonEnabled(false);
-
-    loadRepoButton.addEventListener('click', function () {
-        loadSelectedPullDiff();
-    });
-
-    document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape') closeModal();
-    });
 }

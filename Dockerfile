@@ -31,6 +31,7 @@ WORKDIR /var/www/html
 
 RUN apk add --no-cache \
     bash \
+    git \
     nginx \
     supervisor \
     gettext \

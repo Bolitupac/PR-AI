@@ -1,60 +1,65 @@
-/**
- * API Service for GitHub data
- */
-export async function fetchRepos() {
-    const response = await fetch('/api/github/repos');
+import { appendRepoParams, buildVcsUrl } from '../../shared/vcs-repo-query.js';
+
+async function fetchJson(url, fallbackMessage) {
+    const response = await fetch(url, { headers: { Accept: 'application/json' } });
+    const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-        const err = new Error('Failed to fetch repositories');
-        err.status = response.status;
-        throw err;
+        const error = new Error(data?.message || fallbackMessage);
+        error.status = response.status;
+        error.connectUrl = data?.connect_url || '';
+        error.authRequired = Boolean(data?.auth_required);
+        throw error;
     }
-    const data = await response.json();
+    return data;
+}
+
+export async function fetchRepos(apiBase, provider) {
+    const data = await fetchJson(buildVcsUrl(apiBase, provider, 'repos'), 'Failed to fetch repositories');
     return data.repos || [];
 }
 
-export async function fetchBranches(repoFullName) {
-    const response = await fetch(`/api/github/branches?repo=${encodeURIComponent(repoFullName)}`);
-    if (!response.ok) throw new Error('Failed to fetch branches');
-    const data = await response.json();
-    // Controller wraps in { branches: [...] }
+export async function fetchBranches(apiBase, provider, repo) {
+    const url = new URL(buildVcsUrl(apiBase, provider, 'branches'), window.location.origin);
+    appendRepoParams(url, repo);
+    const data = await fetchJson(url.toString(), 'Failed to fetch branches');
     return data.branches || data.data || [];
 }
 
-export async function fetchRepoMetadata(repoFullName) {
-    const response = await fetch(`/api/github/metadata?repo=${encodeURIComponent(repoFullName)}`);
-    if (!response.ok) return { branch_count: null, pull_count: null };
-    const result = await response.json();
+export async function fetchRepoMetadata(apiBase, provider, repo) {
+    const url = new URL(buildVcsUrl(apiBase, provider, 'metadata'), window.location.origin);
+    appendRepoParams(url, repo);
+    const result = await fetchJson(url.toString(), 'Failed to fetch metadata').catch(() => ({ ok: false }));
     if (!result.ok) return { branch_count: null, pull_count: null };
     return result.data || { branch_count: null, pull_count: null };
 }
 
-export async function fetchPullRequests(repoFullName) {
-    const response = await fetch(`/api/github/pulls?repo=${encodeURIComponent(repoFullName)}`);
-    if (!response.ok) throw new Error('Failed to fetch pull requests');
-    const data = await response.json();
-    // Controller wraps in { pulls: [...] }
+export async function fetchPullRequests(apiBase, provider, repo) {
+    const url = new URL(buildVcsUrl(apiBase, provider, 'pulls'), window.location.origin);
+    appendRepoParams(url, repo);
+    const data = await fetchJson(url.toString(), 'Failed to fetch pull requests');
     return data.pulls || data.data || [];
 }
 
-export async function fetchRecentPullRequests() {
-    const response = await fetch('/api/github/recent-pulls');
-    if (!response.ok) {
-        const err = new Error('Failed to fetch recent pull requests');
-        err.status = response.status;
-        throw err;
-    }
-    const data = await response.json();
+export async function fetchRecentPullRequests(apiBase, provider) {
+    const data = await fetchJson(buildVcsUrl(apiBase, provider, 'recent-pulls'), 'Failed to fetch recent pull requests');
     return data.pulls || data.data || [];
 }
 
-export async function fetchPullDiff(repoFullName, prNumber) {
-    const response = await fetch(`/api/github/pull-diff?repo=${encodeURIComponent(repoFullName)}&pr_number=${prNumber}`);
+export async function fetchPullDiff(apiBase, provider, repo, prNumber) {
+    const url = new URL(buildVcsUrl(apiBase, provider, 'pull-diff'), window.location.origin);
+    appendRepoParams(url, repo);
+    url.searchParams.set('pr_number', String(prNumber));
+    const response = await fetch(url.toString());
     if (!response.ok) throw new Error('Failed to fetch pull request diff');
     return await response.text();
 }
 
-export async function fetchBranchDiff(repoFullName, base, head) {
-    const response = await fetch(`/api/github/branch-diff?repo=${encodeURIComponent(repoFullName)}&base=${encodeURIComponent(base)}&head=${encodeURIComponent(head)}`);
+export async function fetchBranchDiff(apiBase, provider, repo, base, head) {
+    const url = new URL(buildVcsUrl(apiBase, provider, 'branch-diff'), window.location.origin);
+    appendRepoParams(url, repo);
+    url.searchParams.set('base', String(base));
+    url.searchParams.set('head', String(head));
+    const response = await fetch(url.toString());
     if (!response.ok) throw new Error('Failed to fetch branch diff');
     return await response.text();
 }

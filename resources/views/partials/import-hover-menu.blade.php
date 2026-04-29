@@ -1,6 +1,6 @@
 <div class="import-hover-menu">
     <button class="import-hover-item" type="button" data-import-choice="repo">
-        <span class="import-hover-label">Import from GitHub repo</span>
+        <span class="import-hover-label">Import from repo provider</span>
         <span class="import-hover-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" focusable="false">
                 <circle cx="6" cy="6" r="2.1" fill="none" stroke="currentColor" stroke-width="1.8" />

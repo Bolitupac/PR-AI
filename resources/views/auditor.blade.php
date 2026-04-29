@@ -111,15 +111,6 @@
 </head>
 
 <body>
-    @php
-        $vcsProviders = [
-            ['name' => 'GitHub', 'state' => 'Connected'],
-            ['name' => 'GitLab', 'state' => 'Unavailable'],
-            ['name' => 'Bitbucket', 'state' => 'Available'],
-            ['name' => 'Azure DevOps', 'state' => 'Available'],
-        ];
-    @endphp
-
     <div class="app-shell">
         <section class="hero-view">
             @include('partials.sidebar')

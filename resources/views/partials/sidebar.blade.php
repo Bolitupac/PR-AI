@@ -157,7 +157,16 @@
             </button>
         @endauth
         @guest
-            <a class="sidebar-item sidebar-profile-item" href="{{ route('github.redirect') }}" aria-label="Connect GitHub">
+            @php
+                $guestConnectedProvider = !empty($defaultVcsProvider['connected'] ?? false) ? $defaultVcsProvider : null;
+                $guestConnectHref = $guestConnectedProvider
+                    ? (($guestConnectedProvider['key'] ?? '') === 'github' ? route('github.redirect') : '#settings-vcs')
+                    : route('github.redirect');
+                $guestLabel = $guestConnectedProvider
+                    ? (($guestConnectedProvider['name'] ?? 'VCS').' connected')
+                    : 'Connect GitHub';
+            @endphp
+            <a class="sidebar-item sidebar-profile-item" href="{{ $guestConnectHref }}" aria-label="{{ $guestLabel }}">
                 <span class="sidebar-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24">
                         <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7" />
@@ -167,8 +176,8 @@
                     </svg>
                 </span>
                 <span class="sidebar-profile-meta">
-                    <span class="sidebar-profile-name">Connect GitHub</span>
-                    <span class="sidebar-profile-plan">Free</span>
+                    <span class="sidebar-profile-name">{{ $guestLabel }}</span>
+                    <span class="sidebar-profile-plan">{{ $guestConnectedProvider ? 'Session' : 'Free' }}</span>
                 </span>
             </a>
         @endguest

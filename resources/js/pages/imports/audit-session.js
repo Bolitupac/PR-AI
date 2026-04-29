@@ -3,11 +3,17 @@ export function startAuditSession(payload) {
     window.location.href = '/auditor';
 }
 
-export function buildPullRequestAuditPayload({ repo, prNumber, title, auditStatus = null }) {
+export function buildPullRequestAuditPayload({ provider = 'github', repo, prNumber, title, auditStatus = null, repoId = null, project = null, organization = null, workspace = null, repoSlug = null }) {
     const safeTitle = String(title || '').trim();
     return {
-        source: 'github',
+        source: provider,
+        provider,
         repo,
+        repoId,
+        project,
+        organization,
+        workspace,
+        repoSlug,
         prNumber,
         prTitle: safeTitle,
         auditStatus: auditStatus || null,
@@ -20,11 +26,17 @@ export function buildPullRequestAuditPayload({ repo, prNumber, title, auditStatu
     };
 }
 
-export function buildBranchAuditPayload({ repo, branchName, baseBranch }) {
+export function buildBranchAuditPayload({ provider = 'upload', repo, branchName, baseBranch, repoId = null, project = null, organization = null, workspace = null, repoSlug = null }) {
     const safeBranch = String(branchName || '').trim();
     return {
-        source: 'upload',
+        source: provider,
+        provider,
         repo,
+        repoId,
+        project,
+        organization,
+        workspace,
+        repoSlug,
         prNumber: null,
         prTitle: null,
         auditStatus: 'active',
@@ -37,11 +49,17 @@ export function buildBranchAuditPayload({ repo, branchName, baseBranch }) {
     };
 }
 
-export function buildCommitAuditPayload({ repo, commitHash, title }) {
+export function buildCommitAuditPayload({ provider = 'import', repo, commitHash, title, repoId = null, project = null, organization = null, workspace = null, repoSlug = null }) {
     const safeTitle = String(title || '').trim();
     return {
-        source: 'import',
+        source: provider,
+        provider,
         repo,
+        repoId,
+        project,
+        organization,
+        workspace,
+        repoSlug,
         prNumber: null,
         prTitle: null,
         auditStatus: 'historical',

@@ -265,12 +265,18 @@
                         <p>Connected accounts, provider state, and access control.</p>
                     </header>
 
+                    @if (session('vcs_connection_message'))
+                        <p class="settings-api-state">{{ session('vcs_connection_message') }}</p>
+                    @endif
+
                     <ul class="settings-vcs-list">
                         @foreach ($settingsVcsProviders as $provider)
                             @php
-                                $isGitHubAccount = auth()->check() && $provider['name'] === 'GitHub';
-                                $isConnected = strtolower($provider['state']) === 'connected' || $isGitHubAccount;
-                                $stateLabel = $isConnected ? 'Connected' : $provider['state'];
+                                $isGitHubProvider = $provider['key'] === 'github';
+                                $isConnected = !empty($provider['connected']);
+                                $stateLabel = $provider['state'] ?? ($isConnected ? 'Connected' : 'Not connected');
+                                $profile = $provider['profile'] ?? [];
+                                $connectionMeta = $provider['connection_meta'] ?? [];
                             @endphp
                             <li class="settings-vcs-item">
                                 <div class="settings-vcs-main">
@@ -289,10 +295,12 @@
                                     <div class="settings-vcs-meta">
                                         <div class="settings-vcs-item-name">{{ $provider['name'] }}</div>
 
-                                        @if($isGitHubAccount)
+                                        @if(!empty($profile['username']) || !empty($profile['name']))
                                             <div class="settings-vcs-account">
-                                                <img class="settings-vcs-avatar" src="https://github.com/{{ auth()->user()->github_username }}.png" alt="GitHub avatar" loading="lazy">
-                                                <span>{{ auth()->user()->github_username ?? auth()->user()->name ?? 'user' }}</span>
+                                                @if(!empty($profile['avatar_url']))
+                                                    <img class="settings-vcs-avatar" src="{{ $profile['avatar_url'] }}" alt="{{ $provider['name'] }} avatar" loading="lazy">
+                                                @endif
+                                                <span>{{ $profile['username'] ?? $profile['name'] ?? 'Connected account' }}</span>
                                             </div>
                                         @else
                                             <div class="settings-vcs-sub">No account linked yet.</div>
@@ -306,13 +314,49 @@
                                         {{ $stateLabel }}
                                     </span>
 
-                                    @if($isConnected && auth()->check())
+                                    @if($isGitHubProvider && $isConnected)
                                         <form action="{{ route('logout') }}" method="POST" class="settings-vcs-logout-form" data-loading-form>
                                             @csrf
                                             <button class="settings-vcs-logout" type="submit" data-loading-text="Logging out">Log out</button>
                                         </form>
+                                    @elseif($isGitHubProvider)
+                                        <a class="settings-vcs-logout" href="{{ route('github.redirect') }}">Connect</a>
+                                    @elseif($isConnected)
+                                        <form action="{{ route('vcs.connections.destroy', ['provider' => $provider['key']]) }}" method="POST" class="settings-vcs-logout-form">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="settings-vcs-logout" type="submit">Disconnect</button>
+                                        </form>
                                     @endif
                                 </div>
+
+                                @unless($isGitHubProvider)
+                                    <div class="settings-api-box" style="margin-top:16px; width:100%;">
+                                        <form action="{{ route('vcs.connections.store', ['provider' => $provider['key']]) }}" method="POST" style="display:grid; gap:12px;">
+                                            @csrf
+                                            @if($provider['key'] === 'gitlab')
+                                                <input class="settings-api-input" name="base_url" type="url" value="{{ old('base_url', $connectionMeta['base_url'] ?? 'https://gitlab.com') }}" placeholder="GitLab base URL">
+                                                <input class="settings-api-input" name="username" type="text" value="{{ old('username', $connectionMeta['username'] ?? '') }}" placeholder="GitLab username (optional)">
+                                            @endif
+
+                                            @if($provider['key'] === 'bitbucket')
+                                                <input class="settings-api-input" name="workspace" type="text" value="{{ old('workspace', $connectionMeta['workspace'] ?? '') }}" placeholder="Workspace slug">
+                                                <input class="settings-api-input" name="username" type="text" value="{{ old('username', $connectionMeta['username'] ?? '') }}" placeholder="Bitbucket username">
+                                            @endif
+
+                                            @if($provider['key'] === 'azure')
+                                                <input class="settings-api-input" name="organization" type="text" value="{{ old('organization', $connectionMeta['organization'] ?? '') }}" placeholder="Azure organization">
+                                                <input class="settings-api-input" name="project" type="text" value="{{ old('project', $connectionMeta['project'] ?? '') }}" placeholder="Azure project">
+                                                <input class="settings-api-input" name="username" type="text" value="{{ old('username', $connectionMeta['username'] ?? '') }}" placeholder="Email or username for recent PR filtering (optional)">
+                                            @endif
+
+                                            <input class="settings-api-input" name="token" type="password" placeholder="{{ $isConnected ? 'Enter a new token to update this connection' : 'Paste an access token' }}">
+                                            <div class="settings-api-actions">
+                                                <button class="settings-api-save-btn" type="submit">{{ $isConnected ? 'Update connection' : 'Save connection' }}</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                @endunless
                             </li>
                         @endforeach
                     </ul>

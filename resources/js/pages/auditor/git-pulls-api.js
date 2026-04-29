@@ -1,7 +1,9 @@
+import { appendRepoParams } from '../../shared/vcs-repo-query.js';
+
 export async function fetchGitPullRequests(pullsUrl, repoFullName) {
     // Pulls for the selected repo.
     const url = new URL(pullsUrl, window.location.origin);
-    url.searchParams.set('repo', repoFullName);
+    appendRepoParams(url, repoFullName);
 
     const res = await fetch(url.toString(), {
         headers: { Accept: 'application/json' },

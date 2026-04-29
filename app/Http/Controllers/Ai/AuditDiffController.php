@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\Ai\AuditPromptComposer;
 use App\Services\Ai\OpenAiSimpleChatService;
 use App\Services\Audit\AuditSnapshotWriter;
-use App\Services\GitHubApiService;
+use App\Services\Vcs\VcsProviderManager;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +18,7 @@ class AuditDiffController extends Controller
         private readonly OpenAiSimpleChatService $openAiSimpleChatService,
         private readonly AuditPromptComposer $auditPromptComposer,
         private readonly AuditSnapshotWriter $auditSnapshotWriter,
-        private readonly GitHubApiService $gitHubApiService
+        private readonly VcsProviderManager $vcsProviderManager
     ) {
     }
 
@@ -26,8 +26,13 @@ class AuditDiffController extends Controller
     public function audit(Request $request): JsonResponse
     {
         $payload = $request->validate([
-            'source' => ['required', 'string', 'in:github,upload,editor,import,paste'],
+            'source' => ['required', 'string', 'in:github,gitlab,bitbucket,azure,upload,editor,import,paste'],
             'repo' => ['nullable', 'string', 'max:255'],
+            'repo_id' => ['nullable', 'string', 'max:255'],
+            'project' => ['nullable', 'string', 'max:255'],
+            'workspace' => ['nullable', 'string', 'max:255'],
+            'organization' => ['nullable', 'string', 'max:255'],
+            'repo_slug' => ['nullable', 'string', 'max:255'],
             'pr_number' => ['nullable', 'integer'],
             'compare_type' => ['nullable', 'string', 'max:120'],
             'base_branch' => ['nullable', 'string', 'max:255'],
@@ -63,31 +68,12 @@ class AuditDiffController extends Controller
         $issueComments = [];
         $reviewComments = [];
         $pullDetails = [];
-
-        if ($source === 'github' && $repo !== '' && $prNumber !== '') {
-            $user = Auth::user();
-            if ($user?->github_access_token) {
-                $pullDetailsResult = $this->gitHubApiService->getPullDetails($user->github_access_token, $repo, $prNumber);
-                if ($pullDetailsResult['ok']) {
-                    $pullDetails = $pullDetailsResult['data'];
-                    if ($prTitle === '') {
-                        $prTitle = (string) ($pullDetails['title'] ?? '');
-                    }
-                    if ($prDescription === '') {
-                        $prDescription = (string) ($pullDetails['body'] ?? '');
-                    }
-                }
-
-                $issueResult = $this->gitHubApiService->getPullIssueComments($user->github_access_token, $repo, $prNumber);
-                if ($issueResult['ok']) {
-                    $issueComments = $issueResult['data'];
-                }
-
-                $reviewResult = $this->gitHubApiService->getPullReviewComments($user->github_access_token, $repo, $prNumber);
-                if ($reviewResult['ok']) {
-                    $reviewComments = $reviewResult['data'];
-                }
-            }
+        [$pullDetails, $issueComments, $reviewComments] = $this->loadPullContext($request, $source, $payload, $repo, $prNumber);
+        if ($prTitle === '') {
+            $prTitle = (string) ($pullDetails['title'] ?? '');
+        }
+        if ($prDescription === '') {
+            $prDescription = (string) ($pullDetails['body'] ?? '');
         }
 
         $auditKind = $this->resolveAuditKind($auditKind, $source, $compareType, $prNumber);
@@ -181,8 +167,13 @@ class AuditDiffController extends Controller
     public function auditStream(Request $request): StreamedResponse
     {
         $payload = $request->validate([
-            'source' => ['required', 'string', 'in:github,upload,editor,import,paste'],
+            'source' => ['required', 'string', 'in:github,gitlab,bitbucket,azure,upload,editor,import,paste'],
             'repo' => ['nullable', 'string', 'max:255'],
+            'repo_id' => ['nullable', 'string', 'max:255'],
+            'project' => ['nullable', 'string', 'max:255'],
+            'workspace' => ['nullable', 'string', 'max:255'],
+            'organization' => ['nullable', 'string', 'max:255'],
+            'repo_slug' => ['nullable', 'string', 'max:255'],
             'pr_number' => ['nullable', 'integer'],
             'compare_type' => ['nullable', 'string', 'max:120'],
             'base_branch' => ['nullable', 'string', 'max:255'],
@@ -218,31 +209,12 @@ class AuditDiffController extends Controller
         $issueComments = [];
         $reviewComments = [];
         $pullDetails = [];
-
-        if ($source === 'github' && $repo !== '' && $prNumber !== '') {
-            $user = Auth::user();
-            if ($user?->github_access_token) {
-                $pullDetailsResult = $this->gitHubApiService->getPullDetails($user->github_access_token, $repo, $prNumber);
-                if ($pullDetailsResult['ok']) {
-                    $pullDetails = $pullDetailsResult['data'];
-                    if ($prTitle === '') {
-                        $prTitle = (string) ($pullDetails['title'] ?? '');
-                    }
-                    if ($prDescription === '') {
-                        $prDescription = (string) ($pullDetails['body'] ?? '');
-                    }
-                }
-
-                $issueResult = $this->gitHubApiService->getPullIssueComments($user->github_access_token, $repo, $prNumber);
-                if ($issueResult['ok']) {
-                    $issueComments = $issueResult['data'];
-                }
-
-                $reviewResult = $this->gitHubApiService->getPullReviewComments($user->github_access_token, $repo, $prNumber);
-                if ($reviewResult['ok']) {
-                    $reviewComments = $reviewResult['data'];
-                }
-            }
+        [$pullDetails, $issueComments, $reviewComments] = $this->loadPullContext($request, $source, $payload, $repo, $prNumber);
+        if ($prTitle === '') {
+            $prTitle = (string) ($pullDetails['title'] ?? '');
+        }
+        if ($prDescription === '') {
+            $prDescription = (string) ($pullDetails['body'] ?? '');
         }
 
         $auditKind = $this->resolveAuditKind($auditKind, $source, $compareType, $prNumber);
@@ -384,6 +356,48 @@ class AuditDiffController extends Controller
     }
 
     // Extracts risk score and change type markers from model response.
+    /**
+     * @return array{0:array<string,mixed>,1:array<int,mixed>,2:array<int,mixed>}
+     */
+    private function loadPullContext(Request $request, string $source, array $payload, string $repo, string $prNumber): array
+    {
+        if (!$this->isVcsSource($source) || $repo === '' || $prNumber === '') {
+            return [[], [], []];
+        }
+
+        $connection = $this->vcsProviderManager->resolveConnection($source, $request);
+        if (!$connection) {
+            return [[], [], []];
+        }
+
+        $provider = $this->vcsProviderManager->provider($source);
+        $repoPayload = [
+            'repo' => $repo,
+            'repo_id' => $payload['repo_id'] ?? null,
+            'project' => $payload['project'] ?? null,
+            'workspace' => $payload['workspace'] ?? null,
+            'organization' => $payload['organization'] ?? null,
+            'repo_slug' => $payload['repo_slug'] ?? null,
+        ];
+
+        $pullDetailsResult = $provider->getPullDetails($connection, $repoPayload, $prNumber);
+        $pullDetails = $pullDetailsResult['ok'] ? ($pullDetailsResult['data'] ?? []) : [];
+
+        $issueResult = $provider->getPullIssueComments($connection, $repoPayload, $prNumber);
+        $reviewResult = $provider->getPullReviewComments($connection, $repoPayload, $prNumber);
+
+        return [
+            $pullDetails,
+            $issueResult['ok'] ? ($issueResult['data'] ?? []) : [],
+            $reviewResult['ok'] ? ($reviewResult['data'] ?? []) : [],
+        ];
+    }
+
+    private function isVcsSource(string $source): bool
+    {
+        return in_array($source, ['github', 'gitlab', 'bitbucket', 'azure'], true);
+    }
+
     private function resolveAuditKind(string $auditKind, string $source, string $compareType, string $prNumber): string
     {
         if ($auditKind !== '') {

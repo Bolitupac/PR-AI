@@ -51,7 +51,7 @@ function renderEmptyState(panel, message) {
     `;
 }
 
-function renderPullRequests(panel, pullRequests) {
+function renderPullRequests(panel, pullRequests, provider) {
     if (!Array.isArray(pullRequests) || pullRequests.length === 0) {
         renderEmptyState(panel, 'No recent pull requests available.');
         return;
@@ -83,6 +83,10 @@ function renderPullRequests(panel, pullRequests) {
                         data-pr="${escapeHtml(pullRequest.number || '')}"
                         data-status="${escapeHtml(status)}"
                         data-title="${escapeHtml(pullRequest.title || '')}"
+                        data-provider="${escapeHtml(provider || 'github')}"
+                        data-repo-id="${escapeHtml(pullRequest.repo_id || '')}"
+                        data-project="${escapeHtml(pullRequest.project || '')}"
+                        data-organization="${escapeHtml(pullRequest.organization || '')}"
                         aria-label="Audit pull request"
                     >
                         Audit
@@ -93,23 +97,28 @@ function renderPullRequests(panel, pullRequests) {
     }).join('');
 }
 
-export async function initRecentPullRequestsPanel(setImportStatus) {
+export async function initRecentPullRequestsPanel(apiBase, provider, setImportStatus) {
     const panel = document.getElementById('recent-pull-requests-list');
     if (!panel) return;
 
     renderEmptyState(panel, 'Loading recent pull requests...');
 
     try {
-        const pullRequests = await API.fetchRecentPullRequests();
-        renderPullRequests(panel, pullRequests);
+        const pullRequests = await API.fetchRecentPullRequests(apiBase, provider);
+        renderPullRequests(panel, pullRequests, provider);
     } catch (error) {
         if (error?.status === 401) {
-            renderEmptyState(panel, 'Connect GitHub to load your recent pull requests.');
+            renderEmptyState(panel, `Connect ${provider} to load recent pull requests.`);
         } else {
             renderEmptyState(panel, 'Failed to load recent pull requests.');
         }
     }
 
+    if (panel.dataset.boundClick === 'true') {
+        return;
+    }
+
+    panel.dataset.boundClick = 'true';
     panel.addEventListener('click', (event) => {
         const button = event.target.closest('.imports-recent-pr-audit-btn');
         if (!button) return;
@@ -118,6 +127,7 @@ export async function initRecentPullRequestsPanel(setImportStatus) {
         const prNumber = button.dataset.pr;
         const auditStatus = button.dataset.status || null;
         const title = button.dataset.title || 'Untitled pull request';
+        const provider = button.dataset.provider || 'github';
 
         if (!repo || !prNumber) return;
 
@@ -125,10 +135,14 @@ export async function initRecentPullRequestsPanel(setImportStatus) {
         setImportStatus?.('Preparing audit in Auditor...', true);
 
         startAuditSession(buildPullRequestAuditPayload({
+            provider,
             repo,
             prNumber,
             title,
             auditStatus,
+            repoId: button.dataset.repoId || null,
+            project: button.dataset.project || null,
+            organization: button.dataset.organization || null,
         }));
     });
 }

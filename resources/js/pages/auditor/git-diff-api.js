@@ -1,6 +1,8 @@
+import { appendRepoParams } from '../../shared/vcs-repo-query.js';
+
 export async function fetchGitPullDiff(pullDiffUrl, repoFullName, pullNumber) {
     const url = new URL(pullDiffUrl, window.location.origin);
-    url.searchParams.set('repo', repoFullName);
+    appendRepoParams(url, repoFullName);
     url.searchParams.set('pr_number', String(pullNumber));
 
     const res = await fetch(url.toString(), {

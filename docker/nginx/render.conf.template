@@ -34,6 +34,8 @@ server {
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         fastcgi_param DOCUMENT_ROOT $realpath_root;
         fastcgi_pass 127.0.0.1:9000;
+        fastcgi_buffering off;
+        fastcgi_request_buffering off;
         fastcgi_read_timeout 300;
     }
 

@@ -1,16 +1,35 @@
+@php
+    $repoModalProviders = collect($vcsProviders ?? [])->mapWithKeys(function ($provider) {
+        return [
+            $provider['key'] => [
+                'label' => $provider['name'],
+                'connected' => (bool) ($provider['connected'] ?? false),
+            ],
+        ];
+    })->all();
+@endphp
+
 <div class="repo-modal" id="repo-modal" aria-hidden="true"
-    data-repos-url="{{ route('github.repos') }}"
-    data-pulls-url="{{ route('github.pulls') }}"
-    data-pull-diff-url="{{ route('github.pull-diff') }}"
-    data-connect-url="{{ route('github.redirect') }}">
+    data-vcs-api-base="{{ url('/api/vcs') }}"
+    data-default-provider="{{ $defaultVcsProviderKey ?? 'github' }}"
+    data-vcs-providers='@json($repoModalProviders)'>
     <div class="repo-modal-backdrop" data-close="repo-modal"></div>
-    <div class="repo-modal-card" role="dialog" aria-label="Import from GitHub">
+    <div class="repo-modal-card" role="dialog" aria-label="Import from repository provider">
         <button class="repo-modal-close" type="button" aria-label="Close" data-close="repo-modal">&times;</button>
 
         <div class="repo-import-head">
-            <div class="repo-import-title">Import from GitHub</div>
+            <div class="repo-import-title">Import from repository provider</div>
             <div class="repo-import-sub">Choose a repository to load into the auditor.</div>
         </div>
+
+        <label class="repo-import-label" for="repo-provider-select">Provider</label>
+        <select class="repo-import-select" id="repo-provider-select">
+            @foreach (($vcsProviders ?? []) as $provider)
+                <option value="{{ $provider['key'] }}" @selected(($defaultVcsProviderKey ?? 'github') === $provider['key'])>
+                    {{ $provider['name'] }}{{ !empty($provider['connected']) ? '' : ' (not connected)' }}
+                </option>
+            @endforeach
+        </select>
 
         <label class="repo-import-label" for="repo-import-select">Repository</label>
         <select class="repo-import-select" id="repo-import-select">
@@ -18,8 +37,8 @@
         </select>
         <div class="repo-import-help" id="repo-import-help"></div>
         <div class="repo-import-actions-row" id="repo-import-actions-row" hidden>
-            <a class="repo-import-secondary-action" id="repo-connect-github-btn" href="{{ route('github.redirect') }}">
-                Connect GitHub
+            <a class="repo-import-secondary-action" id="repo-connect-github-btn" href="#settings-vcs">
+                Open provider settings
             </a>
             <button class="repo-import-secondary-action" id="repo-retry-btn" type="button">Retry</button>
         </div>

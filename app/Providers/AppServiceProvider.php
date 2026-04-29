@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Services\Vcs\VcsProviderManager;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -32,5 +34,20 @@ class AppServiceProvider extends ServiceProvider
                 URL::forceRootUrl($appUrl);
             }
         }
+
+        View::composer(['auditor', 'imports'], function ($view): void {
+            $request = request();
+            /** @var VcsProviderManager $manager */
+            $manager = app(VcsProviderManager::class);
+            $providers = $manager->providerSummaries($request);
+            $defaultKey = $manager->defaultProviderKey($request);
+            $defaultProvider = collect($providers)->firstWhere('key', $defaultKey) ?? $providers[0] ?? null;
+
+            $view->with([
+                'vcsProviders' => $providers,
+                'defaultVcsProviderKey' => $defaultKey,
+                'defaultVcsProvider' => $defaultProvider,
+            ]);
+        });
     }
 }

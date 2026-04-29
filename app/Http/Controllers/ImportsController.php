@@ -3,24 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Services\Git\RecentCommitsService;
+use App\Services\Vcs\VcsProviderManager;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class ImportsController extends Controller
 {
-    public function __construct(private readonly RecentCommitsService $recentCommitsService)
+    public function __construct(
+        private readonly RecentCommitsService $recentCommitsService,
+        private readonly VcsProviderManager $vcsProviderManager,
+    )
     {
     }
 
-    public function index(): View
+    public function index(Request $request): View
     {
-        $githubConnected = (bool) auth()->user()?->github_access_token;
+        $hasConnectedProvider = collect($this->vcsProviderManager->providerSummaries($request))
+            ->contains(fn (array $provider) => !empty($provider['connected']));
 
         return view('imports', [
-            'githubConnected' => $githubConnected,
-            'recentCommits' => $githubConnected ? $this->recentCommitsService->getRecentCommits(15) : [],
-            'recentCommitsUnavailableReason' => $githubConnected
+            'recentCommits' => $hasConnectedProvider ? $this->recentCommitsService->getRecentCommits(15) : [],
+            'recentCommitsUnavailableReason' => $hasConnectedProvider
                 ? $this->recentCommitsService->getUnavailableReason()
-                : 'Log in with GitHub to load your recent commits.',
+                : 'Connect a VCS provider to load your recent commits.',
         ]);
     }
 }

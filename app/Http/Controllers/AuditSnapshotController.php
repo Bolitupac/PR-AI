@@ -3,16 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Services\Audit\AuditSnapshotWriter;
-use App\Services\GitHubApiService;
+use App\Services\Vcs\VcsProviderManager;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class AuditSnapshotController extends Controller
 {
     public function __construct(
         private readonly AuditSnapshotWriter $snapshotWriter,
-        private readonly GitHubApiService $gitHubApiService
+        private readonly VcsProviderManager $vcsProviderManager
     ) {
     }
 
@@ -20,8 +19,13 @@ class AuditSnapshotController extends Controller
     public function store(Request $request): JsonResponse
     {
         $payload = $request->validate([
-            'source' => ['required', 'string', 'in:github,upload'],
+            'source' => ['required', 'string', 'in:github,gitlab,bitbucket,azure,upload'],
             'repo' => ['nullable', 'string', 'max:255'],
+            'repo_id' => ['nullable', 'string', 'max:255'],
+            'project' => ['nullable', 'string', 'max:255'],
+            'workspace' => ['nullable', 'string', 'max:255'],
+            'organization' => ['nullable', 'string', 'max:255'],
+            'repo_slug' => ['nullable', 'string', 'max:255'],
             'pr_number' => ['nullable', 'integer'],
             'file_name' => ['nullable', 'string', 'max:255'],
             'diff_text' => ['required', 'string', 'max:2000000'],
@@ -35,15 +39,25 @@ class AuditSnapshotController extends Controller
         $issueComments = [];
         $reviewComments = [];
 
-        if ($source === 'github' && $repo !== '' && $prNumber !== '') {
-            $user = Auth::user();
-            if ($user?->github_access_token) {
-                $issueResult = $this->gitHubApiService->getPullIssueComments($user->github_access_token, $repo, $prNumber);
+        if (in_array($source, ['github', 'gitlab', 'bitbucket', 'azure'], true) && $repo !== '' && $prNumber !== '') {
+            $connection = $this->vcsProviderManager->resolveConnection($source, $request);
+            if ($connection) {
+                $provider = $this->vcsProviderManager->provider($source);
+                $repoPayload = [
+                    'repo' => $repo,
+                    'repo_id' => $payload['repo_id'] ?? null,
+                    'project' => $payload['project'] ?? null,
+                    'workspace' => $payload['workspace'] ?? null,
+                    'organization' => $payload['organization'] ?? null,
+                    'repo_slug' => $payload['repo_slug'] ?? null,
+                ];
+
+                $issueResult = $provider->getPullIssueComments($connection, $repoPayload, $prNumber);
                 if ($issueResult['ok']) {
                     $issueComments = $issueResult['data'];
                 }
 
-                $reviewResult = $this->gitHubApiService->getPullReviewComments($user->github_access_token, $repo, $prNumber);
+                $reviewResult = $provider->getPullReviewComments($connection, $repoPayload, $prNumber);
                 if ($reviewResult['ok']) {
                     $reviewComments = $reviewResult['data'];
                 }
@@ -68,4 +82,3 @@ class AuditSnapshotController extends Controller
         ]);
     }
 }
-

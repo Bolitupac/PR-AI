@@ -1,11 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuditorController;
 use App\Http\Controllers\Auth\GitHubOAuthController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\GitHubRepositoryController;
 use App\Http\Controllers\GitCommitController;
 use App\Http\Controllers\ImportsController;
+use App\Http\Controllers\Vcs\VcsConnectionController;
+use App\Http\Controllers\Vcs\VcsRepositoryController;
 use App\Http\Controllers\Ai\SimpleChatController;
 use App\Http\Controllers\Ai\DocGenController;
 use App\Http\Controllers\Ai\AuditDiffController;
@@ -17,10 +20,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/auditor', function () {
-    request()->session()->forget('active_audit_context');
-    return view('auditor');
-});
+Route::get('/auditor', [AuditorController::class, 'index'])->name('auditor.index');
 
 Route::get('/imports', [ImportsController::class, 'index'])->name('imports.index');
 
@@ -35,6 +35,14 @@ Route::get('/api/github/recent-pulls', [GitHubRepositoryController::class, 'rece
 Route::get('/api/github/pull-comments', [GitHubRepositoryController::class, 'pullComments'])->name('github.pull-comments');
 Route::get('/api/github/pull-diff', [GitHubRepositoryController::class, 'pullDiff'])->name('github.pull-diff');
 Route::get('/api/github/branch-diff', [GitHubRepositoryController::class, 'branchDiff'])->name('github.branch-diff');
+Route::get('/api/vcs/{provider}/repos', [VcsRepositoryController::class, 'repos'])->name('vcs.repos');
+Route::get('/api/vcs/{provider}/branches', [VcsRepositoryController::class, 'branches'])->name('vcs.branches');
+Route::get('/api/vcs/{provider}/metadata', [VcsRepositoryController::class, 'metadata'])->name('vcs.metadata');
+Route::get('/api/vcs/{provider}/pulls', [VcsRepositoryController::class, 'pullRequests'])->name('vcs.pulls');
+Route::get('/api/vcs/{provider}/recent-pulls', [VcsRepositoryController::class, 'recentPullRequests'])->name('vcs.recent-pulls');
+Route::get('/api/vcs/{provider}/pull-comments', [VcsRepositoryController::class, 'pullComments'])->name('vcs.pull-comments');
+Route::get('/api/vcs/{provider}/pull-diff', [VcsRepositoryController::class, 'pullDiff'])->name('vcs.pull-diff');
+Route::get('/api/vcs/{provider}/branch-diff', [VcsRepositoryController::class, 'branchDiff'])->name('vcs.branch-diff');
 Route::get('/api/git/commit-diff', [GitCommitController::class, 'diff'])
     ->name('git.commit-diff');
 Route::post('/api/ai/chat', [SimpleChatController::class, 'chat'])->name('ai.chat');
@@ -48,6 +56,8 @@ Route::post('/api/ai/transcribe', [TranscriptionController::class, 'transcribe']
 Route::post('/api/ai/audit-diff', [AuditDiffController::class, 'audit'])->name('ai.audit-diff');
 Route::post('/api/ai/audit-diff-stream', [AuditDiffController::class, 'auditStream'])->name('ai.audit-diff.stream');
 Route::post('/api/audit/snapshot', [AuditSnapshotController::class, 'store'])->name('audit.snapshot');
+Route::post('/vcs/{provider}/connect', [VcsConnectionController::class, 'store'])->name('vcs.connections.store');
+Route::delete('/vcs/{provider}/connect', [VcsConnectionController::class, 'destroy'])->name('vcs.connections.destroy');
 
 Route::post('/logout', LogoutController::class)->middleware('auth')->name('logout');
 

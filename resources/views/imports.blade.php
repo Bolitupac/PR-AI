@@ -19,13 +19,21 @@
 </head>
 
 <body>
+    @php
+        $vcsClientProviders = collect($vcsProviders ?? [])->mapWithKeys(function ($provider) {
+            return [
+                $provider['key'] => [
+                    'label' => $provider['name'],
+                    'connected' => (bool) ($provider['connected'] ?? false),
+                ],
+            ];
+        })->all();
+        $hasConnectedProvider = collect($vcsProviders ?? [])->contains(fn ($provider) => !empty($provider['connected']));
+    @endphp
     <div class="app-shell sidebar-expanded imports-shell" id="imports-page"
-        data-repos-url="{{ route('github.repos') }}"
-        data-branches-url="{{ route('github.branches') }}"
-        data-pulls-url="{{ route('github.pulls') }}"
-        data-metadata-url="{{ route('github.metadata') }}"
-        data-github-connected="{{ !empty($githubConnected) ? 'true' : 'false' }}"
-        data-github-connect-url="{{ route('github.redirect') }}">
+        data-vcs-api-base="{{ url('/api/vcs') }}"
+        data-default-provider="{{ $defaultVcsProviderKey ?? 'github' }}"
+        data-vcs-providers='@json($vcsClientProviders)'>
         @include('partials.sidebar')
 
         <main class="imports-workspace">
@@ -46,7 +54,7 @@
                         <h2 class="imports-panel__title" style="margin: 0;">Recent Commits</h2>
                     </header>
                     <ul class="imports-history-list imports-activity-list imports-commit-list">
-                        @if (empty($githubConnected))
+                        @if (!$hasConnectedProvider)
                             <li class="imports-history-item" style="color: var(--text-soft); font-size: 12px;">
                                 VCS not connected.
                             </li>
@@ -88,7 +96,19 @@
                         <h1 class="imports-page-title">Import Branches & Pull Requests</h1>
                         <p class="imports-page-subtitle">Select a repository to view branches and pull requests.</p>
                     </div>
-                    <div class="imports-import-status" id="imports-import-status" aria-live="polite"></div>
+                    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <label style="display:flex; align-items:center; gap:8px; color:var(--text-soft); font-size:12px;">
+                            <span>Provider</span>
+                            <select id="imports-provider-select" class="chat-model-select" aria-label="Select provider">
+                                @foreach (($vcsProviders ?? []) as $provider)
+                                    <option value="{{ $provider['key'] }}" @selected(($defaultVcsProviderKey ?? 'github') === $provider['key'])>
+                                        {{ $provider['name'] }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </label>
+                        <div class="imports-import-status" id="imports-import-status" aria-live="polite"></div>
+                    </div>
                 </header>
 
                 <ul class="imports-repo-list" id="repo-list-container">

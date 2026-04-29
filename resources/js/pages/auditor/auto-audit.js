@@ -180,6 +180,11 @@ export function initAutoAudit() {
                 body: JSON.stringify({
                     source,
                     repo: detail.repo || null,
+                    repo_id: detail.repoId || null,
+                    project: detail.project || null,
+                    workspace: detail.workspace || null,
+                    organization: detail.organization || null,
+                    repo_slug: detail.repoSlug || null,
                     pr_number: detail.prNumber || null,
                     compare_type: detail.compareType || null,
                     base_branch: detail.baseBranch || null,

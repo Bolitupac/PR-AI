@@ -55,7 +55,9 @@ export function initSettingsModal() {
         });
     };
 
-    const openModal = () => {
+    const openModal = (tabName = 'general') => {
+        setActiveTab(tabName);
+        setThemeButtonState();
         modal.classList.add('is-open');
         modal.setAttribute('aria-hidden', 'false');
     };
@@ -72,9 +74,7 @@ export function initSettingsModal() {
     });
 
     openBtn.addEventListener('click', () => {
-        setActiveTab('general');
-        setThemeButtonState();
-        openModal();
+        openModal('general');
     });
 
     themeButtons.forEach((button) => {
@@ -94,4 +94,15 @@ export function initSettingsModal() {
     });
 
     document.addEventListener('auditor:theme-changed', setThemeButtonState);
+
+    document.addEventListener('auditor:open-settings', (event) => {
+        openModal(event?.detail?.tab || 'general');
+    });
+
+    document.addEventListener('click', (event) => {
+        const link = event.target.closest('a[href="#settings-vcs"]');
+        if (!link) return;
+        event.preventDefault();
+        openModal('vcs');
+    });
 }

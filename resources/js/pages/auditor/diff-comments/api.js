@@ -1,6 +1,9 @@
-export async function fetchGitPullComments(repoFullName, pullNumber) {
-    const url = new URL('/api/github/pull-comments', window.location.origin);
-    url.searchParams.set('repo', repoFullName);
+import { appendRepoParams } from '../../../shared/vcs-repo-query.js';
+
+export async function fetchGitPullComments(repoFullName, pullNumber, provider = 'github', apiBase = '/api/vcs') {
+    const base = String(apiBase || '/api/vcs').replace(/\/$/, '');
+    const url = new URL(`${base}/${encodeURIComponent(provider)}/pull-comments`, window.location.origin);
+    appendRepoParams(url, repoFullName);
     url.searchParams.set('pr_number', String(pullNumber));
 
     const response = await fetch(url.toString(), {
