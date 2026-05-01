@@ -383,19 +383,20 @@
                         <h3>Getting Started</h3>
                         <p>How to use PR-AI and its primary features.</p>
                     </header>
-                    <div class="settings-gh-section" style="padding: 24px; color: var(--text-muted); line-height: 1.6; font-size: 14px;">
+                    <div class="settings-gh-section" style="padding: 24px; color: var(--text-muted); line-height: 1.6; font-size: 14px; max-height: 55vh; overflow-y: auto;">
                         <h4 style="color: var(--text-main); margin-top: 0; font-size: 16px;">Welcome to PR-AI</h4>
-                        <p>PR-AI is an intelligent code auditing platform designed to streamline your code review and documentation workflows. It uses advanced Large Language Models (LLMs) to perform automated, context-aware audits on pull requests, branches, and specific commits.</p>
+                        <p>PR-AI is an intelligent code auditing platform designed to streamline your code review and documentation workflows. It uses advanced Large Language Models (LLMs) to perform automated, context-aware audits.</p>
                         
                         <h4 style="color: var(--text-main); margin-top: 24px; font-size: 16px;">Primary Use Cases</h4>
                         <ul style="padding-left: 20px;">
-                            <li style="margin-bottom: 8px;"><strong>Automated Code Auditing:</strong> Instantly catch bugs, security flaws, and performance bottlenecks in your code diffs.</li>
-                            <li style="margin-bottom: 8px;"><strong>Interactive Chat:</strong> Chat with the AI directly about a specific piece of code, asking it to explain logic or suggest refactors.</li>
-                            <li style="margin-bottom: 8px;"><strong>Documentation Generation:</strong> Automatically generate comprehensive <code>README.md</code> files, setup instructions, or technical design docs based on your repository.</li>
-                            <li style="margin-bottom: 8px;"><strong>Architectural Reviews:</strong> Use the canvas/graph views to visualize complex dependencies and file structures in large codebases.</li>
+                            <li style="margin-bottom: 8px;"><strong>Automated Code Auditing:</strong> The AI conducts automated analysis to spot issues, instantly catching bugs, security flaws, and performance bottlenecks. <em>Note: The tool is currently in its early stage, so please expect some bugs! More updates are coming soon.</em></li>
+                            <li style="margin-bottom: 8px;"><strong>Pull Request, Commit, & Branch Audits:</strong> Seamlessly audit your code history. Branch audits compare the selected branch with the main branch. <strong>Note: For now, you can only audit PRs and Commits directly.</strong></li>
+                            <li style="margin-bottom: 8px;"><strong>Doc Gen Mode:</strong> Automatically generate comprehensive <code>README.md</code> files, setup instructions, or technical design docs based on your repository. The AI will even suggest prompts for you!</li>
+                            <li style="margin-bottom: 8px;"><strong>Interactive Chat & Voice:</strong> Chat with the AI directly about a specific piece of code. You can even use your <strong>voice to talk</strong> to the AI for a hands-free experience.</li>
+                            <li style="margin-bottom: 8px;"><strong>Uploading Documents:</strong> You can upload context documents by clicking the top right icon in the audit page, or by using the plus button in the chatbox.</li>
                         </ul>
 
-                        <p style="margin-top: 24px;">To begin, navigate to the <strong>Imports</strong> page to connect your repositories, or manually paste a diff in the <strong>Auditor</strong>.</p>
+                        <p style="margin-top: 24px;">To begin, navigate to the <strong>Imports</strong> page to connect your repositories, or manually paste a diff.</p>
                     </div>
                 </section>
 
@@ -404,7 +405,7 @@
                         <h3>Connecting Accounts</h3>
                         <p>Link your version control systems to PR-AI.</p>
                     </header>
-                    <div class="settings-gh-section" style="padding: 24px; color: var(--text-muted); line-height: 1.6; font-size: 14px;">
+                    <div class="settings-gh-section" style="padding: 24px; color: var(--text-muted); line-height: 1.6; font-size: 14px; max-height: 55vh; overflow-y: auto;">
                         <p>PR-AI supports multiple Version Control Systems (VCS) so you can directly import pull requests, branches, and commits.</p>
 
                         <h4 style="color: var(--text-main); margin-top: 20px; font-size: 16px;">1. GitHub</h4>
@@ -426,12 +427,15 @@
                         <h3>Features Overview</h3>
                         <p>Deep dive into PR-AI's capabilities.</p>
                     </header>
-                    <div class="settings-gh-section" style="padding: 24px; color: var(--text-muted); line-height: 1.6; font-size: 14px;">
+                    <div class="settings-gh-section" style="padding: 24px; color: var(--text-muted); line-height: 1.6; font-size: 14px; max-height: 55vh; overflow-y: auto;">
                         <h4 style="color: var(--text-main); margin-top: 0; font-size: 16px;">AI Configuration</h4>
-                        <p>In the <strong>API Keys</strong> tab, you can choose to use the default developer API key, or supply your own personal OpenAI key for extended limits. The AI's behavior can be tweaked in the <strong>AI Settings</strong> tab. You can select predefined personalities (like "Strict" or "Friendly Mentor"), adjust verbosity, and even provide a custom system prompt to tailor the code reviews to your team's specific coding guidelines.</p>
+                        <p>In the <strong>API Keys</strong> tab, you can choose to use the default developer API key, or you can choose to supply your own personal OpenAI key for extended limits and privacy.</p>
                         
                         <h4 style="color: var(--text-main); margin-top: 20px; font-size: 16px;">Code Diffs & Visualizer</h4>
-                        <p>The main Auditor window parses raw diffs into an elegant, side-by-side or inline view. You can upload <code>.patch</code> or <code>.diff</code> files directly if you prefer not to connect an account. The platform also includes a Node Canvas, allowing you to build visual workflows or architecture diagrams derived from the code.</p>
+                        <p>The UI displays Git diffs at the bottom of the audit page when a repository is loaded, a diff file is uploaded, or when a diff is posted. <strong>Important:</strong> A user's git diff code <em>must</em> be pasted in the provided box on the Import page so it can be rendered correctly in diff2html, else it will not be rendered.</p>
+                        
+                        <h4 style="color: var(--text-main); margin-top: 20px; font-size: 16px;">Mermaid Diagrams</h4>
+                        <p>PR-AI can visually display architectural diagrams, workflows, and logic trees using <strong>Mermaid</strong>. Just ask the AI to map out your code!</p>
 
                         <h4 style="color: var(--text-main); margin-top: 20px; font-size: 16px;">Dynamic Activity Feeds</h4>
                         <p>Once a provider is connected, the <strong>Imports</strong> page dynamically fetches your recent pull requests and commits in real-time, allowing 1-click auditing.</p>
@@ -443,7 +447,7 @@
                         <h3>About the Developer</h3>
                         <p>Learn more about the creator behind PR-AI.</p>
                     </header>
-                    <div class="settings-gh-section" style="padding: 24px; color: var(--text-muted); line-height: 1.6; font-size: 14px;">
+                    <div class="settings-gh-section" style="padding: 24px; color: var(--text-muted); line-height: 1.6; font-size: 14px; max-height: 55vh; overflow-y: auto;">
                         <div style="display:flex; align-items:center; gap:16px; margin-bottom: 24px;">
                             <div style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(130deg, #009eff 0%, #9360ff 100%); display:flex; align-items:center; justify-content:center; color:white; font-size: 24px; font-weight:bold;">
                                 ND
@@ -451,6 +455,7 @@
                             <div>
                                 <h4 style="color: var(--text-main); margin: 0; font-size: 18px;">Nanbol Dassak</h4>
                                 <div style="color: var(--brand); font-weight: 500;">Software Engineer & AI Architect</div>
+                                <a href="https://bolitupac.github.io/" target="_blank" style="color: var(--brand); text-decoration: underline; font-size: 13px;">bolitupac.github.io</a>
                             </div>
                         </div>
 

@@ -291,6 +291,41 @@
                     @endforeach
                 </div>
             </section>
+            <section class="feature-overview" id="documentation" style="margin-top: 120px; padding-bottom: 60px;">
+                <div class="section-copy">
+                    <span class="section-tag">Documentation & Capabilities</span>
+                    <h2>Everything you need to know</h2>
+                    <p>
+                        Explore the full range of PR-AI's capabilities, from automated code audits to interactive architectural diagramming.
+                    </p>
+                </div>
+
+                <div class="feature-grid" style="grid-template-columns: 1fr; max-width: 860px; margin: 40px auto 0; text-align: left;">
+                    <article class="feature-card" style="padding: 32px; align-items: flex-start; text-align: left; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+                        <h3 style="margin-bottom: 12px; font-size: 20px;">1. Automated Auditing & Scopes</h3>
+                        <p style="margin-bottom: 16px;">The AI conducts automated analysis to spot issues, instantly catching bugs, security flaws, and performance bottlenecks. <em>Note: The tool is currently in its early stage, so please expect some bugs! More updates are coming soon.</em></p>
+                        <p style="margin-bottom: 0;"><strong>Audits:</strong> Seamlessly audit your code history. Branch audits compare the selected branch with the main branch. <strong>Note: For now, you can only audit Pull Requests and Commits directly.</strong></p>
+                    </article>
+
+                    <article class="feature-card" style="padding: 32px; align-items: flex-start; text-align: left; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+                        <h3 style="margin-bottom: 12px; font-size: 20px;">2. Doc Gen & Voice Interactions</h3>
+                        <p style="margin-bottom: 16px;">Automatically generate comprehensive <code>README.md</code> files, setup instructions, or technical design docs based on your repository. The AI will even suggest prompts for you to get started.</p>
+                        <p style="margin-bottom: 0;">You can also chat with the AI directly about a specific piece of code, or use your <strong>voice to talk</strong> to the AI for a hands-free experience.</p>
+                    </article>
+
+                    <article class="feature-card" style="padding: 32px; align-items: flex-start; text-align: left; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+                        <h3 style="margin-bottom: 12px; font-size: 20px;">3. Diffs, Diagrams & Context</h3>
+                        <p style="margin-bottom: 16px;">The UI displays Git diffs at the bottom of the audit page when a repository is loaded, a diff file is uploaded, or when a diff is posted. <strong>Important:</strong> A user's git diff code <em>must</em> be pasted in the provided box on the Import page so it can be rendered correctly in diff2html, else it will not be rendered.</p>
+                        <p style="margin-bottom: 16px;">PR-AI can also visually display architectural diagrams, workflows, and logic trees using <strong>Mermaid</strong>.</p>
+                        <p style="margin-bottom: 0;">You can upload external context documents by clicking the top right icon in the audit page, or by using the plus button in the chatbox.</p>
+                    </article>
+
+                    <article class="feature-card" style="padding: 32px; align-items: flex-start; text-align: left; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+                        <h3 style="margin-bottom: 12px; font-size: 20px;">4. Configuration & API Keys</h3>
+                        <p style="margin-bottom: 0;">In the settings, you can choose to use the default developer API key, or you can choose to supply your own personal OpenAI key for extended limits and privacy.</p>
+                    </article>
+                </div>
+            </section>
         </main>
 
         <footer class="site-footer">

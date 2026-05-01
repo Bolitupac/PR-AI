@@ -17,7 +17,7 @@
 
 .imports-panel {
     border: 1px solid var(--panel-stroke);
-    border-radius: 20px;
+    border-radius: var(--radius-xl, 8px);
     background: var(--panel-bg);
     box-shadow: var(--panel-shadow);
     min-height: 0;
