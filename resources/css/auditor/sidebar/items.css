@@ -64,16 +64,12 @@
     align-items: center;
 }
 
+/* Logo renders in its natural colours — no forced brightness filter */
 .pr-cat-logo {
     position: absolute;
     width: 20px !important;
     height: 20px !important;
     transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-html[data-theme="light"] .pr-cat-logo,
-html:not([data-theme]) .pr-cat-logo {
-    filter: brightness(0);
 }
 
 .sidebar-collapse-svg {
@@ -155,7 +151,7 @@ html:not([data-theme]) .pr-cat-logo {
     color: var(--text-soft);
 }
 
-/* Custom tooltips for collapsed mode */
+/* ─── Consistent pill-style tooltips for collapsed sidebar ─── */
 .app-shell:not(.sidebar-expanded) .sidebar-item {
     position: relative;
     overflow: visible;
@@ -164,33 +160,76 @@ html:not([data-theme]) .pr-cat-logo {
 .app-shell:not(.sidebar-expanded) .sidebar-item::after {
     content: attr(aria-label);
     position: absolute;
-    left: 100%;
-    margin-left: 10px;
-    background-color: var(--theme-color, #0085ff);
-    color: #fff;
-    padding: 6px 12px;
-    border-radius: 2px;
+    left: calc(100% + 12px);
+    top: 50%;
+    transform: translateY(-50%) translateX(-4px);
+    background: var(--panel-bg, #f9fafc);
+    color: var(--text-main, #090b1e);
+    border: 1px solid var(--panel-stroke, #d8dce7);
+    padding: 5px 11px;
+    border-radius: 9px;
     font-size: 12px;
     font-weight: 500;
     white-space: nowrap;
     opacity: 0;
     visibility: hidden;
     z-index: 9999;
-    box-shadow: 0 4px 12px rgba(0, 133, 255, 0.2);
-    transition: opacity 0.2s ease 0.1s, visibility 0.2s ease 0.1s, transform 0.2s ease 0.1s;
-    transform: translateX(-4px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.10), 0 1px 3px rgba(0, 0, 0, 0.06);
+    transition: opacity 0.18s ease 0.08s, visibility 0.18s ease 0.08s, transform 0.18s ease 0.08s;
     pointer-events: none;
 }
 
 .app-shell:not(.sidebar-expanded) .sidebar-item:hover::after {
     opacity: 1;
     visibility: visible;
-    transform: translateX(0);
+    transform: translateY(-50%) translateX(0);
 }
 
+/* ─── Theme toggle icon swap ─── */
 .theme-toggle-icon {
     width: 16px;
     height: 16px;
     color: currentColor;
     display: block;
+    transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+/* Stack sun + moon icons inside the sidebar-icon wrapper */
+.sidebar-theme-toggle .sidebar-icon {
+    position: relative;
+}
+
+.sidebar-theme-toggle .theme-toggle-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Light mode: show moon, hide sun */
+html[data-theme="light"] .sidebar-theme-toggle .theme-toggle-icon--moon,
+html:not([data-theme]) .sidebar-theme-toggle .theme-toggle-icon--moon {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(0deg);
+    color: #2c3958;
+}
+
+html[data-theme="light"] .sidebar-theme-toggle .theme-toggle-icon--sun,
+html:not([data-theme]) .sidebar-theme-toggle .theme-toggle-icon--sun {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(90deg);
+    color: #f59e0b;
+}
+
+/* Dark mode: show sun, hide moon */
+html[data-theme="dark"] .sidebar-theme-toggle .theme-toggle-icon--sun {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(0deg);
+    color: #f59e0b;
+}
+
+html[data-theme="dark"] .sidebar-theme-toggle .theme-toggle-icon--moon {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(-90deg);
+    color: #8cafff;
 }

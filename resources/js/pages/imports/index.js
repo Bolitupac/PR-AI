@@ -44,7 +44,21 @@ export async function initImportsPage() {
 
     const isConnectedProvider = () => Boolean(providerConfig?.[currentProvider]?.connected);
     const providerLabel = () => providerConfig?.[currentProvider]?.label || currentProvider;
-    const providerConnectTarget = () => currentProvider === 'github' ? '/auth/github' : '#settings-vcs';
+    const providerConnectTarget = () => '#settings-vcs';
+
+    const getProviderSvg = (provider) => {
+        switch(provider) {
+            case 'gitlab':
+                return `<path d="M23.955 10.37L21.316 2.246a.82.82 0 0 0-1.564 0l-2.07 6.386H6.315L4.246 2.246a.82.82 0 0 0-1.564 0L.044 10.37a.822.822 0 0 0 .296.907L12 20.59l11.66-9.311a.822.822 0 0 0 .295-.91z" fill="#FC6D26"/><path d="M12 20.59L.044 10.37a.822.822 0 0 1-.296-.906L2.68 1.34a.82.82 0 0 1 1.564 0l2.07 6.386H12v12.863z" fill="#E24329"/><path d="M12 20.59V8.632H6.315L12 20.59z" fill="#FCA326"/><path d="M12 20.59l11.956-10.22a.822.822 0 0 0 .295-.91L21.32 1.34a.82.82 0 0 0-1.564 0l-2.07 6.386H12v12.863z" fill="#E24329"/><path d="M12 20.59V8.632h5.685L12 20.59z" fill="#FCA326"/>`;
+            case 'bitbucket':
+                return `<path d="M1.082 3.6A1.666 1.666 0 0 1 2.748 2h18.52a1.666 1.666 0 0 1 1.644 1.889l-2.613 15.013A1.666 1.666 0 0 1 18.656 20H5.319a1.666 1.666 0 0 1-1.644-1.39l-2.593-15.01zm13.195 10.23L15.65 8H8.38l1.373 5.83h4.524z" fill="#0052CC"/>`;
+            case 'azure':
+                return `<rect x="2" y="2" width="9" height="9" fill="#00A4EF"/><rect x="2" y="12" width="9" height="9" fill="#00A4EF"/><rect x="12" y="2" width="9" height="9" fill="#00A4EF"/><rect x="12" y="12" width="9" height="9" fill="#00A4EF"/>`;
+            case 'github':
+            default:
+                return `<path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z" fill="currentColor" stroke="none"/>`;
+        }
+    };
 
     const setImportStatus = (text, isLoading = false) => {
         if (!importStatus) return;
@@ -55,21 +69,38 @@ export async function initImportsPage() {
     const renderProviderPrompt = (container, title, message) => {
         if (!container) return;
 
-        const actionLabel = currentProvider === 'github' ? 'Connect GitHub' : 'Open VCS settings';
+        const actionLabel = `Connect ${providerLabel()}`;
+        const providerSvg = getProviderSvg(currentProvider);
         container.innerHTML = `
             <li style="padding: 40px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px;">
                 <div style="background: var(--brand-soft); color: var(--brand); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                     <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z" fill="currentColor" stroke="none"/>
+                        ${providerSvg}
                     </svg>
                 </div>
                 <div>
                     <h3 style="margin: 0 0 8px; color: var(--text-main); font-size: 18px;">${title}</h3>
                     <p style="margin: 0; color: var(--text-soft); font-size: 14px; max-width: 320px;">${message}</p>
                 </div>
-                <a href="${providerConnectTarget()}" class="imports-login-btn">${actionLabel}</a>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                    <a href="${providerConnectTarget()}" class="imports-login-btn">${actionLabel}</a>
+                    <button type="button" class="change-vcs-btn" style="background: none; border: none; color: var(--text-soft); text-decoration: underline; cursor: pointer; font-size: 13px; padding: 4px;">Change VCS</button>
+                </div>
             </li>
         `;
+
+        const changeVcsBtn = container.querySelector('.change-vcs-btn');
+        if (changeVcsBtn) {
+            changeVcsBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (providerSelect) {
+                    providerSelect.focus();
+                    if (typeof providerSelect.showPicker === 'function') {
+                        try { providerSelect.showPicker(); } catch(err) {}
+                    }
+                }
+            });
+        }
     };
 
     const renderDisconnectedText = (container, message = 'VCS not connected.') => {

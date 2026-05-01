@@ -5,15 +5,15 @@ export function initThemeToggle() {
     const root = document.documentElement;
     const btn = document.getElementById('theme-toggle-btn');
     if (!btn) return;
+
+    const label = document.getElementById('theme-toggle-label');
     let switchTimer = null;
     let logoSpinTimer = null;
     let logoSpinReverseTimer = null;
 
     const runThemeTransition = () => {
         root.classList.add('theme-switching');
-        if (switchTimer) {
-            clearTimeout(switchTimer);
-        }
+        if (switchTimer) clearTimeout(switchTimer);
         switchTimer = setTimeout(() => {
             root.classList.remove('theme-switching');
             switchTimer = null;
@@ -23,7 +23,14 @@ export function initThemeToggle() {
     const applyTheme = (theme) => {
         const next = theme === 'dark' ? 'dark' : 'light';
         root.setAttribute('data-theme', next);
-        btn.setAttribute('aria-label', next === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+
+        // Update aria-label and label text to show what clicking will do next
+        const switchTo = next === 'dark' ? 'light' : 'dark';
+        btn.setAttribute('aria-label', `Switch to ${switchTo} mode`);
+        if (label) {
+            label.textContent = next === 'dark' ? 'Light mode' : 'Dark mode';
+        }
+
         document.dispatchEvent(new CustomEvent('auditor:theme-changed', { detail: { theme: next } }));
     };
 
@@ -34,26 +41,25 @@ export function initThemeToggle() {
         const current = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
         const next = current === 'dark' ? 'light' : 'dark';
         runThemeTransition();
+
         if (current === 'dark' && next === 'light') {
             root.classList.add('logo-spin-on-switch');
-            if (logoSpinTimer) {
-                clearTimeout(logoSpinTimer);
-            }
+            if (logoSpinTimer) clearTimeout(logoSpinTimer);
             logoSpinTimer = setTimeout(() => {
                 root.classList.remove('logo-spin-on-switch');
                 logoSpinTimer = null;
             }, 560);
         }
+
         if (current === 'light' && next === 'dark') {
             root.classList.add('logo-spin-on-switch-reverse');
-            if (logoSpinReverseTimer) {
-                clearTimeout(logoSpinReverseTimer);
-            }
+            if (logoSpinReverseTimer) clearTimeout(logoSpinReverseTimer);
             logoSpinReverseTimer = setTimeout(() => {
                 root.classList.remove('logo-spin-on-switch-reverse');
                 logoSpinReverseTimer = null;
             }, 560);
         }
+
         applyTheme(next);
         localStorage.setItem(THEME_KEY, next);
     });

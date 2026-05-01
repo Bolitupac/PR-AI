@@ -80,41 +80,13 @@ html[data-theme="dark"] .sidebar-profile-plan {
     color: #c5b9da;
 }
 
-html[data-theme="dark"] .theme-switch-track {
-    background: rgba(255, 255, 255, 0.15);
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-
-html[data-theme="dark"] .theme-switch-thumb {
-    background: #1b1c20;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-    transform: translateX(16px);
-}
-
-html[data-theme="dark"] .theme-toggle-icon--sun {
-    opacity: 0;
-    transform: rotate(90deg);
-    color: #6d7ea2;
-}
-
-html[data-theme="dark"] .theme-toggle-icon--moon {
-    opacity: 1;
-    transform: rotate(0deg);
-    color: #8cafff;
-}
-
-html[data-theme="light"] .theme-toggle-icon--sun,
-html:not([data-theme]) .theme-toggle-icon--sun {
-    opacity: 1;
-    transform: rotate(0deg);
-    color: #f59e0b;
-}
-
-html[data-theme="light"] .theme-toggle-icon--moon,
-html:not([data-theme]) .theme-toggle-icon--moon {
-    opacity: 0;
-    transform: rotate(-90deg);
-    color: #f59e0b;
+/* ─── Tooltip overrides for dark mode ─── */
+/* Icon transitions are handled by .sidebar-theme-toggle rules in items.css */
+html[data-theme="dark"] .app-shell:not(.sidebar-expanded) .sidebar-item::after {
+    background: var(--panel-bg, #0f1122);
+    color: var(--text-main, #f9fafc);
+    border-color: var(--panel-stroke);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
 }
 
 html[data-theme="dark"] .icon-btn .ui-logo,
