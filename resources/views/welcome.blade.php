@@ -324,6 +324,13 @@
                         <h3 style="margin-bottom: 12px; font-size: 20px;">4. Configuration & API Keys</h3>
                         <p style="margin-bottom: 0;">In the settings, you can choose to use the default developer API key, or you can choose to supply your own personal OpenAI key for extended limits and privacy.</p>
                     </article>
+
+                    <article class="feature-card" style="padding: 32px; align-items: flex-start; text-align: left; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+                        <h3 style="margin-bottom: 12px; font-size: 20px;">5. Buttons & Settings Reference</h3>
+                        <p style="margin-bottom: 16px;"><strong>Imports Page:</strong> Use <em>Connect</em> to link VCS providers. Use <em>Load Diff Box</em> or <em>Upload Diff</em> to import custom patches, and click <em>Audit</em> next to pulled PRs to instantly analyze them.</p>
+                        <p style="margin-bottom: 16px;"><strong>Auditor Controls:</strong> Toggle the sidebar, toggle themes (Sun/Moon), upload context files (+), dictate prompts with the <em>Voice/Mic</em> button, or switch to <em>Doc Gen Mode</em> to generate architecture docs.</p>
+                        <p style="margin-bottom: 0;"><strong>Settings Modal:</strong> Adjust your AI's personality, verbosity, and tone. Toggle <em>Demo Mode</em> to safely test features, or provide a Custom System Prompt to strictly align the AI with your team's unique coding guidelines.</p>
+                    </article>
                 </div>
             </section>
         </main>

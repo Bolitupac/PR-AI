@@ -70,6 +70,7 @@
                     <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-getting-started">Getting Started</button>
                     <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-vcs">Connecting Accounts</button>
                     <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-features">Features</button>
+                    <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-buttons">UI Reference</button>
                     <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-developer">About Developer</button>
                 </div>
             </aside>
@@ -439,6 +440,41 @@
 
                         <h4 style="color: var(--text-main); margin-top: 20px; font-size: 16px;">Dynamic Activity Feeds</h4>
                         <p>Once a provider is connected, the <strong>Imports</strong> page dynamically fetches your recent pull requests and commits in real-time, allowing 1-click auditing.</p>
+                    </div>
+                </section>
+
+                <section class="settings-pane" data-settings-pane="help-buttons">
+                    <header class="settings-pane-head">
+                        <h3>UI Reference</h3>
+                        <p>A comprehensive guide to all buttons and settings.</p>
+                    </header>
+                    <div class="auto-hide-scrollbar" style="padding: 24px; color: var(--text-muted); line-height: 1.6; font-size: 14px; max-height: 55vh; overflow-y: auto;">
+                        <h4 style="color: var(--text-main); margin-top: 0; font-size: 16px;">Imports Page Buttons</h4>
+                        <ul style="padding-left: 20px;">
+                            <li style="margin-bottom: 8px;"><strong>Connect:</strong> Links your chosen VCS provider (GitHub, GitLab, etc.) to your account.</li>
+                            <li style="margin-bottom: 8px;"><strong>Load Diff Box:</strong> Paste a raw diff here to be rendered dynamically in diff2html on the Auditor page.</li>
+                            <li style="margin-bottom: 8px;"><strong>Upload diff file:</strong> Allows you to upload a <code>.patch</code> or <code>.diff</code> file from your computer.</li>
+                            <li style="margin-bottom: 8px;"><strong>Audit Pull Request/Commit:</strong> An inline button next to your repository imports that instantly launches an audit on that specific code block.</li>
+                        </ul>
+
+                        <h4 style="color: var(--text-main); margin-top: 20px; font-size: 16px;">Auditor Page Controls</h4>
+                        <ul style="padding-left: 20px;">
+                            <li style="margin-bottom: 8px;"><strong>Sidebar Toggle:</strong> Expands or collapses the left-hand navigation sidebar.</li>
+                            <li style="margin-bottom: 8px;"><strong>Chat Upload (+):</strong> Found in the chatbox, click this to upload additional context files for the AI.</li>
+                            <li style="margin-bottom: 8px;"><strong>Voice/Mic Button:</strong> Enables voice-to-text dictation, allowing you to speak your prompts.</li>
+                            <li style="margin-bottom: 8px;"><strong>Theme Toggle (Sun/Moon):</strong> Switches the application between Light and Dark mode.</li>
+                            <li style="margin-bottom: 8px;"><strong>Settings Gear:</strong> Opens this Settings Modal.</li>
+                            <li style="margin-bottom: 8px;"><strong>New Audit / Reset:</strong> Clears the current audit and prepares the UI for a new diff.</li>
+                            <li style="margin-bottom: 8px;"><strong>Doc Gen Mode Toggle:</strong> Switches the AI's primary mode from bug auditing to generating documentation (READMEs, design docs).</li>
+                        </ul>
+
+                        <h4 style="color: var(--text-main); margin-top: 20px; font-size: 16px;">Settings Options</h4>
+                        <ul style="padding-left: 20px;">
+                            <li style="margin-bottom: 8px;"><strong>Demo Mode Toggle:</strong> Simulates a mock PR audit so you can test features without using real API tokens.</li>
+                            <li style="margin-bottom: 8px;"><strong>AI Personality:</strong> Adjusts how the AI talks to you (e.g., Strict, Friendly, Direct).</li>
+                            <li style="margin-bottom: 8px;"><strong>AI Verbosity & Tone:</strong> Controls the length and emotional tone of the AI's output.</li>
+                            <li style="margin-bottom: 8px;"><strong>Custom System Prompt:</strong> Let's you provide specific instructions (e.g. coding guidelines) that the AI must follow in all audits.</li>
+                        </ul>
                     </div>
                 </section>
 
