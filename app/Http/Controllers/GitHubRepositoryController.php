@@ -117,6 +117,32 @@ class GitHubRepositoryController extends Controller
         return response()->json(['pulls' => $result['data']]);
     }
 
+    public function recentCommits(): JsonResponse
+    {
+        $user = Auth::user();
+
+        if (!$user || !$user->github_access_token || !$user->github_username) {
+            return $this->githubAuthRequiredResponse('Log in with GitHub to load your recent commits.', 'commits');
+        }
+
+        $result = $this->githubApiService->getRecentAccountCommits(
+            $user->github_access_token,
+            $user->github_username,
+            15,
+        );
+
+        if (!$result['ok']) {
+            return response()->json([
+                'commits' => [],
+                'message' => $this->githubFailureMessage($result['status'], 'Could not load recent commits from GitHub.'),
+                'connect_url' => route('github.redirect'),
+                'github_status' => $result['status'],
+            ], $result['status']);
+        }
+
+        return response()->json(['commits' => $result['data']]);
+    }
+
     public function pullComments(): JsonResponse
     {
         $user = Auth::user();

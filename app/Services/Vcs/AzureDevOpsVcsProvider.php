@@ -162,6 +162,11 @@ class AzureDevOpsVcsProvider implements VcsProviderInterface
         return ['ok' => true, 'status' => 200, 'data' => $pulls];
     }
 
+    public function getRecentCommits(array $connection, int $limit = 15): array
+    {
+        return ['ok' => false, 'status' => 501, 'message' => 'Select a repository to view its recent commits.'];
+    }
+
     public function getPullDetails(array $connection, array $repo, string $pullNumber): array
     {
         $response = $this->client($connection)->get($this->repositoryApiBase($connection, $repo).'/pullrequests/'.$pullNumber, [

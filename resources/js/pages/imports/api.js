@@ -45,6 +45,11 @@ export async function fetchRecentPullRequests(apiBase, provider) {
     return data.pulls || data.data || [];
 }
 
+export async function fetchRecentCommits(apiBase, provider) {
+    const data = await fetchJson(buildVcsUrl(apiBase, provider, 'recent-commits'), 'Failed to fetch recent commits');
+    return data.commits || data.data || [];
+}
+
 export async function fetchPullDiff(apiBase, provider, repo, prNumber) {
     const url = new URL(buildVcsUrl(apiBase, provider, 'pull-diff'), window.location.origin);
     appendRepoParams(url, repo);

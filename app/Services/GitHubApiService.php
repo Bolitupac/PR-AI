@@ -193,6 +193,45 @@ class GitHubApiService
         return ['ok' => true, 'status' => 200, 'data' => $pulls];
     }
 
+    public function getRecentAccountCommits(string $encryptedToken, string $username, int $limit = 15): array
+    {
+        $limit = max(1, min(30, $limit));
+
+        $response = $this->client($encryptedToken)->get("https://api.github.com/users/{$username}/events", [
+            'per_page' => 100,
+        ]);
+
+        if ($response->failed()) {
+            return ['ok' => false, 'status' => $response->status(), 'data' => []];
+        }
+
+        $events = collect($response->json() ?? []);
+        $commits = [];
+
+        foreach ($events as $event) {
+            if (($event['type'] ?? '') === 'PushEvent') {
+                $repoName = $event['repo']['name'] ?? '';
+                $pushCommits = $event['payload']['commits'] ?? [];
+                
+                foreach (array_reverse($pushCommits) as $commit) {
+                    $commits[] = [
+                        'repo' => $repoName,
+                        'hash' => substr($commit['sha'] ?? '', 0, 7),
+                        'message' => $commit['message'] ?? '',
+                        'author' => $commit['author']['name'] ?? $username,
+                        'time' => \Illuminate\Support\Carbon::parse($event['created_at'])->diffForHumans(),
+                    ];
+
+                    if (count($commits) >= $limit) {
+                        break 2;
+                    }
+                }
+            }
+        }
+
+        return ['ok' => true, 'status' => 200, 'data' => $commits];
+    }
+
     private function extractRepoFullName(string $repositoryUrl): string
     {
         if ($repositoryUrl === '') {

@@ -53,39 +53,10 @@
                     <header class="imports-panel__head">
                         <h2 class="imports-panel__title" style="margin: 0;">Recent Commits</h2>
                     </header>
-                    <ul class="imports-history-list imports-activity-list imports-commit-list">
-                        @if (!$hasConnectedProvider)
-                            <li class="imports-history-item" style="color: var(--text-soft); font-size: 12px;">
-                                VCS not connected.
-                            </li>
-                        @else
-                        @forelse ($recentCommits ?? [] as $commit)
-                            <li class="imports-history-item imports-activity-item imports-commit-item">
-                                <div class="imports-activity-flex imports-commit-flex">
-                                    <div class="imports-activity-main imports-commit-main">
-                                        <code class="imports-activity-badge imports-commit-hash">{{ $commit['hash'] ?? '—' }}</code>
-                                        <span class="imports-activity-title imports-commit-msg">{{ $commit['message'] ?? '' }}</span>
-                                    </div>
-                                    <div class="imports-activity-meta imports-commit-meta">
-                                        <span class="imports-commit-author">{{ $commit['author'] ?? '' }}</span>
-                                        <span class="imports-commit-repo">{{ $commit['repo'] ?? '' }}</span>
-                                        <span class="imports-activity-time imports-commit-time">{{ $commit['time'] ?? '' }}</span>
-                                    </div>
-                                    <button class="imports-activity-action-btn imports-commit-import-btn" type="button"
-                                        data-commit="{{ $commit['hash'] ?? '' }}"
-                                        data-title="{{ $commit['message'] ?? '' }}"
-                                        data-repo="{{ $commit['repo'] ?? '' }}"
-                                        aria-label="Audit commit">
-                                        Audit
-                                    </button>
-                                </div>
-                            </li>
-                        @empty
-                            <li class="imports-history-item" style="color: var(--text-soft); font-size: 12px;">
-                                {{ $recentCommitsUnavailableReason ?? 'No commits available.' }}
-                            </li>
-                        @endforelse
-                        @endif
+                    <ul class="imports-history-list imports-activity-list" id="recent-commits-list">
+                        <li class="imports-history-item" style="color: var(--text-soft); font-size: 12px;">
+                            Loading recent commits...
+                        </li>
                     </ul>
                 </article>
             </section>

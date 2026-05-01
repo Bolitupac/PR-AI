@@ -32,6 +32,7 @@ Route::get('/api/github/branches', [GitHubRepositoryController::class, 'branches
 Route::get('/api/github/metadata', [GitHubRepositoryController::class, 'metadata'])->name('github.metadata');
 Route::get('/api/github/pulls', [GitHubRepositoryController::class, 'pullRequests'])->name('github.pulls');
 Route::get('/api/github/recent-pulls', [GitHubRepositoryController::class, 'recentPullRequests'])->name('github.recent-pulls');
+Route::get('/api/github/recent-commits', [GitHubRepositoryController::class, 'recentCommits'])->name('github.recent-commits');
 Route::get('/api/github/pull-comments', [GitHubRepositoryController::class, 'pullComments'])->name('github.pull-comments');
 Route::get('/api/github/pull-diff', [GitHubRepositoryController::class, 'pullDiff'])->name('github.pull-diff');
 Route::get('/api/github/branch-diff', [GitHubRepositoryController::class, 'branchDiff'])->name('github.branch-diff');
@@ -40,6 +41,7 @@ Route::get('/api/vcs/{provider}/branches', [VcsRepositoryController::class, 'bra
 Route::get('/api/vcs/{provider}/metadata', [VcsRepositoryController::class, 'metadata'])->name('vcs.metadata');
 Route::get('/api/vcs/{provider}/pulls', [VcsRepositoryController::class, 'pullRequests'])->name('vcs.pulls');
 Route::get('/api/vcs/{provider}/recent-pulls', [VcsRepositoryController::class, 'recentPullRequests'])->name('vcs.recent-pulls');
+Route::get('/api/vcs/{provider}/recent-commits', [VcsRepositoryController::class, 'recentCommits'])->name('vcs.recent-commits');
 Route::get('/api/vcs/{provider}/pull-comments', [VcsRepositoryController::class, 'pullComments'])->name('vcs.pull-comments');
 Route::get('/api/vcs/{provider}/pull-diff', [VcsRepositoryController::class, 'pullDiff'])->name('vcs.pull-diff');
 Route::get('/api/vcs/{provider}/branch-diff', [VcsRepositoryController::class, 'branchDiff'])->name('vcs.branch-diff');

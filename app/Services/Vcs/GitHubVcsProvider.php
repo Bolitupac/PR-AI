@@ -54,6 +54,16 @@ class GitHubVcsProvider implements VcsProviderInterface
         return $this->gitHubApiService->getRecentAccountPullRequests((string) $connection['token'], $username, $limit);
     }
 
+    public function getRecentCommits(array $connection, int $limit = 15): array
+    {
+        $username = (string) ($connection['username'] ?? '');
+        if ($username === '') {
+            return ['ok' => false, 'status' => 422, 'data' => []];
+        }
+
+        return $this->gitHubApiService->getRecentAccountCommits((string) $connection['token'], $username, $limit);
+    }
+
     public function getPullDetails(array $connection, array $repo, string $pullNumber): array
     {
         return $this->gitHubApiService->getPullDetails((string) $connection['token'], (string) ($repo['repo'] ?? ''), $pullNumber);

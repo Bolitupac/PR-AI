@@ -7,6 +7,7 @@ import * as API from './api';
 import * as Renderers from './renderers';
 import { buildBranchAuditPayload, buildCommitAuditPayload, buildPullRequestAuditPayload, startAuditSession } from './audit-session';
 import { initRecentPullRequestsPanel } from './recent-pulls';
+import { initRecentCommitsPanel } from './recent-commits';
 
 const PAGE_SIZE = 20;
 const METADATA_START_DELAY_MS = 1200;
@@ -260,6 +261,7 @@ export async function initImportsPage() {
         }
 
         initRecentPullRequestsPanel(apiBase, currentProvider, setImportStatus);
+        initRecentCommitsPanel(apiBase, currentProvider, setImportStatus);
 
         try {
             const repos = await API.fetchRepos(apiBase, currentProvider);
@@ -293,36 +295,7 @@ export async function initImportsPage() {
 
     loadMoreBtn?.addEventListener('click', renderNextPage);
 
-    commitList?.addEventListener('click', async (event) => {
-        const button = event.target.closest('.imports-commit-import-btn');
-        if (!button) return;
 
-        event.preventDefault();
-        event.stopPropagation();
-
-        const commitHash = button.dataset.commit;
-        const title = button.dataset.title || 'Commit audit';
-        const repo = button.dataset.repo || 'repo';
-
-        if (!commitHash) return;
-
-        button.classList.add('is-loading');
-        setImportStatus('Preparing audit in Auditor...', true);
-
-        try {
-            startAuditSession(buildCommitAuditPayload({
-                provider: currentProvider,
-                repo,
-                commitHash,
-                title,
-            }));
-        } catch (err) {
-            console.error('Commit import failed:', err);
-            alert(`Commit import failed: ${err.message || 'Check console for details'}`);
-            button.classList.remove('is-loading');
-            setImportStatus('', false);
-        }
-    });
 
     repoContainer.addEventListener('click', async (event) => {
         const btn = event.target.closest('.imports-action-btn');

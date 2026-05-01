@@ -18,6 +18,8 @@ interface VcsProviderInterface
 
     public function getRecentPullRequests(array $connection, int $limit = 10): array;
 
+    public function getRecentCommits(array $connection, int $limit = 15): array;
+
     public function getPullDetails(array $connection, array $repo, string $pullNumber): array;
 
     public function getPullIssueComments(array $connection, array $repo, string $pullNumber): array;

@@ -156,6 +156,53 @@ class GitLabVcsProvider implements VcsProviderInterface
         return ['ok' => true, 'status' => 200, 'data' => $pulls];
     }
 
+    public function getRecentCommits(array $connection, int $limit = 15): array
+    {
+        $limit = max(1, min(30, $limit));
+
+        $response = $this->client($connection)->get($this->apiBase($connection).'/events', [
+            'action' => 'pushed',
+            'per_page' => 100,
+        ]);
+
+        if ($response->failed()) {
+            return ['ok' => false, 'status' => $response->status(), 'data' => []];
+        }
+
+        $events = collect($response->json() ?? []);
+        $commits = [];
+
+        // In GitLab events, push_data only contains tip commit info (commit_title, commit_to, commit_count).
+        // Since we want recent commits, showing the tip commit of each push is usually sufficient for a global feed.
+        foreach ($events as $event) {
+            $pushData = $event['push_data'] ?? null;
+            if ($pushData && !empty($pushData['commit_to'])) {
+                $commits[] = [
+                    'repo' => '', // We don't have project path easily without another API call or using project_id. We'll leave it empty or map it if possible.
+                    'repo_id' => $event['project_id'] ?? null, // Store ID to fetch repo name later or just rely on ID
+                    'hash' => substr($pushData['commit_to'], 0, 7),
+                    'message' => $pushData['commit_title'] ?? 'Updated repository',
+                    'author' => $event['author']['name'] ?? $event['author']['username'] ?? 'GitLab User',
+                    'time' => \Illuminate\Support\Carbon::parse($event['created_at'])->diffForHumans(),
+                ];
+
+                if (count($commits) >= $limit) {
+                    break;
+                }
+            }
+        }
+
+        // Optional: map repo_ids to names if we need to. But let's fetch projects from getRepos if we need mapping,
+        // or just return without repo name for now. We can fetch /projects/ID to get the path_with_namespace.
+        // For performance, we'll just format the repo as "Project ID: X" if we don't have the map.
+        foreach ($commits as &$commit) {
+            $commit['repo'] = 'Project ' . $commit['repo_id'];
+            unset($commit['repo_id']);
+        }
+
+        return ['ok' => true, 'status' => 200, 'data' => $commits];
+    }
+
     public function getPullDetails(array $connection, array $repo, string $pullNumber): array
     {
         $response = $this->client($connection)->get($this->projectPath($connection, $repo).'/merge_requests/'.$pullNumber);
