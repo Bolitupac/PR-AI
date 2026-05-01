@@ -53,6 +53,19 @@ export function initSettingsModal() {
         panes.forEach((pane) => {
             pane.classList.toggle('is-active', pane.dataset.settingsPane === tabName);
         });
+
+        const helpSubNav = document.getElementById('help-nav-sub');
+        if (helpSubNav) {
+            if (tabName.startsWith('help')) {
+                helpSubNav.style.display = 'flex';
+                // If they just clicked 'help', default to the first chapter
+                if (tabName === 'help') {
+                    setActiveTab('help-getting-started');
+                }
+            } else {
+                helpSubNav.style.display = 'none';
+            }
+        }
     };
 
     const openModal = (tabName = 'general') => {

@@ -10,7 +10,7 @@
 
 .doc-gen-inline-card {
     border: 1px solid rgba(250, 204, 21, 0.28);
-    border-radius: 22px;
+    border-radius: var(--radius-xl);
     padding: 18px;
     background: linear-gradient(180deg, rgba(24, 24, 27, 0.9), rgba(16, 16, 18, 0.94));
     box-shadow: 0 24px 80px rgba(15, 23, 42, 0.38);
