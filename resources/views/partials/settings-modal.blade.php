@@ -67,10 +67,15 @@
                     <span>Help</span>
                 </button>
                 <div class="settings-nav-sub" id="help-nav-sub" style="display:none;">
-                    <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-getting-started">Getting Started</button>
-                    <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-vcs">Connecting Accounts</button>
-                    <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-features">Features</button>
-                    <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-buttons">UI Reference</button>
+                    <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-c2">The Auditor Workspace</button>
+                    <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-c3">Importing Code</button>
+                    <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-c4">Auditing Modes</button>
+                    <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-c5">DocGen Mode</button>
+                    <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-c6">Voice Interactions</button>
+                    <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-c7">Git Diffs</button>
+                    <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-c8">Advanced Features</button>
+                    <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-c9">API Keys</button>
+                    <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-c10">Roadmap &amp; Known Issues</button>
                     <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-developer">About Developer</button>
                 </div>
             </aside>
@@ -379,132 +384,454 @@
                     </ul>
                 </section>
 
-                <section class="settings-pane" data-settings-pane="help-getting-started">
+                <section class="settings-pane" data-settings-pane="help-c2">
                     <header class="settings-pane-head">
-                        <h3>Getting Started</h3>
-                        <p>How to use PR-AI and its primary features.</p>
+                        <h3>The Auditor Workspace</h3>
+                        <p>Understanding the layout and UI elements.</p>
                     </header>
-                    <div class="settings-gh-section" style="padding: 24px; color: var(--text-muted); line-height: 1.6; font-size: 14px; max-height: 55vh; overflow-y: auto;">
-                        <h4 style="color: var(--text-main); margin-top: 0; font-size: 16px;">Welcome to PR-AI</h4>
-                        <p>PR-AI is an intelligent code auditing platform designed to streamline your code review and documentation workflows. It uses advanced Large Language Models (LLMs) to perform automated, context-aware audits.</p>
-                        
-                        <h4 style="color: var(--text-main); margin-top: 24px; font-size: 16px;">Primary Use Cases</h4>
-                        <ul style="padding-left: 20px;">
-                            <li style="margin-bottom: 8px;"><strong>Automated Code Auditing:</strong> The AI conducts automated analysis to spot issues, instantly catching bugs, security flaws, and performance bottlenecks. <em>Note: The tool is currently in its early stage, so please expect some bugs! More updates are coming soon.</em></li>
-                            <li style="margin-bottom: 8px;"><strong>Pull Request, Commit, & Branch Audits:</strong> Seamlessly audit your code history. Branch audits compare the selected branch with the main branch. <strong>Note: For now, you can only audit PRs and Commits directly.</strong></li>
-                            <li style="margin-bottom: 8px;"><strong>Doc Gen Mode:</strong> Automatically generate comprehensive <code>README.md</code> files, setup instructions, or technical design docs based on your repository. The AI will even suggest prompts for you!</li>
-                            <li style="margin-bottom: 8px;"><strong>Interactive Chat & Voice:</strong> Chat with the AI directly about a specific piece of code. You can even use your <strong>voice to talk</strong> to the AI for a hands-free experience.</li>
-                            <li style="margin-bottom: 8px;"><strong>Uploading Documents:</strong> You can upload context documents by clicking the top right icon in the audit page, or by using the plus button in the chatbox.</li>
+                    <div class="help-doc-content">
+                        <h4>Understanding the Layout</h4>
+                        <p>The Auditor page is divided into three main sections:</p>
+                        <table>
+                            <thead><tr><th>Section</th><th>Description</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>Header</strong></td><td>Import Button, Model Selector, and Settings gear — all top-right controls</td></tr>
+                                <tr><td><strong>AI Chat Panel (Center)</strong></td><td>Shows AI responses and chat history. Empty state welcomes you to import code.</td></tr>
+                                <tr><td><strong>Git Diff Viewer (Bottom)</strong></td><td>Displays syntax-highlighted file differences. Only visible after loading code or diffs.</td></tr>
+                                <tr><td><strong>Chat Input Area</strong></td><td>Text input for questions, Send button, Voice button, Plus (+) button, and DocGen mode indicator when active.</td></tr>
+                            </tbody>
+                        </table>
+
+                        <h4>Top Header</h4>
+                        <p><strong>Import Button</strong> (Top Right) — Opens a dropdown menu with three import options: "Import from repo provider", "Upload diff file", and "Paste diff/code".</p>
+                        <p><strong>Model Selector</strong> (Top Right, Next to Import) — Switch between available AI models (e.g., GPT-4o-mini, GPT-4). Your selection persists across audits.</p>
+
+                        <h4>Chat Input Area</h4>
+                        <ul>
+                            <li><strong>Text Input Field</strong> — Type questions or prompts to the AI. The AI maintains context with your active audit. Press Enter or click Send to submit.</li>
+                            <li><strong>Send Button (→)</strong> — Submits your message to the AI.</li>
+                            <li><strong>Microphone Button (🎤)</strong> — Click to start voice recording. Speak your prompt naturally. Timer shows recording duration. Press again or wait for silence detection to send.</li>
+                            <li><strong>Plus Button (+)</strong> — Opens import/upload menu for documents. Upload files without leaving the chat. Add additional context during review.</li>
+                            <li><strong>DocGen Mode Chip</strong> (Golden badge) — Appears when DocGen mode is active. Click to toggle DocGen on/off.</li>
                         </ul>
 
-                        <p style="margin-top: 24px;">To begin, navigate to the <strong>Imports</strong> page to connect your repositories, or manually paste a diff.</p>
+                        <h4>Sidebar Navigation</h4>
+                        <ul>
+                            <li><strong>Auditor</strong> — Main code review workspace</li>
+                            <li><strong>Import</strong> — Browse recent PRs and commits; select from repositories</li>
+                            <li><strong>Apps</strong> — Enable/disable features like DocGen</li>
+                        </ul>
+                        <p><strong>Bottom Controls:</strong> Theme Toggle (light/dark mode), Settings (configure API keys, VCS), Profile (account and plan tier).</p>
                     </div>
                 </section>
 
-                <section class="settings-pane" data-settings-pane="help-vcs">
+                <section class="settings-pane" data-settings-pane="help-c3">
                     <header class="settings-pane-head">
-                        <h3>Connecting Accounts</h3>
-                        <p>Link your version control systems to PR-AI.</p>
+                        <h3>Importing Code</h3>
+                        <p>All the ways to bring code into PR-AI.</p>
                     </header>
-                    <div class="settings-gh-section" style="padding: 24px; color: var(--text-muted); line-height: 1.6; font-size: 14px; max-height: 55vh; overflow-y: auto;">
-                        <p>PR-AI supports multiple Version Control Systems (VCS) so you can directly import pull requests, branches, and commits.</p>
+                    <div class="help-doc-content">
+                        <h4>Method 1: Import from Repository Provider</h4>
+                        <ol>
+                            <li>Click the <strong>Import</strong> button (top right of Auditor)</li>
+                            <li>Select <strong>"Import from repo provider"</strong></li>
+                            <li>Choose a provider (GitHub, GitLab, Bitbucket, Azure)</li>
+                            <li>You'll be redirected to the <strong>Imports page</strong></li>
+                        </ol>
+                        <p><strong>On the Imports Page:</strong> The Recent Pull Requests panel (left) shows your latest PRs. The Recent Commits panel shows recent commits. The main panel displays all your repositories.</p>
+                        <p>Click on a repository to expand it and see Branches, Pull Requests, and Commits.</p>
 
-                        <h4 style="color: var(--text-main); margin-top: 20px; font-size: 16px;">1. GitHub</h4>
-                        <p>You can connect your GitHub account via OAuth. This provides read-only access to your public and private repositories. Head to the <strong>VCS</strong> tab in these settings and click "Connect" under GitHub. You will be redirected to authorize the application.</p>
+                        <p>⚠️ <strong>Branch Audits Explained:</strong> Branch audits compare the <strong>selected branch with the main branch</strong>. This gives you a high-level view of all changes introduced on that branch. For now, you can audit <strong>main branch only</strong>. PR and commit audits are fully supported.</p>
 
-                        <h4 style="color: var(--text-main); margin-top: 20px; font-size: 16px;">2. GitLab</h4>
-                        <p>To connect GitLab, you need a Personal Access Token with <code>read_api</code> scope. Under the VCS tab, input your GitLab base URL (defaults to <code>https://gitlab.com</code>), your username, and your generated token.</p>
+                        <h4>Method 2: Upload a Diff File</h4>
+                        <ol>
+                            <li>Click the <strong>Import</strong> button or the <strong>Plus (+)</strong> button in chat</li>
+                            <li>Select <strong>"Upload diff file"</strong></li>
+                            <li>Choose a <code>.diff</code> or <code>.patch</code> file from your computer</li>
+                            <li>The file uploads and the diff appears at the bottom</li>
+                        </ol>
+                        <p><strong>Supported Formats:</strong> <code>.diff</code> files (unified diff format), <code>.patch</code> files (Git patch format), raw diff output from <code>git diff</code> command.</p>
 
-                        <h4 style="color: var(--text-main); margin-top: 20px; font-size: 16px;">3. Bitbucket</h4>
-                        <p>For Bitbucket, generate an App Password with repository read permissions. Supply your Bitbucket workspace slug, username, and the App Password to authenticate.</p>
+                        <h4>Method 3: Paste Diff or Code Manually</h4>
+                        <ol>
+                            <li>Click the <strong>Plus (+)</strong> button in chat</li>
+                            <li>Select <strong>"Paste diff/code"</strong></li>
+                            <li>A Monaco Editor opens (VS Code–like editor)</li>
+                            <li>Paste your diff or code into the editor</li>
+                            <li>Click <strong>Audit</strong> or <strong>Analyze</strong></li>
+                        </ol>
+                        <p>⚠️ <strong>Critical:</strong> For Git diff to render at the bottom, the pasted content must be in <strong>valid diff format</strong>. If you paste raw code without diff markers, the diff viewer won't show it—but you can still chat with the AI about the code.</p>
+                        <p><strong>Valid Diff Format Example:</strong></p>
+                        <pre>--- a/src/index.js
++++ b/src/index.js
+@@ -10,3 +10,5 @@
+ function greet() {
+   console.log("Hello");
++  console.log("Updated");
++  console.log("New line");
+ }</pre>
 
-                        <h4 style="color: var(--text-main); margin-top: 20px; font-size: 16px;">4. Azure DevOps</h4>
-                        <p>For Azure DevOps, create a Personal Access Token (PAT) with Code (Read) permissions. Provide your Azure Organization name, Project name, and the PAT token to connect.</p>
+                        <h4>Why Git Diff Matters</h4>
+                        <p>The Git Diff Viewer at the bottom is crucial for effective code review because it shows added lines in green, removed lines in red, context lines in gray, and includes syntax highlighting and line numbers—making it easy to spot changes at a glance.</p>
+                        <p><strong>If your diff doesn't appear:</strong> Verify it's in valid unified diff format. Check that it contains <code>---</code> and <code>+++</code> lines with file paths. Try re-uploading or re-pasting the diff.</p>
                     </div>
                 </section>
 
-                <section class="settings-pane" data-settings-pane="help-features">
+                <section class="settings-pane" data-settings-pane="help-c4">
                     <header class="settings-pane-head">
-                        <h3>Features Overview</h3>
-                        <p>Deep dive into PR-AI's capabilities.</p>
+                        <h3>Auditing Modes</h3>
+                        <p>How the AI analyzes your code.</p>
                     </header>
-                    <div class="settings-gh-section" style="padding: 24px; color: var(--text-muted); line-height: 1.6; font-size: 14px; max-height: 55vh; overflow-y: auto;">
-                        <h4 style="color: var(--text-main); margin-top: 0; font-size: 16px;">AI Configuration</h4>
-                        <p>In the <strong>API Keys</strong> tab, you can choose to use the default developer API key, or you can choose to supply your own personal OpenAI key for extended limits and privacy.</p>
-                        
-                        <h4 style="color: var(--text-main); margin-top: 20px; font-size: 16px;">Code Diffs & Visualizer</h4>
-                        <p>The UI displays Git diffs at the bottom of the audit page when a repository is loaded, a diff file is uploaded, or when a diff is posted. <strong>Important:</strong> A user's git diff code <em>must</em> be pasted in the provided box on the Import page so it can be rendered correctly in diff2html, else it will not be rendered.</p>
-                        
-                        <h4 style="color: var(--text-main); margin-top: 20px; font-size: 16px;">Mermaid Diagrams</h4>
-                        <p>PR-AI can visually display architectural diagrams, workflows, and logic trees using <strong>Mermaid</strong>. Just ask the AI to map out your code!</p>
+                    <div class="help-doc-content">
+                        <h4>Overview</h4>
+                        <table>
+                            <thead><tr><th>Audit Type</th><th>What It Does</th><th>Best For</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>Pull Request Audit</strong></td><td>Analyzes a complete PR with all changes and comments</td><td>Full code review before merging</td></tr>
+                                <tr><td><strong>Commit Audit</strong></td><td>Focuses on changes in a single commit</td><td>Reviewing specific work, understanding commit history</td></tr>
+                                <tr><td><strong>Branch Audit</strong></td><td>Compares an entire branch against main</td><td>High-level branch review (currently main only)</td></tr>
+                                <tr><td><strong>Manual/Paste Audit</strong></td><td>Audits code or diffs you paste manually</td><td>Quick reviews, snippets, external code samples</td></tr>
+                            </tbody>
+                        </table>
 
-                        <h4 style="color: var(--text-main); margin-top: 20px; font-size: 16px;">Dynamic Activity Feeds</h4>
-                        <p>Once a provider is connected, the <strong>Imports</strong> page dynamically fetches your recent pull requests and commits in real-time, allowing 1-click auditing.</p>
+                        <h4>How Audits Work</h4>
+                        <p>The AI automatically:</p>
+                        <ul>
+                            <li>✅ Reads all changed lines in the code</li>
+                            <li>✅ Analyzes the diff context (lines before/after changes)</li>
+                            <li>✅ Reviews pull request metadata (title, description)</li>
+                            <li>✅ Extracts and incorporates any PR comments or discussions</li>
+                            <li>✅ Runs automated checks for: Security vulnerabilities, Performance issues, Code style violations, Logic errors, Dependency risks, Best practice violations</li>
+                        </ul>
+                        <p>The AI returns: a structured <strong>summary</strong> of findings, <strong>risk signals</strong> (high/medium/low severity), specific line-by-line insights, architecture impact analysis, recommendations for improvement, and <strong>Mermaid diagrams</strong> (if relevant).</p>
+
+                        <h4>Understanding Audit Limitations</h4>
+                        <p>⚠️ <strong>Important:</strong> PR-AI is in <strong>early stage development</strong>. You should expect:</p>
+                        <ul>
+                            <li>Occasional inaccurate suggestions</li>
+                            <li>Sometimes missing obvious issues</li>
+                            <li>AI models making reasoning mistakes</li>
+                            <li>False positives or negatives</li>
+                            <li>Improved accuracy as the tool evolves</li>
+                        </ul>
+                        <p><strong>Always use PR-AI as an assistant</strong>, not a replacement for human review. Critical code should still be reviewed by team members.</p>
                     </div>
                 </section>
 
-                <section class="settings-pane" data-settings-pane="help-buttons">
+                <section class="settings-pane" data-settings-pane="help-c5">
                     <header class="settings-pane-head">
-                        <h3>UI Reference</h3>
-                        <p>A comprehensive guide to all buttons and settings.</p>
+                        <h3>DocGen Mode</h3>
+                        <p>Automatic documentation generation.</p>
                     </header>
-                    <div class="auto-hide-scrollbar" style="padding: 24px; color: var(--text-muted); line-height: 1.6; font-size: 14px; max-height: 55vh; overflow-y: auto;">
-                        <h4 style="color: var(--text-main); margin-top: 0; font-size: 16px;">Imports Page Buttons</h4>
-                        <ul style="padding-left: 20px;">
-                            <li style="margin-bottom: 8px;"><strong>Connect:</strong> Links your chosen VCS provider (GitHub, GitLab, etc.) to your account.</li>
-                            <li style="margin-bottom: 8px;"><strong>Load Diff Box:</strong> Paste a raw diff here to be rendered dynamically in diff2html on the Auditor page.</li>
-                            <li style="margin-bottom: 8px;"><strong>Upload diff file:</strong> Allows you to upload a <code>.patch</code> or <code>.diff</code> file from your computer.</li>
-                            <li style="margin-bottom: 8px;"><strong>Audit Pull Request/Commit:</strong> An inline button next to your repository imports that instantly launches an audit on that specific code block.</li>
+                    <div class="help-doc-content">
+                        <h4>What is DocGen?</h4>
+                        <p>DocGen (Documentation Generation) mode enables the AI to automatically generate comprehensive documentation from your code, including:</p>
+                        <ul>
+                            <li>✅ README.md files</li>
+                            <li>✅ Setup instructions</li>
+                            <li>✅ API documentation</li>
+                            <li>✅ Architecture guides</li>
+                            <li>✅ Technical design documents</li>
                         </ul>
 
-                        <h4 style="color: var(--text-main); margin-top: 20px; font-size: 16px;">Auditor Page Controls</h4>
-                        <ul style="padding-left: 20px;">
-                            <li style="margin-bottom: 8px;"><strong>Sidebar Toggle:</strong> Expands or collapses the left-hand navigation sidebar.</li>
-                            <li style="margin-bottom: 8px;"><strong>Chat Upload (+):</strong> Found in the chatbox, click this to upload additional context files for the AI.</li>
-                            <li style="margin-bottom: 8px;"><strong>Voice/Mic Button:</strong> Enables voice-to-text dictation, allowing you to speak your prompts.</li>
-                            <li style="margin-bottom: 8px;"><strong>Theme Toggle (Sun/Moon):</strong> Switches the application between Light and Dark mode.</li>
-                            <li style="margin-bottom: 8px;"><strong>Settings Gear:</strong> Opens this Settings Modal.</li>
-                            <li style="margin-bottom: 8px;"><strong>New Audit / Reset:</strong> Clears the current audit and prepares the UI for a new diff.</li>
-                            <li style="margin-bottom: 8px;"><strong>Doc Gen Mode Toggle:</strong> Switches the AI's primary mode from bug auditing to generating documentation (READMEs, design docs).</li>
+                        <h4>Enabling DocGen Mode</h4>
+                        <p><strong>Method 1: Via Apps Menu</strong></p>
+                        <ol>
+                            <li>Click <strong>Apps</strong> in the sidebar</li>
+                            <li>Find <strong>DocGen</strong> in the list</li>
+                            <li>Click <strong>Activate</strong></li>
+                            <li>A golden badge appears in the chat area showing DocGen is active</li>
+                        </ol>
+                        <p><strong>Method 2: Via Settings Modal</strong></p>
+                        <ol>
+                            <li>Click <strong>Settings</strong> (gear icon) in sidebar</li>
+                            <li>Scroll to <strong>Applications</strong> section</li>
+                            <li>Toggle <strong>DocGen</strong> on</li>
+                        </ol>
+                        <p><strong>Method 3: Direct Toggle</strong> — The golden <strong>DocGen</strong> chip appears in the chat tools when available. Click it to toggle on/off.</p>
+
+                        <h4>Using DocGen</h4>
+                        <p>Once enabled, the AI detects document-generation requests in your prompts. You can ask:</p>
+                        <ul>
+                            <li>"Generate a README for this project"</li>
+                            <li>"Create API documentation"</li>
+                            <li>"Write a setup guide"</li>
+                            <li>"Document the architecture"</li>
+                        </ul>
+                        <p>The AI will analyze your code, extract key components and functions, generate well-structured markdown, include code examples, and provide clear instructions.</p>
+
+                        <h4>DocGen Output Format</h4>
+                        <p>Documentation is generated in <strong>Markdown format</strong> (.md), ready to copy and paste into your GitHub repo, share with the team, convert to PDF, or use as-is and customize further.</p>
+
+                        <h4>Important Notes</h4>
+                        <p>⚠️ If the AI detects a document-generation intent but DocGen isn't active, it will prompt you to turn on DocGen mode in Apps and re-send your request.</p>
+                    </div>
+                </section>
+
+                <section class="settings-pane" data-settings-pane="help-c6">
+                    <header class="settings-pane-head">
+                        <h3>Voice Interactions</h3>
+                        <p>Talk to the AI hands-free.</p>
+                    </header>
+                    <div class="help-doc-content">
+                        <h4>Voice Review Workflow</h4>
+                        <p>PR-AI supports voice-to-AI conversations, allowing you to:</p>
+                        <ul>
+                            <li>✅ Speak prompts naturally instead of typing</li>
+                            <li>✅ Keep your hands free during code review</li>
+                            <li>✅ Speed up review discussions</li>
+                            <li>✅ Use natural language effortlessly</li>
                         </ul>
 
-                        <h4 style="color: var(--text-main); margin-top: 20px; font-size: 16px;">Settings Options</h4>
-                        <ul style="padding-left: 20px;">
-                            <li style="margin-bottom: 8px;"><strong>Demo Mode Toggle:</strong> Simulates a mock PR audit so you can test features without using real API tokens.</li>
-                            <li style="margin-bottom: 8px;"><strong>AI Personality:</strong> Adjusts how the AI talks to you (e.g., Strict, Friendly, Direct).</li>
-                            <li style="margin-bottom: 8px;"><strong>AI Verbosity & Tone:</strong> Controls the length and emotional tone of the AI's output.</li>
-                            <li style="margin-bottom: 8px;"><strong>Custom System Prompt:</strong> Let's you provide specific instructions (e.g. coding guidelines) that the AI must follow in all audits.</li>
+                        <h4>Using Voice — Step by Step</h4>
+                        <ol>
+                            <li>Click the <strong>Microphone button (🎤)</strong> in the chat tools. The button changes color (usually blue/animated). A timer appears showing recording duration.</li>
+                            <li>Speak your question or prompt naturally — e.g., "What are the security risks in this PR?" or "Check for performance issues".</li>
+                            <li>Stop speaking (button turns back normal) or wait for silence detection. The UI may auto-detect when you've finished, or press the microphone button again to stop recording.</li>
+                            <li>The audio is transcribed and sent to the AI.</li>
+                            <li>The AI responds with its analysis.</li>
+                        </ol>
+
+                        <h4>Voice Button Locations</h4>
+                        <ul>
+                            <li><strong>In Chat Area:</strong> Located in the chat tools row near the Plus (+) button. Always visible when you're in the Auditor.</li>
+                            <li><strong>Floating Action Button (FAB):</strong> A separate voice button appears in the bottom-right corner of the screen. Useful for quick voice prompts without scrolling to the chat area. Works the same as the main microphone button.</li>
+                        </ul>
+
+                        <h4>Supported Languages</h4>
+                        <p>Voice transcription supports multiple languages including English (US, UK, AU), Spanish, French, German, and many more. You can configure your default language in Settings → Voice section.</p>
+
+                        <h4>Troubleshooting Voice</h4>
+                        <p><strong>If microphone doesn't work:</strong> Check browser permissions (allow microphone access). Ensure your browser supports Web Audio API. Try Chrome, Firefox, or Safari. Check microphone hardware is working.</p>
+                        <p><strong>If transcription is inaccurate:</strong> Speak more clearly and slowly. Reduce background noise. Use a higher-quality microphone. Try shorter, more specific prompts.</p>
+                    </div>
+                </section>
+
+                <section class="settings-pane" data-settings-pane="help-c7">
+                    <header class="settings-pane-head">
+                        <h3>Git Diffs</h3>
+                        <p>Understanding the diff viewer at the bottom of the auditor.</p>
+                    </header>
+                    <div class="help-doc-content">
+                        <h4>Understanding the Diff Viewer</h4>
+                        <p>The Git Diff Viewer appears at the bottom of the Auditor workspace and shows:</p>
+                        <ul>
+                            <li>✅ Side-by-side or unified view of code changes</li>
+                            <li>✅ Added lines (typically green)</li>
+                            <li>✅ Removed lines (typically red)</li>
+                            <li>✅ Context lines (unchanged, gray background)</li>
+                            <li>✅ Syntax highlighting for better readability</li>
+                            <li>✅ File headers showing file names and paths</li>
+                            <li>✅ Line numbers for reference</li>
+                        </ul>
+
+                        <h4>When Does the Diff Viewer Appear?</h4>
+                        <p>The diff viewer only appears after you've:</p>
+                        <ol>
+                            <li>Imported a repository (GitHub PR, commit, or branch)</li>
+                            <li>Uploaded a diff file (<code>.diff</code> or <code>.patch</code>)</li>
+                            <li>Pasted valid diff-formatted code (with <code>---</code> and <code>+++</code> markers)</li>
+                        </ol>
+                        <p>If you paste raw code without diff formatting, the AI can still analyze it, but the diff viewer won't render.</p>
+
+                        <h4>Reading the Diff Viewer</h4>
+                        <ul>
+                            <li>🟢 <strong>Green lines with +</strong> = New code added</li>
+                            <li>🔴 <strong>Red lines with -</strong> = Code removed</li>
+                            <li>⚪ <strong>White/gray lines</strong> = Context (unchanged code)</li>
+                            <li>🔵 <strong>Blue headers</strong> = File information</li>
+                        </ul>
+                        <p><strong>Header Example:</strong></p>
+                        <pre>--- a/src/index.js      ← Old file path
++++ b/src/index.js      ← New file path
+@@ -10,5 +10,7 @@    ← Hunk header (line numbers)</pre>
+
+                        <h4>What If Diff Doesn't Appear?</h4>
+                        <ol>
+                            <li><strong>Verify diff format</strong> — Is your content in valid unified diff format? Valid content starts with <code>---</code> file path line. Raw code without diff markers is invalid.</li>
+                            <li><strong>Check file type</strong> — Ensure uploaded file is <code>.diff</code>, <code>.patch</code>, or plain text.</li>
+                            <li><strong>Re-upload/paste</strong> — Try uploading or pasting the content again.</li>
+                            <li><strong>Still can't see it?</strong> — The AI can still analyze raw code; just ask questions in chat.</li>
+                        </ol>
+                    </div>
+                </section>
+
+                <section class="settings-pane" data-settings-pane="help-c8">
+                    <header class="settings-pane-head">
+                        <h3>Advanced Features</h3>
+                        <p>Mermaid diagrams, context-aware chat, and document uploads.</p>
+                    </header>
+                    <div class="help-doc-content">
+                        <h4>Mermaid Diagrams</h4>
+                        <p>PR-AI uses Mermaid.js to automatically generate visual diagrams of:</p>
+                        <ul>
+                            <li>✅ Architecture diagrams — Component relationships</li>
+                            <li>✅ Flow charts — Process logic and workflows</li>
+                            <li>✅ Sequence diagrams — Method call sequences</li>
+                            <li>✅ State diagrams — State transitions</li>
+                            <li>✅ Entity-relationship diagrams — Database schemas</li>
+                        </ul>
+                        <p>The AI automatically generates diagrams when analyzing code that involves complex workflows, multiple interacting components, database relationships, authentication flows, or business logic with decision trees.</p>
+                        <p><strong>Viewing Diagrams:</strong> Diagrams appear in the chat response area and are rendered as interactive visualizations. Hover over nodes to see details. Some diagrams allow zooming/panning. Right-click to export as image (browser-dependent).</p>
+                        <p><strong>Example Prompts:</strong> "Create a diagram showing how the authentication flow works", "Visualize the database schema for this module", "Show me the component architecture".</p>
+
+                        <h4>Context-Aware Questioning</h4>
+                        <p>Once you've loaded a code audit, the AI maintains context about the specific files changed, the commit/PR metadata (title, description), comments from pull request discussions, and the complete diff of all changes.</p>
+                        <p><strong>This means:</strong> You can ask follow-up questions without re-explaining the code. The AI understands pronouns like "this function" or "these changes". You can ask deeper questions like "What about error handling here?" or request different perspectives like "What about performance?"</p>
+                        <p><strong>Example Follow-up Chat:</strong></p>
+                        <pre>You: "Audit this PR"
+AI: [Provides full analysis]
+
+You: "What about security?"
+AI: [Analyzes security implications specifically]
+
+You: "Can this cause any race conditions?"
+AI: [Analyzes concurrency and threading issues]
+
+You: "Suggest optimizations"
+AI: [Proposes performance improvements]</pre>
+
+                        <h4>Document Upload During Review</h4>
+                        <p>Upload external context to help the AI understand requirements:</p>
+                        <ol>
+                            <li>Click the <strong>Plus (+) button</strong> in chat tools</li>
+                            <li>Select <strong>Upload file</strong> or drag-and-drop</li>
+                            <li>Upload relevant documents: technical specifications, architecture diagrams, design documents, API specifications, or internal coding standards</li>
+                        </ol>
+                        <p><strong>Supported Formats:</strong> <code>.pdf</code>, <code>.md</code>, <code>.txt</code>, <code>.json</code>, Images (<code>.jpg</code>, <code>.png</code>). The AI will reference these documents in its analysis.</p>
+                    </div>
+                </section>
+
+                <section class="settings-pane" data-settings-pane="help-c9">
+                    <header class="settings-pane-head">
+                        <h3>API Keys</h3>
+                        <p>Managing your OpenAI API key and billing modes.</p>
+                    </header>
+                    <div class="help-doc-content">
+                        <h4>Two-Mode Key System</h4>
+                        <p>PR-AI supports two ways to handle OpenAI API keys:</p>
+
+                        <h4>Mode 1: Developer Key (Shared / Free)</h4>
+                        <ul>
+                            <li>Uses a shared developer API key provided by PR-AI</li>
+                            <li>No cost to you (PR-AI covers API costs for free tier)</li>
+                            <li>Limited usage quotas</li>
+                            <li>Good for: Getting started, light usage, teams</li>
+                        </ul>
+                        <p><strong>How to Use:</strong> Sign up for PR-AI and you're automatically in "Developer" mode. Start auditing immediately — no API key needed.</p>
+
+                        <h4>Mode 2: Personal Key (Your Own)</h4>
+                        <ul>
+                            <li>You provide your own OpenAI API key</li>
+                            <li>You control billing and costs</li>
+                            <li>Full quota limits (your OpenAI account limits)</li>
+                            <li>Good for: Heavy usage, enterprises, cost control, privacy</li>
+                        </ul>
+                        <p><strong>How to Set Up:</strong></p>
+                        <ol>
+                            <li>Get your OpenAI API key at <strong>platform.openai.com/api-keys</strong> — create a new API key and copy it (you'll only see it once).</li>
+                            <li>Add it to PR-AI: Click <strong>Settings</strong> in sidebar → go to <strong>API Keys</strong> section → paste your OpenAI key → click <strong>Save</strong>.</li>
+                            <li>Switch to Personal mode: click the toggle to switch to <strong>Personal</strong> mode. All subsequent audits use your key and you're billed directly through OpenAI.</li>
+                        </ol>
+
+                        <h4>Managing Your Personal Key</h4>
+                        <ul>
+                            <li><strong>View your masked key:</strong> Settings shows <code>sk-••••••••••••••••1234</code> (last 4 characters visible)</li>
+                            <li><strong>Remove your key:</strong> In Settings, click <strong>Remove</strong> next to your key — you'll return to Developer mode</li>
+                            <li><strong>Change your key:</strong> Remove the old key, add a new key, verify it works with a test audit</li>
+                        </ul>
+
+                        <h4>Billing Considerations</h4>
+                        <table>
+                            <thead><tr><th>Audit Type</th><th>Estimated Cost (Personal Key)</th></tr></thead>
+                            <tbody>
+                                <tr><td>Small PR (&lt; 50 lines)</td><td>$0.01 – $0.05</td></tr>
+                                <tr><td>Medium PR (50–500 lines)</td><td>$0.05 – $0.20</td></tr>
+                                <tr><td>Large PR (500+ lines)</td><td>$0.20 – $1.00</td></tr>
+                                <tr><td>DocGen output</td><td>$0.10 – $0.50</td></tr>
+                            </tbody>
+                        </table>
+                        <p><em>Costs depend on model choice, token usage, and current OpenAI pricing.</em></p>
+                    </div>
+                </section>
+
+                <section class="settings-pane" data-settings-pane="help-c10">
+                    <header class="settings-pane-head">
+                        <h3>Roadmap &amp; Known Issues</h3>
+                        <p>What's coming and what to expect as an early user.</p>
+                    </header>
+                    <div class="help-doc-content">
+                        <h4>What's Coming Soon 🚀</h4>
+                        <ul>
+                            <li><strong>Inline Code Comments</strong> — AI will add comments directly on specific lines of code, with manual approval before posting to GitHub/GitLab.</li>
+                            <li><strong>Extensive Technical Reports</strong> — Auto-generate detailed PDF reports with metrics, trends, and recommendations to share with stakeholders.</li>
+                            <li><strong>Test Plan Generation</strong> — AI creates comprehensive test plans including edge cases and test coverage suggestions, exportable to CI/CD systems.</li>
+                            <li><strong>QA Documentation</strong> — Automated QA checklists, test case generation, and bug severity classification.</li>
+                            <li><strong>Commit &amp; Push Workflows</strong> — Instruct the AI to prepare commits from natural language. "Make these changes" → AI suggests commits.</li>
+                            <li><strong>Multi-Branch Comparisons</strong> — Compare any branch with any other branch (not just main). Branch-to-branch diffs and multiple branch analysis.</li>
+                            <li><strong>Performance Profiling</strong> — Analyze code for performance bottlenecks, suggest optimizations, profile memory usage patterns.</li>
+                        </ul>
+
+                        <h4>Known Issues &amp; Bugs ⚠️</h4>
+                        <p>PR-AI is in <strong>early stage development</strong>. Expect these known issues:</p>
+                        <ul>
+                            <li><strong>False Positives</strong> — AI may flag safe code as risky or suggest unnecessary changes. <em>Workaround: Cross-check AI suggestions with your domain knowledge.</em></li>
+                            <li><strong>Incomplete Diffs</strong> — Large files (&gt;10MB) may not render fully in diff viewer. Some binary files and special characters may be skipped. <em>Workaround: Upload split diffs.</em></li>
+                            <li><strong>Voice Transcription Errors</strong> — Accents may cause transcription mistakes. Background noise affects accuracy. <em>Workaround: Speak clearly; use typed prompts for critical reviews.</em></li>
+                            <li><strong>Diagram Generation</strong> — Complex code may not generate useful diagrams. Mermaid rendering has browser compatibility issues. <em>Workaround: Request specific diagram types.</em></li>
+                            <li><strong>Performance on Large PRs</strong> — PRs over 5000 lines may take longer. API timeouts on extremely complex changes. <em>Workaround: Split large PRs; use during off-peak hours.</em></li>
+                            <li><strong>Session Timeouts</strong> — Long inactive periods may disconnect. Chat history may not persist on browser clear. <em>Workaround: Save important audits; clear cache periodically.</em></li>
+                        </ul>
+
+                        <h4>Performance Tips 💡</h4>
+                        <ul>
+                            <li>Use recent browsers (Chrome, Firefox, Safari, Edge)</li>
+                            <li>Keep diffs under 2000 lines per audit</li>
+                            <li>Use specific, clear prompts instead of vague questions</li>
+                            <li>Enable personal API key for consistent performance</li>
+                            <li>Audit during off-peak hours for faster responses</li>
+                            <li>Clear browser cache if experiencing slowdowns</li>
+                            <li>Upload documents to provide better context</li>
+                        </ul>
+
+                        <h4>Frequently Asked Questions</h4>
+                        <ul>
+                            <li><strong>Is my code secure?</strong> All code is processed securely. With a personal API key, your code is sent to OpenAI for analysis. With the developer key, code is processed with enterprise-grade privacy safeguards. Never upload highly sensitive credentials or private keys.</li>
+                            <li><strong>Can I use PR-AI offline?</strong> No, PR-AI requires internet and connection to OpenAI/Gemini APIs. Offline analysis is not currently supported.</li>
+                            <li><strong>How do I cancel my personal API key?</strong> Go to Settings → API Keys → Remove. You'll return to Developer mode immediately.</li>
+                            <li><strong>Can I export the audit results?</strong> Yes, you can copy chat responses. Export of audit reports as PDF is coming soon.</li>
+                            <li><strong>What if I hit my API quota?</strong> If using personal key, upgrade your OpenAI plan. If using developer key, wait for the monthly reset.</li>
                         </ul>
                     </div>
                 </section>
 
                 <section class="settings-pane" data-settings-pane="help-developer">
                     <header class="settings-pane-head">
-                        <h3>About the Developer</h3>
-                        <p>Learn more about the creator behind PR-AI.</p>
+                        <h3>About Developer</h3>
+                        <p>The person behind PR-AI.</p>
                     </header>
-                    <div class="settings-gh-section" style="padding: 24px; color: var(--text-muted); line-height: 1.6; font-size: 14px; max-height: 55vh; overflow-y: auto;">
+                    <div class="help-doc-content">
                         <div style="display:flex; align-items:center; gap:16px; margin-bottom: 24px;">
-                            <div style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(130deg, #009eff 0%, #9360ff 100%); display:flex; align-items:center; justify-content:center; color:white; font-size: 24px; font-weight:bold;">
+                            <div style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(130deg, #009eff 0%, #9360ff 100%); display:flex; align-items:center; justify-content:center; color:white; font-size: 24px; font-weight:bold; flex-shrink:0;">
                                 ND
                             </div>
                             <div>
-                                <h4 style="color: var(--text-main); margin: 0; font-size: 18px;">Nanbol Dassak</h4>
-                                <div style="color: var(--brand); font-weight: 500;">Software Engineer & AI Architect</div>
+                                <h4 style="margin: 0; font-size: 18px;">Nanbol Dassak</h4>
+                                <div style="color: var(--brand); font-weight: 500;">Software Engineer &amp; AI Architect</div>
                                 <a href="https://bolitupac.github.io/" target="_blank" style="color: var(--brand); text-decoration: underline; font-size: 13px;">bolitupac.github.io</a>
                             </div>
                         </div>
 
                         <p><strong>Nanbol Dassak</strong> (also known as Dassak Nanbol Felix) is a software engineer, AI systems architect, and game developer based in Nigeria. As a software engineering student at Babcock University, Nanbol focuses heavily on AI integration, workflow automation, and eliminating manual bottlenecks through intelligent systems.</p>
-                        
-                        <h4 style="color: var(--text-main); margin-top: 20px; font-size: 16px;">Expertise</h4>
-                        <ul style="padding-left: 20px;">
-                            <li style="margin-bottom: 8px;"><strong>AI & Automation:</strong> Specializes in building autonomous AI agents, integrating Large Language Models (LLMs), and designing robust n8n orchestrations.</li>
-                            <li style="margin-bottom: 8px;"><strong>Software Engineering:</strong> Extensive backend experience utilizing frameworks like Laravel, Django, and Flask.</li>
-                            <li style="margin-bottom: 8px;"><strong>Game Development:</strong> Develops interactive experiences and games using Godot, including the 2D platformer <em>"One Chance"</em>.</li>
+
+                        <h4>Expertise</h4>
+                        <ul>
+                            <li><strong>AI &amp; Automation:</strong> Specializes in building autonomous AI agents, integrating Large Language Models (LLMs), and designing robust n8n orchestrations.</li>
+                            <li><strong>Software Engineering:</strong> Extensive backend experience utilizing frameworks like Laravel, Django, and Flask.</li>
+                            <li><strong>Game Development:</strong> Develops interactive experiences and games using Godot, including the 2D platformer <em>"One Chance"</em>.</li>
                         </ul>
 
-                        <p style="margin-top: 24px;">Nanbol is highly active in the developer community. You can find his projects and insights on platforms like GitHub, daily.dev, itch.io, and X (Twitter).</p>
+                        <p>Nanbol is highly active in the developer community. You can find his projects and insights on platforms like GitHub, daily.dev, itch.io, and X (Twitter).</p>
                     </div>
                 </section>
             </div>

@@ -157,6 +157,104 @@
     min-width: 0;
     padding: 56px 24px 24px;
     overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--brand, #0085ff) transparent;
+}
+
+.settings-modal-content::-webkit-scrollbar {
+    width: 5px;
+}
+
+.settings-modal-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.settings-modal-content::-webkit-scrollbar-thumb {
+    background: var(--brand, #0085ff);
+    border-radius: 10px;
+    opacity: 0.7;
+}
+
+.settings-modal-content::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in srgb, var(--brand, #0085ff) 80%, white);
+}
+
+/* Help documentation content — no border, no box, flows naturally */
+.help-doc-content {
+    color: var(--text-muted);
+    line-height: 1.7;
+    font-size: 14px;
+}
+
+.help-doc-content h4 {
+    color: var(--text-main);
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 28px;
+    margin-bottom: 8px;
+}
+
+.help-doc-content h5 {
+    color: var(--text-main);
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 20px;
+    margin-bottom: 6px;
+}
+
+.help-doc-content p {
+    margin-bottom: 12px;
+}
+
+.help-doc-content ul,
+.help-doc-content ol {
+    padding-left: 22px;
+    margin-bottom: 12px;
+}
+
+.help-doc-content li {
+    margin-bottom: 6px;
+}
+
+.help-doc-content code {
+    background: var(--panel-bg-soft, rgba(0,133,255,0.06));
+    border: 1px solid var(--panel-stroke);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.help-doc-content pre {
+    background: var(--panel-bg-soft, rgba(0,133,255,0.06));
+    border: 1px solid var(--panel-stroke);
+    border-radius: var(--radius-md, 6px);
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-size: 13px;
+    margin-bottom: 14px;
+}
+
+.help-doc-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+    font-size: 13px;
+}
+
+.help-doc-content th {
+    background: var(--panel-bg-soft);
+    color: var(--text-main);
+    font-weight: 600;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--panel-stroke);
+    text-align: left;
+}
+
+.help-doc-content td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--panel-stroke);
+    color: var(--text-muted);
 }
 
 .settings-pane {
