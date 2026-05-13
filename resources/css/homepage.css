@@ -193,6 +193,23 @@ img {
     box-shadow: none;
 }
 
+.hero-watermark {
+    position: absolute;
+    inset: 120px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.hero-watermark img {
+    width: min(52vw, 640px);
+    opacity: 0.07;
+    filter: blur(10px) grayscale(1);
+    transform: translateY(10px) scale(1.18);
+}
+
 .hero-interactive {
     --mx: 50%;
     --my: 36%;
@@ -390,15 +407,31 @@ img {
 
 .hero-floating--left {
     top: 210px;
-    left: 40px;
+    left: 110px;
     transform: rotate(-8deg);
+}
+
+.hero-floating--left-lower {
+    top: 390px;
+    left: 150px;
+    max-width: 250px;
+    transform: rotate(-3deg);
+    animation-delay: 500ms;
 }
 
 .hero-floating--right {
     top: 180px;
-    right: 40px;
+    right: 110px;
     transform: rotate(8deg);
     animation-delay: 900ms;
+}
+
+.hero-floating--right-lower {
+    top: 376px;
+    right: 150px;
+    max-width: 250px;
+    transform: rotate(4deg);
+    animation-delay: 1300ms;
 }
 
 .hero-floating--bottom {
@@ -793,17 +826,30 @@ img {
     }
 
     .hero-floating--left,
-    .hero-floating--right {
+    .hero-floating--left-lower,
+    .hero-floating--right,
+    .hero-floating--right-lower {
         top: auto;
-        bottom: 94px;
         transform: none;
     }
 
     .hero-floating--left {
+        bottom: 164px;
+        left: 28px;
+    }
+
+    .hero-floating--left-lower {
+        bottom: 88px;
         left: 28px;
     }
 
     .hero-floating--right {
+        bottom: 164px;
+        right: 28px;
+    }
+
+    .hero-floating--right-lower {
+        bottom: 88px;
         right: 28px;
     }
 }
@@ -836,6 +882,15 @@ img {
         min-height: auto;
     }
 
+    .hero-watermark {
+        inset: 120px 0 auto;
+    }
+
+    .hero-watermark img {
+        width: min(82vw, 420px);
+        opacity: 0.08;
+    }
+
     .hero-window__nav {
         flex-wrap: wrap;
         justify-content: center;
@@ -845,6 +900,10 @@ img {
         margin-top: 72px;
     }
 
+    .hero-floating--left,
+    .hero-floating--left-lower,
+    .hero-floating--right,
+    .hero-floating--right-lower,
     .hero-floating {
         position: static;
         max-width: none;

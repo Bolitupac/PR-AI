@@ -97,6 +97,10 @@
                 <div class="hero-interactive" id="hero-interactive" aria-hidden="true"></div>
 
                 <div class="hero-window">
+                    <div class="hero-watermark" aria-hidden="true">
+                        <img src="{{ asset('images/git-pull-ai-Logo tp bg 512.png') }}" alt="">
+                    </div>
+
                     <div class="hero-window__nav">
                         <span class="hero-window__brand">PR ai</span>
                         <a href="/auditor" class="hero-window__cta">Contact us</a>
@@ -127,9 +131,19 @@
                         <strong>GitHub, branches, PRs, commits</strong>
                     </div>
 
+                    <div class="hero-floating hero-floating--left-lower">
+                        <span class="hero-floating__label">Reviewer context</span>
+                        <strong>Comments, diffs, and active audit history</strong>
+                    </div>
+
                     <div class="hero-floating hero-floating--right">
                         <span class="hero-floating__label">Structured output</span>
                         <strong>Audits, diagrams, reports, follow-ups</strong>
+                    </div>
+
+                    <div class="hero-floating hero-floating--right-lower">
+                        <span class="hero-floating__label">DocGen mode</span>
+                        <strong>Generate shareable docs and exportable PDFs</strong>
                     </div>
 
                     <div class="hero-floating hero-floating--bottom">
