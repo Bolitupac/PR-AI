@@ -13,18 +13,18 @@
         rel="stylesheet">
     <style>
         :root {
-            --bg-blue: #1291f6;
-            --bg-blue-deep: #0e7fe0;
+            --bg-page: #f0ede8;
+            --bg-page-deep: #ece8e2;
             --panel-white: rgba(255, 255, 255, 0.96);
             --panel-dark: #1f2634;
             --panel-dark-soft: #2a3141;
             --text: #12141c;
             --text-soft: #687081;
             --text-muted: #9aa2b3;
-            --brand: #304cff;
-            --brand-deep: #2338c2;
+            --brand: #4965ff;
+            --brand-deep: #304cff;
             --line: rgba(218, 224, 234, 0.92);
-            --shadow: 0 36px 90px rgba(14, 31, 71, 0.18);
+            --shadow: 0 36px 90px rgba(38, 40, 52, 0.08);
             --font-body: 'Geologica', ui-sans-serif, system-ui, sans-serif;
         }
 
@@ -41,9 +41,9 @@
             font-family: var(--font-body);
             color: var(--text);
             background:
-                radial-gradient(420px 240px at 10% 8%, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0) 72%),
-                radial-gradient(460px 240px at 92% 96%, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0) 76%),
-                linear-gradient(180deg, var(--bg-blue) 0%, var(--bg-blue-deep) 100%);
+                radial-gradient(960px 540px at 0% 0%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 65%),
+                radial-gradient(760px 420px at 100% 2%, rgba(73, 101, 255, 0.08) 0%, rgba(73, 101, 255, 0) 72%),
+                linear-gradient(180deg, #f0ede8 0%, #ece8e2 100%);
             overflow-x: hidden;
         }
 
@@ -55,22 +55,21 @@
             width: 320px;
             height: 320px;
             background:
-                linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0));
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-            opacity: 0.4;
+                linear-gradient(135deg, rgba(73, 101, 255, 0.06), rgba(73, 101, 255, 0));
+            border-radius: 999px;
+            filter: blur(60px);
+            opacity: 0.8;
             pointer-events: none;
         }
 
         body::before {
             top: -40px;
             left: -80px;
-            transform: rotate(18deg);
         }
 
         body::after {
             right: -70px;
             bottom: -80px;
-            transform: rotate(-12deg);
         }
 
         a {
@@ -309,16 +308,12 @@
             font-weight: 800;
         }
 
-        .provider-icon--azure {
-            color: #2f8df8;
-        }
-
-        .provider-icon--google {
-            color: #d74b3f;
-        }
-
-        .provider-icon--gitlab {
-            color: #fc6d26;
+        .provider-icon--azure svg,
+        .provider-icon--gitlab svg,
+        .provider-icon--bitbucket svg {
+            width: 18px;
+            height: 18px;
+            display: block;
         }
 
         .auth-divider {
@@ -394,10 +389,19 @@
         }
 
         .auth-back {
-            display: inline-block;
-            margin-top: 18px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 20px;
             color: var(--text-soft);
             font-size: 14px;
+            opacity: 0.8;
+            transition: opacity 140ms ease;
+        }
+
+        .auth-back:hover {
+            opacity: 1;
         }
 
         @media (max-width: 900px) {
@@ -459,6 +463,8 @@
             </div>
 
             <div class="auth-panel">
+                <a href="{{ url('/') }}" class="auth-back">← Back to homepage</a>
+
                 <a href="{{ url('/') }}" class="auth-brand">
                     <img src="{{ asset('images/git-pull-ai-Logo tp bg 512.png') }}" alt="PR ai logo">
                     <span>PR ai</span>
@@ -482,7 +488,12 @@
                     </a>
 
                     <div class="auth-provider-disabled" aria-disabled="true">
-                        <span class="provider-icon provider-icon--azure">A</span>
+                        <span class="provider-icon provider-icon--azure">
+                            <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9.941 0 5.61 9.628 1 16.2h4.03l1.85-2.94 4.62 2.94H18L9.941 0z" fill="#0078D4"/>
+                                <path d="M5.61 9.628 9.26.86 6.26 0 0 16.2h4.03l1.58-3.97 4.35-2.6h-4.35z" fill="#0078D4"/>
+                            </svg>
+                        </span>
                         <span>Azure DevOps</span>
                     </div>
                 </div>
@@ -491,12 +502,33 @@
 
                 <div class="auth-provider-list">
                     <div class="auth-provider-disabled" aria-disabled="true">
-                        <span class="provider-icon provider-icon--google">G</span>
-                        <span>Google</span>
+                        <span class="provider-icon provider-icon--bitbucket">
+                            <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1.03 1a.5.5 0 0 0-.496.578l2.446 14.898a.5.5 0 0 0 .487.407h11.17a.5.5 0 0 0 .497-.42l2.382-14.885a.5.5 0 0 0-.496-.578H1.03zm9.903 10.265H7.05L6.16 6.735h5.604l-.831 4.53z" fill="#2684FF"/>
+                                <path d="M16.353 6.735h-4.589l-.831 4.53H7.05l-3.89 4.657a.5.5 0 0 0 .328.16h11.17a.5.5 0 0 0 .497-.42l1.198-8.927z" fill="url(#bb_grad)"/>
+                                <defs>
+                                    <linearGradient id="bb_grad" x1="17.089" y1="8.207" x2="11.322" y2="15.052" gradientUnits="userSpaceOnUse">
+                                        <stop stop-color="#0052CC"/>
+                                        <stop offset="1" stop-color="#2684FF"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </span>
+                        <span>Bitbucket</span>
                     </div>
 
                     <div class="auth-provider-disabled" aria-disabled="true">
-                        <span class="provider-icon provider-icon--gitlab">G</span>
+                        <span class="provider-icon provider-icon--gitlab">
+                            <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 17.09 12.42 6.85H5.58L9 17.09z" fill="#FC6D26"/>
+                                <path d="M9 17.09 5.58 6.85H1.13L9 17.09z" fill="#E24329"/>
+                                <path d="M1.13 6.85.05 10.15a.75.75 0 0 0 .272.837L9 17.09 1.13 6.85z" fill="#FCA326"/>
+                                <path d="M1.13 6.85H5.58L3.73 1.17a.375.375 0 0 0-.712 0L1.13 6.85z" fill="#E24329"/>
+                                <path d="M9 17.09 12.42 6.85h4.45L9 17.09z" fill="#E24329"/>
+                                <path d="M16.87 6.85l1.08 3.3a.75.75 0 0 1-.272.837L9 17.09l7.87-10.24z" fill="#FCA326"/>
+                                <path d="M16.87 6.85H12.42l1.85-5.68a.375.375 0 0 1 .712 0l1.886 5.68z" fill="#E24329"/>
+                            </svg>
+                        </span>
                         <span>GitLab</span>
                     </div>
                 </div>
@@ -509,11 +541,9 @@
                     <div class="auth-privacy-icon">P</div>
                     <div>
                         <strong>Your access is important</strong>
-                        <p>GitHub is the only live sign-in provider right now. Azure, Google, and GitLab are shown here as upcoming options and are intentionally disabled.</p>
+                        <p>GitHub is the only live sign-in provider right now. Azure, Bitbucket, and GitLab are shown here as upcoming options and are intentionally disabled.</p>
                     </div>
                 </div>
-
-                <a href="{{ url('/') }}" class="auth-back">Back to homepage</a>
             </div>
         </section>
     </main>
