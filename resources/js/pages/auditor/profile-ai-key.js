@@ -30,8 +30,16 @@ async function requestJson(url, method = 'GET', body = null) {
     return { ok: response.ok, status: response.status, json };
 }
 
-export function initProfileAiKey() {
-    const box = document.getElementById('profile-ai-key-box');
+function initKeyBox({
+    boxId,
+    modeSelectId,
+    inputId,
+    saveBtnId,
+    removeBtnId,
+    stateId,
+    hintId,
+}) {
+    const box = document.getElementById(boxId);
     if (!box) return;
 
     const statusUrl = box.dataset.statusUrl;
@@ -39,12 +47,12 @@ export function initProfileAiKey() {
     const removeUrl = box.dataset.removeUrl;
     const modeUrl = box.dataset.modeUrl;
 
-    const modeSelect = document.getElementById('profile-ai-key-mode');
-    const input = document.getElementById('profile-api-input');
-    const saveBtn = document.getElementById('profile-api-save-btn');
-    const removeBtn = document.getElementById('profile-api-remove-btn');
-    const state = document.getElementById('profile-ai-key-state');
-    const hint = document.getElementById('profile-ai-key-hint');
+    const modeSelect = document.getElementById(modeSelectId);
+    const input = document.getElementById(inputId);
+    const saveBtn = document.getElementById(saveBtnId);
+    const removeBtn = document.getElementById(removeBtnId);
+    const state = document.getElementById(stateId);
+    const hint = document.getElementById(hintId);
 
     if (!statusUrl || !saveUrl || !removeUrl || !modeUrl || !modeSelect || !input || !saveBtn || !removeBtn) return;
 
@@ -118,3 +126,24 @@ export function initProfileAiKey() {
     });
 }
 
+export function initProfileAiKey() {
+    initKeyBox({
+        boxId: 'profile-ai-key-box',
+        modeSelectId: 'profile-ai-key-mode',
+        inputId: 'profile-api-input',
+        saveBtnId: 'profile-api-save-btn',
+        removeBtnId: 'profile-api-remove-btn',
+        stateId: 'profile-ai-key-state',
+        hintId: 'profile-ai-key-hint',
+    });
+
+    initKeyBox({
+        boxId: 'settings-profile-ai-key-box',
+        modeSelectId: 'settings-profile-ai-key-mode',
+        inputId: 'settings-profile-api-input',
+        saveBtnId: 'settings-profile-api-save-btn',
+        removeBtnId: 'settings-profile-api-remove-btn',
+        stateId: 'settings-profile-ai-key-state',
+        hintId: 'settings-profile-ai-key-hint',
+    });
+}

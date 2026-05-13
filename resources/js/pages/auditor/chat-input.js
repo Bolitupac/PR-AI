@@ -54,6 +54,7 @@ export function initChatInput() {
     let activeRequest = null;
     let selectedModel = modelSelect?.value || '';
     let lastBusyState = false;
+    const loginUrl = '/login';
 
     const hideEmptyState = () => {
         if (!emptyState) return;
@@ -98,6 +99,12 @@ export function initChatInput() {
         responseArea.appendChild(message);
         responseArea.scrollTop = responseArea.scrollHeight;
         return message;
+    };
+
+    const showLoginRequiredMessage = (status, customMessage = null) => {
+        const message = customMessage || 'You need to log in with GitHub before you can use PR ai. Please log in to continue.';
+        status.markError('Login required.');
+        appendMessage(message, 'ai');
     };
 
     const parseSseBlock = (blockText) => {
@@ -164,6 +171,10 @@ export function initChatInput() {
             credentials: 'same-origin',
         });
 
+        if (res.status === 401 || (res.redirected && res.url && res.url.includes(loginUrl))) {
+            throw new Error('LOGIN_REQUIRED');
+        }
+
         if (!res.ok) {
             return [];
         }
@@ -192,6 +203,10 @@ export function initChatInput() {
             }),
             credentials: 'same-origin',
         });
+
+        if (res.status === 401 || (res.redirected && res.url && res.url.includes(loginUrl))) {
+            throw new Error('LOGIN_REQUIRED');
+        }
 
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {
@@ -313,6 +328,12 @@ export function initChatInput() {
                 status.markError('Response stopped.');
                 return false;
             }
+
+            if (res.status === 401 || (res.redirected && res.url && res.url.includes(loginUrl))) {
+                showLoginRequiredMessage(status);
+                return false;
+            }
+
             clearTimeout(awaitingTimer);
             if (!switchedToAwaiting) {
                 status.stopDots();
@@ -473,6 +494,8 @@ export function initChatInput() {
             if (error?.name === 'AbortError' || requestState.stopped) {
                 requestState.replyNode?.remove();
                 status.markError('Response stopped.');
+            } else if (error?.message === 'LOGIN_REQUIRED') {
+                showLoginRequiredMessage(status);
             } else {
                 try {
                     status.set('Streaming failed. Retrying without streaming...');
@@ -498,8 +521,12 @@ export function initChatInput() {
                     status.remove(700);
                     return true;
                 } catch (fallbackError) {
-                    status.markError(`Request failed: ${fallbackError?.message || error?.message || 'Unknown error'}`);
-                    appendMessage(String(fallbackError?.message || 'Could not reach AI service.'), 'ai');
+                    if (fallbackError?.message === 'LOGIN_REQUIRED') {
+                        showLoginRequiredMessage(status);
+                    } else {
+                        status.markError(`Request failed: ${fallbackError?.message || error?.message || 'Unknown error'}`);
+                        appendMessage(String(fallbackError?.message || 'Could not reach AI service.'), 'ai');
+                    }
                 }
             }
             return false;

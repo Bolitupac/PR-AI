@@ -285,6 +285,18 @@
     color: var(--text-soft);
 }
 
+.settings-profile-user {
+    margin-bottom: 18px;
+}
+
+.settings-profile-grid {
+    margin-bottom: 18px;
+}
+
+.settings-profile-actions {
+    justify-content: flex-start;
+}
+
 /* ─── Section cards ─── */
 .settings-gh-section,
 .settings-provider-item,

@@ -35,6 +35,16 @@
                     <span>API Keys</span>
                 </button>
 
+                <button class="settings-nav-btn" type="button" data-settings-tab="profile">
+                    <span class="settings-nav-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.7" />
+                            <path d="M5 19.2c1.6-3.1 4.1-4.7 7-4.7s5.4 1.6 7 4.7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+                        </svg>
+                    </span>
+                    <span>Profile</span>
+                </button>
+
                 <button class="settings-nav-btn" type="button" data-settings-tab="ai-settings">
                     <span class="settings-nav-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24">
@@ -132,6 +142,96 @@
                             <span>Notify on pull request import errors</span>
                         </label>
                     </div>
+                </section>
+
+                <section class="settings-pane" data-settings-pane="profile">
+                    <header class="settings-pane-head">
+                        <h3>Profile</h3>
+                        <p>Manage the signed-in account, GitHub identity, and logout options.</p>
+                    </header>
+
+                    @auth
+                        <div class="profile-modal-user settings-profile-user">
+                            <img class="profile-modal-avatar" src="https://github.com/{{ auth()->user()->github_username }}.png"
+                                alt="GitHub avatar">
+                            <div class="profile-modal-meta">
+                                <div class="profile-modal-name">{{ auth()->user()->name ?? 'User' }}</div>
+                                <div class="profile-modal-handle">&#64;{{ auth()->user()->github_username ?? 'github-user' }}</div>
+                                <div class="profile-modal-email">{{ auth()->user()->email ?? 'no-email' }}</div>
+                            </div>
+                        </div>
+
+                        <div class="profile-modal-grid settings-profile-grid">
+                            <div class="profile-modal-box">
+                                <div class="profile-modal-label">Current Plan</div>
+                                <div class="profile-modal-value">
+                                    <span class="profile-plan-pill">{{ auth()->user()->plan_name ?? 'Free' }}</span>
+                                </div>
+                            </div>
+
+                            <div class="profile-modal-box">
+                                <div class="profile-modal-label">GitHub Account</div>
+                                <div class="profile-modal-value">{{ auth()->user()->github_username ?? 'Connected' }}</div>
+                                <div class="profile-api-sub">This GitHub account is used to access PR ai right now.</div>
+                            </div>
+
+                            <div class="profile-modal-box" id="settings-profile-ai-key-box"
+                                data-status-url="{{ route('profile.ai-key.status') }}"
+                                data-save-url="{{ route('profile.ai-key.save') }}"
+                                data-remove-url="{{ route('profile.ai-key.remove') }}"
+                                data-mode-url="{{ route('profile.ai-key.mode') }}">
+                                <div class="profile-modal-label">OpenAI API Key</div>
+
+                                <label class="profile-mode-label" for="settings-profile-ai-key-mode">Key source</label>
+                                <select class="profile-mode-select" id="settings-profile-ai-key-mode" aria-label="Profile API key source">
+                                    <option value="developer">Use developer key (recommended)</option>
+                                    <option value="personal">Use my key</option>
+                                </select>
+
+                                <input class="profile-api-input" id="settings-profile-api-input" type="password"
+                                    placeholder="sk-...">
+
+                                <div class="profile-api-actions">
+                                    <button class="profile-modal-action profile-api-save" id="settings-profile-api-save-btn"
+                                        type="button" data-loading-btn data-loading-text="Saving">
+                                        Save key
+                                    </button>
+                                    <button class="profile-api-remove-btn" id="settings-profile-api-remove-btn" type="button"
+                                        data-loading-btn data-loading-text="Removing">
+                                        Remove key
+                                    </button>
+                                </div>
+
+                                <div class="profile-api-sub" id="settings-profile-ai-key-hint">
+                                    Choose which key source this account uses for AI chat.
+                                </div>
+                                <div class="profile-api-state" id="settings-profile-ai-key-state"></div>
+                            </div>
+                        </div>
+
+                        <div class="profile-modal-actions settings-profile-actions">
+                            <a class="profile-modal-action" href="https://github.com/{{ auth()->user()->github_username }}"
+                                target="_blank" rel="noopener noreferrer">
+                                View on GitHub
+                            </a>
+                            <form action="{{ route('logout') }}" method="POST" data-loading-form>
+                                @csrf
+                                <button class="profile-logout-btn" type="submit" data-loading-text="Logging out">Log out</button>
+                            </form>
+                        </div>
+                    @endauth
+
+                    @guest
+                        <div class="profile-modal-box">
+                            <div class="profile-modal-label">Status</div>
+                            <div class="profile-modal-value">Guest</div>
+                            <div class="profile-api-sub">Log in with GitHub to access profile settings and the auditor workspace.</div>
+                        </div>
+
+                        <div class="profile-modal-actions settings-profile-actions">
+                            <a class="profile-modal-action" href="{{ route('login') }}">Go to login</a>
+                        </div>
+                    @endguest
                 </section>
 
                 <section class="settings-pane" data-settings-pane="api-keys">
