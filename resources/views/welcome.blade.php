@@ -78,7 +78,6 @@
         <div class="bg-grid" aria-hidden="true"></div>
         <div class="bg-orb bg-orb--one" aria-hidden="true"></div>
         <div class="bg-orb bg-orb--two" aria-hidden="true"></div>
-        <div class="bg-orb bg-orb--three" aria-hidden="true"></div>
 
         <header class="site-header">
             <a href="/" class="brandmark">
@@ -87,70 +86,77 @@
             </a>
             <nav class="top-nav" aria-label="Primary">
                 <a href="#features">Features</a>
-                <a href="#faq">FAQ</a>
+                <a href="#docgen">DocGen</a>
+                <a href="#help">Help</a>
                 <a href="/auditor" class="nav-cta">Try it</a>
             </nav>
         </header>
 
         <main>
-            <section class="hero">
+            <section class="hero" data-reveal>
                 <div class="hero-interactive" id="hero-interactive" aria-hidden="true"></div>
-                <div class="hero-copy hero-copy--full">
-                    <div class="eyebrow-row">
-                        <span class="eyebrow-pill">AI review workspace</span>
-                        <span class="eyebrow-note">Built for pull requests, diffs, and team velocity</span>
+
+                <div class="hero-window">
+                    <div class="hero-window__nav">
+                        <span class="hero-window__brand">PR ai</span>
+                        <a href="/auditor" class="hero-window__cta">Contact us</a>
                     </div>
 
-                    <h1>Cut PR review time by 80% using AI</h1>
-
-                    <p class="hero-lead">
-                        Import pull requests, branch diffs, commits, or pasted code into one focused workspace. PR ai
-                        turns changes into structured reviews, visual impact maps, follow-up answers, and a smoother
-                        path from diff to decision.
-                    </p>
-
-                    <div class="hero-actions">
-                        <a href="/auditor" class="button button--primary">Try demo</a>
-                        <a href="#features" class="button button--ghost">See features</a>
-                    </div>
-
-                    <div class="trust-panel">
-                        <p class="trust-title">Built around the tools developers already use</p>
-                        <div class="trust-logos">
-                            <div class="trust-logo-card">
-                                <img src="{{ asset('images/github.png') }}" alt="GitHub">
-                                <span>GitHub import</span>
-                            </div>
-                            <div class="trust-logo-card trust-logo-card--brand">
-                                <img src="{{ asset('images/git-pull-ai-Logo tp bg 512.png') }}" alt="PR ai">
-                                <span>PR ai workspace</span>
-                            </div>
-                            <div class="trust-chip">Diffs</div>
-                            <div class="trust-chip">AI audits</div>
-                            <div class="trust-chip">Inline context</div>
+                    <div class="hero-copy hero-copy--full">
+                        <div class="eyebrow-row">
+                            <span class="eyebrow-pill">AI review workspace</span>
+                            <span class="eyebrow-note">Built for pull requests, diffs, and team velocity</span>
                         </div>
+
+                        <h1>Cut PR review time by 80% using AI</h1>
+
+                        <p class="hero-lead">
+                            Import pull requests, branch diffs, commits, or pasted code into one focused workspace. PR ai
+                            turns changes into structured reviews, visual impact maps, follow-up answers, and a smoother
+                            path from diff to decision.
+                        </p>
+
+                        <div class="hero-actions">
+                            <a href="/auditor" class="button button--primary">Try demo</a>
+                            <a href="#features" class="button button--ghost">See features</a>
+                        </div>
+                    </div>
+
+                    <div class="hero-floating hero-floating--left">
+                        <span class="hero-floating__label">Import flow</span>
+                        <strong>GitHub, branches, PRs, commits</strong>
+                    </div>
+
+                    <div class="hero-floating hero-floating--right">
+                        <span class="hero-floating__label">Structured output</span>
+                        <strong>Audits, diagrams, reports, follow-ups</strong>
+                    </div>
+
+                    <div class="hero-floating hero-floating--bottom">
+                        <span class="hero-floating__label">Team workflow</span>
+                        <strong>Diffs, comments, DocGen mode, help docs</strong>
                     </div>
                 </div>
             </section>
 
-            <section class="stats-strip" aria-label="Product summary">
-                <article class="stat-card">
+            <section class="stats-strip" aria-label="Product summary" data-reveal>
+                <article class="stat-card" data-reveal>
                     <strong>GitHub to audit in one flow</strong>
                     <span>Import repositories, pull requests, branches, and comments without leaving the app.</span>
                 </article>
-                <article class="stat-card">
+                <article class="stat-card" data-reveal>
                     <strong>Structured reviews, not generic chat</strong>
                     <span>Get summaries, impact maps, walkthroughs, Mermaid diagrams, and risk-oriented findings.</span>
                 </article>
-                <article class="stat-card">
+                <article class="stat-card" data-reveal>
                     <strong>Built for iteration</strong>
                     <span>Keep the diff context active, ask follow-up questions, and move from review to action faster.</span>
                 </article>
             </section>
 
-            <section class="feature-overview" id="features">
-                <div class="section-copy">
-                    <span class="section-tag">Product overview</span>
+            <section class="feature-overview" id="features" data-reveal>
+                <div class="section-copy" data-reveal>
+                    <span class="section-tag">Futuristic features. About time.</span>
                     <h2>One focused place for AI-assisted pull request reviews</h2>
                     <p>
                         PR ai is designed to reduce review friction. Instead of juggling GitHub tabs, pasted diffs,
@@ -161,7 +167,7 @@
 
                 <div class="feature-grid">
                     @foreach ($featureCards as $card)
-                        <article class="feature-card">
+                        <article class="feature-card" data-reveal>
                             <div class="feature-media">
                                 <img src="{{ asset($card['image']) }}" alt="{{ $card['title'] }}">
                             </div>
@@ -171,51 +177,83 @@
                             </div>
                         </article>
                     @endforeach
+
+                    <article class="feature-card feature-card--docgen" data-reveal>
+                        <div class="feature-media">
+                            <img src="{{ asset('images/homepage/viewgitrepos, pullrequests, commitsetc in out import page.png') }}"
+                                alt="PR ai import and app workflow">
+                        </div>
+                        <div class="feature-copy">
+                            <h3>Turn on DocGen mode in one click</h3>
+                            <p>Add DocGen to your workflow from the app gallery, then switch from audit chat into document generation without losing context.</p>
+                        </div>
+                    </article>
                 </div>
             </section>
 
-            <section class="details-section">
-                <div class="details-card details-card--primary">
-                    <span class="section-tag">What users get today</span>
-                    <h2>Import code, audit faster, ask better questions</h2>
-                    <ul class="details-list">
-                        <li>GitHub repository, branch, pull request, and comment import</li>
-                        <li>Commit-level auditing from local git history</li>
-                        <li>Structured AI review responses with findings and visual impact maps</li>
-                        <li>Follow-up chat grounded in the active audit context</li>
-                        <li>Voice-to-AI workflow for quick prompting during review</li>
-                    </ul>
-                </div>
-
-                <div class="details-card details-card--accent">
-                    <span class="section-tag">Coming soon</span>
-                    <h2>More capability is on the way</h2>
-                    <ul class="details-list">
-                        <li>The AI will be able to comment directly on specific lines of code</li>
-                        <li>Users will be able to generate extensive technical reports, test plans, and QA documents</li>
-                        <li>Users will be able to instruct the AI to prepare commit-and-push workflows from natural language</li>
-                        <li>Ongoing bug fixes, refinement, and product furnishing will keep improving the experience</li>
-                    </ul>
-                </div>
-            </section>
-
-            <section class="cta-band">
-                <div class="cta-copy">
-                    <span class="section-tag">Start reviewing</span>
-                    <h2>Move from diff to decision with less drag</h2>
+            <section class="docgen-section" id="docgen" data-reveal>
+                <div class="section-copy" data-reveal>
+                    <span class="section-tag">DocGen mode</span>
+                    <h2>Generate a document, review it, and download the PDF</h2>
                     <p>
-                        Open the auditor, import a pull request or diff, and let PR ai turn raw changes into something
-                        your team can review much faster.
+                        DocGen mode lets users move beyond code review summaries and create shareable documentation.
+                        It can prepare structured project documents, show the generated output inside the workspace,
+                        and present a clear download action for the final PDF.
                     </p>
                 </div>
-                <div class="cta-actions">
-                    <a href="/auditor" class="button button--primary">Try it</a>
-                    <a href="#faq" class="button button--ghost">Read FAQ</a>
+
+                <div class="docgen-layout">
+                    <article class="docgen-card docgen-card--info" data-reveal>
+                        <span class="docgen-card__tag">What users get today</span>
+                        <h3>Import code, audit faster, ask better questions</h3>
+                        <ul class="details-list">
+                            <li>GitHub repository, branch, pull request, and comment import</li>
+                            <li>Commit-level auditing from local git history</li>
+                            <li>Structured AI review responses with findings and visual impact maps</li>
+                            <li>Follow-up chat grounded in the active audit context</li>
+                            <li>Voice-to-AI workflow for quick prompting during review</li>
+                        </ul>
+                    </article>
+
+                    <article class="docgen-card docgen-card--preview" data-reveal>
+                        <div class="doc-panel">
+                            <img src="{{ asset('images/homepage/PRAI audit page "chat with the ai good ui".png') }}"
+                                alt="PR ai DocGen preview and download experience">
+                        </div>
+                    </article>
                 </div>
             </section>
 
-            <section class="comparison-section" id="comparison">
-                <div class="section-copy">
+            <section class="help-section" id="help" data-reveal>
+                <div class="section-copy" data-reveal>
+                    <span class="section-tag">Help section</span>
+                    <h2>Give users a clear place to learn the workflow</h2>
+                    <p>
+                        The help area should explain how to import code, switch audit modes, use DocGen mode, and find the settings that matter most. This keeps the tool easier to understand for first-time users.
+                    </p>
+                </div>
+
+                <div class="help-layout">
+                    <article class="help-card help-card--menu" data-reveal>
+                        <img src="{{ asset('images/homepage/useyour own openai key.png') }}"
+                            alt="PR ai settings and help related interface">
+                    </article>
+
+                    <article class="help-card help-card--content" data-reveal>
+                        <span class="help-kicker">DocGen Mode</span>
+                        <h3>Show users how to move from audit chat to downloadable documentation</h3>
+                        <ol class="help-steps">
+                            <li>Click the DocGen option from the app gallery or chat controls.</li>
+                            <li>Enter a request for the document you want the AI to prepare.</li>
+                            <li>Review the generated output inside the document preview card.</li>
+                            <li>Use the download button to export the PDF when the document is ready.</li>
+                        </ol>
+                    </article>
+                </div>
+            </section>
+
+            <section class="comparison-section" id="comparison" data-reveal>
+                <div class="section-copy" data-reveal>
                     <span class="section-tag">Comparison</span>
                     <h2>Why teams pick PR ai over the usual alternatives</h2>
                     <p>
@@ -225,7 +263,7 @@
                     </p>
                 </div>
 
-                <div class="comparison-card">
+                <div class="comparison-card" data-reveal>
                     <div class="comparison-head comparison-grid">
                         <div>Capability</div>
                         <div class="comparison-head__brand">PR ai</div>
@@ -276,61 +314,19 @@
                 </div>
             </section>
 
-            <section class="faq-section" id="faq">
-                <div class="section-copy section-copy--faq">
+            <section class="faq-section" id="faq" data-reveal>
+                <div class="section-copy section-copy--faq" data-reveal>
                     <span class="section-tag">FAQ</span>
                     <h2>Questions users will probably ask first</h2>
                 </div>
 
                 <div class="faq-list">
                     @foreach ($faqs as $faq)
-                        <details class="faq-item" @if ($loop->first) open @endif>
+                        <details class="faq-item" data-reveal @if ($loop->first) open @endif>
                             <summary>{{ $faq['question'] }}</summary>
                             <p>{{ $faq['answer'] }}</p>
                         </details>
                     @endforeach
-                </div>
-            </section>
-            <section class="feature-overview" id="documentation" style="margin-top: 120px; padding-bottom: 60px;">
-                <div class="section-copy">
-                    <span class="section-tag">Documentation & Capabilities</span>
-                    <h2>Everything you need to know</h2>
-                    <p>
-                        Explore the full range of PR-AI's capabilities, from automated code audits to interactive architectural diagramming.
-                    </p>
-                </div>
-
-                <div class="feature-grid" style="grid-template-columns: 1fr; max-width: 860px; margin: 40px auto 0; text-align: left;">
-                    <article class="feature-card" style="padding: 32px; align-items: flex-start; text-align: left; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
-                        <h3 style="margin-bottom: 12px; font-size: 20px;">1. Automated Auditing & Scopes</h3>
-                        <p style="margin-bottom: 16px;">The AI conducts automated analysis to spot issues, instantly catching bugs, security flaws, and performance bottlenecks. <em>Note: The tool is currently in its early stage, so please expect some bugs! More updates are coming soon.</em></p>
-                        <p style="margin-bottom: 0;"><strong>Audits:</strong> Seamlessly audit your code history. Branch audits compare the selected branch with the main branch. <strong>Note: For now, you can only audit Pull Requests and Commits directly.</strong></p>
-                    </article>
-
-                    <article class="feature-card" style="padding: 32px; align-items: flex-start; text-align: left; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
-                        <h3 style="margin-bottom: 12px; font-size: 20px;">2. Doc Gen & Voice Interactions</h3>
-                        <p style="margin-bottom: 16px;">Automatically generate comprehensive <code>README.md</code> files, setup instructions, or technical design docs based on your repository. The AI will even suggest prompts for you to get started.</p>
-                        <p style="margin-bottom: 0;">You can also chat with the AI directly about a specific piece of code, or use your <strong>voice to talk</strong> to the AI for a hands-free experience.</p>
-                    </article>
-
-                    <article class="feature-card" style="padding: 32px; align-items: flex-start; text-align: left; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
-                        <h3 style="margin-bottom: 12px; font-size: 20px;">3. Diffs, Diagrams & Context</h3>
-                        <p style="margin-bottom: 16px;">The UI displays Git diffs at the bottom of the audit page when a repository is loaded, a diff file is uploaded, or when a diff is posted. <strong>Important:</strong> A user's git diff code <em>must</em> be pasted in the provided box on the Import page so it can be rendered correctly in diff2html, else it will not be rendered.</p>
-                        <p style="margin-bottom: 16px;">PR-AI can also visually display architectural diagrams, workflows, and logic trees using <strong>Mermaid</strong>.</p>
-                        <p style="margin-bottom: 0;">You can upload external context documents by clicking the top right icon in the audit page, or by using the plus button in the chatbox.</p>
-                    </article>
-
-                    <article class="feature-card" style="padding: 32px; align-items: flex-start; text-align: left; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
-                        <h3 style="margin-bottom: 12px; font-size: 20px;">4. Configuration & API Keys</h3>
-                        <p style="margin-bottom: 0;">In the settings, you can choose to use the default developer API key, or you can choose to supply your own personal OpenAI key for extended limits and privacy.</p>
-                    </article>
-
-                    <article class="feature-card" style="padding: 32px; align-items: flex-start; text-align: left; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
-                        <h3 style="margin-bottom: 12px; font-size: 20px;">5. Buttons & Settings Reference</h3>
-                        <p style="margin-bottom: 16px;"><strong>Imports Page:</strong> Use <em>Connect</em> to link VCS providers. Use <em>Load Diff Box</em> or <em>Upload Diff</em> to import custom patches, and click <em>Audit</em> next to pulled PRs to instantly analyze them.</p>
-                        <p style="margin-bottom: 16px;"><strong>Auditor Controls:</strong> Toggle the sidebar, toggle themes (Sun/Moon), upload context files (+), dictate prompts with the <em>Voice/Mic</em> button, or switch to <em>Doc Gen Mode</em> to generate architecture docs.</p>
-                        <p style="margin-bottom: 0;"><strong>Settings Modal:</strong> Adjust your AI's personality, verbosity, and tone. Toggle <em>Demo Mode</em> to safely test features, or provide a Custom System Prompt to strictly align the AI with your team's unique coding guidelines.</p>
-                    </article>
                 </div>
             </section>
         </main>
