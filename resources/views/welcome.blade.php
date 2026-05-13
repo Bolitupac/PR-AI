@@ -17,6 +17,7 @@
 
 <body>
     @php
+        $toolEntryUrl = auth()->check() ? route('auditor.index') : route('login');
         $featureCards = [
             [
                 'title' => 'Import pull requests from GitHub',
@@ -88,7 +89,7 @@
                 <a href="#features">Features</a>
                 <a href="#docgen">DocGen</a>
                 <a href="#help">Help</a>
-                <a href="/auditor" class="nav-cta">Try it</a>
+                <a href="{{ $toolEntryUrl }}" class="nav-cta">Try it</a>
             </nav>
         </header>
 
@@ -103,7 +104,7 @@
 
                     <div class="hero-window__nav">
                         <span class="hero-window__brand">PR ai</span>
-                        <a href="/auditor" class="hero-window__cta">Contact us</a>
+                        <a href="{{ $toolEntryUrl }}" class="hero-window__cta">Try it</a>
                     </div>
 
                     <div class="hero-copy hero-copy--full">
@@ -121,7 +122,7 @@
                         </p>
 
                         <div class="hero-actions">
-                            <a href="/auditor" class="button button--primary">Try demo</a>
+                            <a href="{{ $toolEntryUrl }}" class="button button--primary">Try demo</a>
                             <a href="#features" class="button button--ghost">See features</a>
                         </div>
                     </div>
