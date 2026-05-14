@@ -198,37 +198,53 @@ class AuditPromptComposer
 
     private function buildAuditModeInstructions(string $auditKind, string $auditStatus): array
     {
-        $instructions = [
-            'Keep the output structure consistent across all audit types: Review Status, Summary, Impact Map, Logic Flow, Walkthrough, Key Findings.',
+        $base = [
+            'FRAMEWORK: Apply OWASP Top 10 (2021) and VAPT methodology throughout. Produce a comprehensive, long-form report — do not truncate or summarise the findings sections.',
+            'MANDATORY SECTIONS: Review Status → Executive Summary → OWASP Top 10 Coverage Analysis → VAPT Findings → Impact Map → Logic Flow → Detailed Walkthrough → Remediation Roadmap.',
+            'OWASP: Assess ALL 10 categories (A01–A10) even if they are N/A. Populate every row of the OWASP table with a specific note.',
+            'VAPT: Group findings as Critical / High / Medium / Low / Informational. Every finding must include Location, Description, Proof of Concept, Impact, and Remediation.',
+            'DEPTH: A short report is a failure. Write detailed prose under each section. The VAPT Findings section alone should be comprehensive for any change that touches security-sensitive code.',
         ];
 
         if ($auditKind === 'commit_audit') {
-            $instructions[] = 'This is a historical commit audit. Treat it as a post-change review, not a merge decision.';
-            $instructions[] = 'Focus on regression risk, hidden side effects, rollback concerns, and follow-up fixes.';
-            $instructions[] = 'In prose, do not tell the user to merge or not merge this commit.';
-            return $instructions;
+            return array_merge($base, [
+                'AUDIT CONTEXT: This is a historical commit audit — post-change review, not a merge decision.',
+                'FOCUS: Regression risk, hidden side effects, rollback concerns, and follow-up fixes.',
+                'VAPT FOCUS: Check for secrets accidentally committed, logic regressions that weaken existing security controls, and any new attack surface introduced by this commit.',
+                'Do not frame findings as merge/do-not-merge. Use post-deployment risk framing.',
+            ]);
         }
 
         if ($auditKind === 'branch_audit') {
-            $instructions[] = 'This is a branch audit before integration.';
-            $instructions[] = 'Focus on branch readiness, missing checks, integration risk against the base branch, and what should change before merge.';
-            return $instructions;
+            return array_merge($base, [
+                'AUDIT CONTEXT: This is a branch audit before integration with the base branch.',
+                'FOCUS: Branch readiness, missing checks, integration risk, and what must change before merge.',
+                'VAPT FOCUS: Assess the full attack surface introduced by this branch compared to the base. Treat every new endpoint, middleware bypass, or data access path as a potential VAPT finding.',
+                'Pay special attention to A01 (access control) and A05 (security misconfiguration) for branch-level changes.',
+            ]);
         }
 
         if ($auditKind === 'pull_request_audit' && $auditStatus === 'merged') {
-            $instructions[] = 'This pull request is already merged. Treat it as a post-merge review.';
-            $instructions[] = 'Focus on production impact, regression risk, rollout concerns, and follow-up actions.';
-            $instructions[] = 'In prose, do not frame the conclusion as merge or do-not-merge.';
-            return $instructions;
+            return array_merge($base, [
+                'AUDIT CONTEXT: This pull request is already merged — post-merge security review.',
+                'FOCUS: Production impact, regression risk, rollout concerns, and follow-up security actions.',
+                'VAPT FOCUS: Identify any vulnerabilities that made it to production. Prioritise immediate remediation for Critical and High findings.',
+                'Frame findings as production risk and required follow-up actions, not merge decisions.',
+            ]);
         }
 
         if ($auditKind === 'pull_request_audit') {
-            $instructions[] = 'This is a pull request audit before or during review.';
-            $instructions[] = 'Focus on merge readiness, correctness, risk, and what should be fixed before approval.';
-            return $instructions;
+            return array_merge($base, [
+                'AUDIT CONTEXT: This is a pull request audit before or during review.',
+                'FOCUS: Merge readiness, correctness, security risk, and required fixes before approval.',
+                'VAPT FOCUS: Conduct a full white-box penetration test against the changed code. Trace every new data input from source to sink. Check for injection, auth bypass, privilege escalation, and data exposure.',
+                'Pay special attention to A03 (injection), A01 (access control), and A07 (auth failures) for PR-level changes touching API or auth code.',
+            ]);
         }
 
-        $instructions[] = 'Treat this as a general diff audit and focus on correctness, risk, and next actions.';
-        return $instructions;
+        return array_merge($base, [
+            'AUDIT CONTEXT: General diff audit — treat as a focused security review.',
+            'VAPT FOCUS: Apply source-to-sink analysis for any new user input paths. Report all deviations from secure coding standards.',
+        ]);
     }
 }

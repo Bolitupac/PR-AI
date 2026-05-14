@@ -510,6 +510,27 @@ class AuditDiffController extends Controller
         $scalabilityScore = null;
         $reliabilityScore = null;
 
+        // OWASP Top 10 fields (default: na)
+        $owaspFields = [
+            'owasp_broken_access_control'     => 'na',
+            'owasp_cryptographic_failures'    => 'na',
+            'owasp_injection'                 => 'na',
+            'owasp_insecure_design'           => 'na',
+            'owasp_security_misconfiguration' => 'na',
+            'owasp_vulnerable_components'     => 'na',
+            'owasp_auth_failures'             => 'na',
+            'owasp_integrity_failures'        => 'na',
+            'owasp_logging_failures'          => 'na',
+            'owasp_ssrf'                      => 'na',
+        ];
+
+        // VAPT severity counts (default: 0)
+        $vaptCritical = 0;
+        $vaptHigh = 0;
+        $vaptMedium = 0;
+        $vaptLow = 0;
+        $vaptInfo = 0;
+
         if (preg_match('/\[AUDIT_META\](.*?)\[\/AUDIT_META\]/is', $reply, $metaBlockMatch)) {
             $metaBlock = (string) $metaBlockMatch[1];
 
@@ -540,6 +561,30 @@ class AuditDiffController extends Controller
             if (preg_match('/reliability_score\s*=\s*(\d{1,3})/i', $metaBlock, $m)) {
                 $reliabilityScore = max(0, min(100, (int) $m[1]));
             }
+
+            // Parse OWASP Top 10 fields
+            foreach (array_keys($owaspFields) as $field) {
+                if (preg_match('/' . preg_quote($field, '/') . '\s*=\s*(pass|review|fail|na)/i', $metaBlock, $m)) {
+                    $owaspFields[$field] = strtolower((string) $m[1]);
+                }
+            }
+
+            // Parse VAPT severity counts
+            if (preg_match('/vapt_critical_count\s*=\s*(\d+)/i', $metaBlock, $m)) {
+                $vaptCritical = max(0, (int) $m[1]);
+            }
+            if (preg_match('/vapt_high_count\s*=\s*(\d+)/i', $metaBlock, $m)) {
+                $vaptHigh = max(0, (int) $m[1]);
+            }
+            if (preg_match('/vapt_medium_count\s*=\s*(\d+)/i', $metaBlock, $m)) {
+                $vaptMedium = max(0, (int) $m[1]);
+            }
+            if (preg_match('/vapt_low_count\s*=\s*(\d+)/i', $metaBlock, $m)) {
+                $vaptLow = max(0, (int) $m[1]);
+            }
+            if (preg_match('/vapt_info_count\s*=\s*(\d+)/i', $metaBlock, $m)) {
+                $vaptInfo = max(0, (int) $m[1]);
+            }
         }
 
         if (preg_match('/Change Type:\s*(upgrade|downgrade|neutral)/i', $reply, $m)) {
@@ -568,14 +613,19 @@ class AuditDiffController extends Controller
             $reliabilityScore = max(0, min(100, (int) $m[1]));
         }
 
-        return [
-            'change_type' => $changeType,
-            'risk_score' => $riskScore,
-            'risk_level' => $riskLevel,
-            'suggestion' => $suggestion,
-            'security_score' => $securityScore,
+        return array_merge([
+            'change_type'       => $changeType,
+            'risk_score'        => $riskScore,
+            'risk_level'        => $riskLevel,
+            'suggestion'        => $suggestion,
+            'security_score'    => $securityScore,
             'scalability_score' => $scalabilityScore,
             'reliability_score' => $reliabilityScore,
-        ];
+            'vapt_critical_count' => $vaptCritical,
+            'vapt_high_count'     => $vaptHigh,
+            'vapt_medium_count'   => $vaptMedium,
+            'vapt_low_count'      => $vaptLow,
+            'vapt_info_count'     => $vaptInfo,
+        ], $owaspFields);
     }
 }

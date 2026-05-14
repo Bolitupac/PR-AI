@@ -84,12 +84,50 @@ export function initAutoAudit() {
         const scalabilityClass = scoreToRiskClass(scalabilityScore);
         const reliabilityClass = scoreToRiskClass(reliabilityScore);
 
+        // OWASP Top 10 grid
+        const owaspCategories = [
+            { key: 'owasp_broken_access_control',     label: 'A01', title: 'Broken Access Control' },
+            { key: 'owasp_cryptographic_failures',    label: 'A02', title: 'Cryptographic Failures' },
+            { key: 'owasp_injection',                 label: 'A03', title: 'Injection' },
+            { key: 'owasp_insecure_design',           label: 'A04', title: 'Insecure Design' },
+            { key: 'owasp_security_misconfiguration', label: 'A05', title: 'Security Misconfiguration' },
+            { key: 'owasp_vulnerable_components',     label: 'A06', title: 'Vulnerable Components' },
+            { key: 'owasp_auth_failures',             label: 'A07', title: 'Auth Failures' },
+            { key: 'owasp_integrity_failures',        label: 'A08', title: 'Integrity Failures' },
+            { key: 'owasp_logging_failures',          label: 'A09', title: 'Logging Failures' },
+            { key: 'owasp_ssrf',                      label: 'A10', title: 'SSRF' },
+        ];
+        const owaspStatusClass = (s) => ({ pass: 'owasp-pass', review: 'owasp-review', fail: 'owasp-fail' })[String(s||'na').toLowerCase()] || 'owasp-na';
+        const owaspStatusIcon  = (s) => ({ pass: '\u2705', review: '\u26a0\ufe0f', fail: '\ud83d\udd34' })[String(s||'na').toLowerCase()] || '\u2796';
+        const owaspGridHtml = owaspCategories.map(c => {
+            const st = String(meta[c.key] || 'na').toLowerCase();
+            return `<span class="owasp-pill ${owaspStatusClass(st)}" title="${c.title}">${owaspStatusIcon(st)} ${c.label}</span>`;
+        }).join('');
+
+        // VAPT severity counts
+        const vaptCritical = Number.isInteger(meta.vapt_critical_count) ? meta.vapt_critical_count : 0;
+        const vaptHigh     = Number.isInteger(meta.vapt_high_count)     ? meta.vapt_high_count     : 0;
+        const vaptMedium   = Number.isInteger(meta.vapt_medium_count)   ? meta.vapt_medium_count   : 0;
+        const vaptLow      = Number.isInteger(meta.vapt_low_count)      ? meta.vapt_low_count      : 0;
+        const vaptInfo     = Number.isInteger(meta.vapt_info_count)     ? meta.vapt_info_count     : 0;
+
+
         const card = document.createElement('div');
         card.className = 'msg ai audit-scorecard';
         card.innerHTML = `
             <div class="audit-scorecard-header">
                 <span class="audit-chip ${toneClass}">Change: ${changeType}</span>
                 <span class="audit-chip is-suggestion">${suggestionLabel}: ${suggestionText}</span>
+            </div>
+            <div class="audit-scorecard-section-label">OWASP Top 10 (2021)</div>
+            <div class="owasp-grid">${owaspGridHtml}</div>
+            <div class="audit-scorecard-section-label">VAPT Findings</div>
+            <div class="vapt-counts">
+                <span class="vapt-badge vapt-critical" title="Critical findings">\ud83d\udd34 ${vaptCritical} Critical</span>
+                <span class="vapt-badge vapt-high"     title="High findings">\ud83d\udfe0 ${vaptHigh} High</span>
+                <span class="vapt-badge vapt-medium"   title="Medium findings">\ud83d\udfe1 ${vaptMedium} Medium</span>
+                <span class="vapt-badge vapt-low"      title="Low findings">\ud83d\udfe4 ${vaptLow} Low</span>
+                <span class="vapt-badge vapt-info"     title="Informational findings">\u26aa ${vaptInfo} Info</span>
             </div>
             <table class="audit-score-table">
                 <tbody>

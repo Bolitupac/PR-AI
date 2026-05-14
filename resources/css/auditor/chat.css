@@ -695,6 +695,114 @@ html[data-theme="light"] .msg.ai .mermaid svg .edgeLabel rect {
     color: #7f1d1d;
 }
 
+/* OWASP Top 10 grid in scorecard */
+.audit-scorecard-section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #5a6e96;
+    margin: 10px 0 5px;
+}
+
+.owasp-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 2px;
+}
+
+.owasp-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    border-radius: 6px;
+    padding: 3px 7px;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: default;
+    border: 1px solid transparent;
+    transition: transform 0.12s ease;
+}
+
+.owasp-pill:hover {
+    transform: translateY(-1px);
+}
+
+.owasp-pass {
+    background: rgba(220, 252, 231, 0.85);
+    color: #14532d;
+    border-color: rgba(134, 239, 172, 0.5);
+}
+
+.owasp-review {
+    background: rgba(254, 249, 195, 0.9);
+    color: #7c5a00;
+    border-color: rgba(253, 224, 71, 0.5);
+}
+
+.owasp-fail {
+    background: rgba(254, 226, 226, 0.9);
+    color: #991b1b;
+    border-color: rgba(252, 165, 165, 0.5);
+}
+
+.owasp-na {
+    background: rgba(241, 245, 249, 0.8);
+    color: #64748b;
+    border-color: rgba(203, 213, 225, 0.5);
+}
+
+/* VAPT severity count badges */
+.vapt-counts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 6px;
+}
+
+.vapt-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    border-radius: 999px;
+    padding: 3px 9px;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1px solid transparent;
+}
+
+.vapt-critical {
+    background: rgba(95, 15, 23, 0.9);
+    color: #ffffff;
+    border-color: rgba(95, 15, 23, 0.6);
+}
+
+.vapt-high {
+    background: rgba(255, 237, 213, 0.9);
+    color: #9a3412;
+    border-color: rgba(253, 186, 116, 0.5);
+}
+
+.vapt-medium {
+    background: rgba(254, 249, 195, 0.9);
+    color: #7c5a00;
+    border-color: rgba(253, 224, 71, 0.5);
+}
+
+.vapt-low {
+    background: rgba(219, 234, 254, 0.9);
+    color: #1e3a8a;
+    border-color: rgba(147, 197, 253, 0.5);
+}
+
+.vapt-info {
+    background: rgba(241, 245, 249, 0.85);
+    color: #475569;
+    border-color: rgba(203, 213, 225, 0.5);
+}
+
+
 .chat-input {
     flex: 1;
     min-height: 42px;
