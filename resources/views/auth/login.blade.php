@@ -487,6 +487,13 @@
                         <span>GitHub</span>
                     </a>
 
+                    <form action="{{ route('temp.login') }}" method="POST" style="margin: 0;">
+                        @csrf
+                        <button type="submit" class="auth-provider" style="width: 100%; border: none; cursor: pointer; background: linear-gradient(135deg, #304cff, #1e2e99);">
+                            <span>TEMPORARY LOGIN</span>
+                        </button>
+                    </form>
+
                     <div class="auth-provider-disabled" aria-disabled="true">
                         <span class="provider-icon provider-icon--azure">
                             <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">

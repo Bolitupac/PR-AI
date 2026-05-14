@@ -1,0 +1,962 @@
+Perfect! Now I have everything I need. Let me create a comprehensive help documentation for your PR-AI tool. I'll structure it with clear chapters that you can feed to Gemini for your website.
+
+```markdown
+# PR-AI Comprehensive User Guide
+
+**Version 1.0** | Designed for the PR-AI platform
+
+---
+
+## Table of Contents
+
+1. [Getting Started with PR-AI](#chapter-1-getting-started)
+2. [The Auditor Workspace](#chapter-2-auditor-workspace)
+3. [Importing Code & Repositories](#chapter-3-importing)
+4. [AI Auditing Modes](#chapter-4-auditing-modes)
+5. [DocGen Mode: Automatic Documentation](#chapter-5-docgen)
+6. [Voice Interactions](#chapter-6-voice)
+7. [Git Diffs Visualization](#chapter-7-diffs)
+8. [Advanced Features](#chapter-8-advanced)
+9. [API Key Management](#chapter-9-api-keys)
+10. [Roadmap & Known Issues](#chapter-10-roadmap)
+
+---
+
+## Chapter 1: Getting Started with PR-AI {#chapter-1-getting-started}
+
+### What is PR-AI?
+
+PR-AI is an intelligent code review workspace designed to help development teams streamline their pull request audits, branch analysis, and commit reviews. Using AI-powered analysis, PR-AI turns raw code changes into structured reviews, visual diagrams, and actionable insights—all in one focused workspace.
+
+### Key Features at a Glance
+
+✅ **Import from Multiple Sources**: GitHub repositories, GitLab, Bitbucket, Azure DevOps, uploaded diffs, pasted code, or manual editing  
+✅ **Automated AI Audits**: Smart analysis of pull requests, commits, and branch changes  
+✅ **Visual Diff Rendering**: See changes side-by-side with syntax highlighting  
+✅ **Voice-to-AI**: Talk to the AI for hands-free prompting  
+✅ **Mermaid Diagrams**: Automatic visualization of code architecture and workflows  
+✅ **DocGen Mode**: Generate README files and technical documentation  
+✅ **Flexible API Keys**: Use shared developer keys or your own OpenAI key  
+
+### Getting Started in 3 Steps
+
+1. **Navigate to the Auditor** (main workspace for code review)
+2. **Import a code source** (GitHub PR, diff file, or paste code)
+3. **Ask the AI questions** or let it auto-audit the changes
+
+---
+
+## Chapter 2: The Auditor Workspace {#chapter-2-auditor-workspace}
+
+### Understanding the Layout
+
+The Auditor page is divided into three main sections:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  HEADER: Import Button | Model Selector | Settings       │
+├──────────────────────────────────────────────────────────┤
+│                                                          │
+│  AI CHAT PANEL (Center)                                 │
+│  - Shows AI responses and chat history                  │
+│  - Empty state welcomes you to import code              │
+│                                                          │
+├──────────────────────────────────────────────────────────┤
+│  GIT DIFF VIEWER (Bottom)                               │
+│  - Displays syntax-highlighted file differences         │
+│  - Only visible after loading code/diffs               │
+│                                                          │
+├──────────────────────────────────────────────────────────┤
+│  CHAT INPUT AREA                                        │
+│  - Text input for questions                             │
+│  - Send button, Voice button, Plus button              │
+│  - DocGen mode indicator (when active)                  │
+└──────────────────────────────────────────────────────────┘
+```
+
+### Key UI Elements
+
+#### **Top Header**
+
+**Import Button** (Top Right)
+- Opens a dropdown menu with three import options
+- "Import from repo provider" → Connect GitHub, GitLab, Bitbucket, or Azure
+- "Upload diff file" → Upload a `.diff` or `.patch` file
+- "Paste diff/code" → Manually enter code or diff text
+
+**Model Selector** (Top Right, Next to Import)
+- Switch between available AI models (e.g., GPT-4o-mini, GPT-4)
+- Your selection persists across audits
+- Different models have different performance/cost tradeoffs
+
+#### **Chat Input Area**
+
+**Text Input Field**
+- Type questions or prompts to the AI
+- The AI maintains context with your active audit
+- Press Enter or click Send to submit
+
+**Send Button** (→ icon)
+- Submits your message to the AI
+- Shows immediately below the text input
+
+**Microphone Button** (🎤 icon)
+- Click to start voice recording
+- Speak your prompt naturally
+- Timer shows recording duration
+- Press again or wait for silence detection to send
+
+**Plus Button** (+)
+- Opens import/upload menu for documents
+- Upload files without leaving the chat
+- Add additional context during review
+
+**DocGen Mode Chip** (Golden badge)
+- Appears when DocGen mode is active
+- Click to toggle DocGen on/off
+- Shows that documentation generation is enabled
+
+### Sidebar Navigation
+
+**Auditor** - Main code review workspace  
+**Import** - Browse recent PRs and commits; select from repositories  
+**Apps** - Enable/disable features like DocGen  
+
+**Bottom Controls**
+- **Theme Toggle** - Switch between light and dark mode
+- **Settings** - Configure API keys, VCS connections, preferences
+- **Profile** - View your account and plan tier
+
+---
+
+## Chapter 3: Importing Code & Repositories {#chapter-3-importing}
+
+PR-AI supports multiple import methods. Here's how to use each:
+
+### Method 1: Import from Repository Provider
+
+**Step-by-Step:**
+
+1. Click the **"Import"** button (top right of Auditor)
+2. Select **"Import from repo provider"**
+3. **Choose a provider** (GitHub, GitLab, Bitbucket, Azure)
+4. You'll be redirected to the **Imports page**
+
+**On the Imports Page:**
+
+- **Recent Pull Requests** panel (left) shows your latest PRs
+- **Recent Commits** panel (left) shows recent commits
+- **Main panel** displays all your repositories
+
+**Selecting a Repository:**
+
+1. Click on a repository in the main panel
+2. The UI expands to show:
+   - **Branches** - Compare branch with main
+   - **Pull Requests** - Select an open PR to audit
+   - **Commits** - Pick recent commits for analysis
+
+**Branch Audits Explained:**
+
+⚠️ **Important:** Branch audits compare the **selected branch with the main branch**. This gives you a high-level view of all changes introduced on that branch.
+
+**Current Limitation:** For now, you can audit **main branch only**. PRs and commits audits are fully supported.
+
+**Selecting a Pull Request:**
+
+1. Choose a PR from the list
+2. The audit loads in the main Auditor workspace
+3. The diff viewer automatically shows at the bottom
+4. The AI begins analyzing the changes
+5. Start chatting with the AI about the review
+
+**Selecting a Commit:**
+
+1. Click on a commit from the Recent Commits list
+2. The commit diff loads in the auditor
+3. The git diff visualization shows what changed
+4. Ask the AI specific questions about the commit
+
+### Method 2: Upload a Diff File
+
+**Step-by-Step:**
+
+1. Click the **"Import"** button or the **"Plus" button** (+) in the chat area
+2. Select **"Upload diff file"**
+3. Choose a `.diff` or `.patch` file from your computer
+4. The file uploads and the diff appears at the bottom
+5. The AI begins analysis
+
+**Supported Formats:**
+- `.diff` files (unified diff format)
+- `.patch` files (Git patch format)
+- Raw diff output from `git diff` command
+
+**Important Note:** Ensure your diff file is in standard unified diff format, or it may not render correctly in the diff viewer.
+
+### Method 3: Paste Diff or Code Manually
+
+**Step-by-Step:**
+
+1. Click the **"Plus" button** (+) in the chat area
+2. Select **"Paste diff/code"**
+3. A **Monaco Editor** opens (VS Code–like code editor)
+4. Paste your diff or code into the editor
+5. Click **"Audit"** or **"Analyze"** button
+6. The content loads and the diff viewer displays it
+
+**What to Paste:**
+
+You can paste:
+- Git diffs (from `git diff output`)
+- Pull request diffs (from GitHub/GitLab API)
+- Raw code changes
+- Any text-based code snippet
+
+**⚠️ Critical:** For Git diff to render at the bottom, the pasted content must be in **valid diff format**. If you paste raw code without diff markers, the diff viewer won't show it—but you can still chat with the AI about the code.
+
+**Valid Diff Format Example:**
+```
+--- a/src/index.js
++++ b/src/index.js
+@@ -10,3 +10,5 @@
+ function greet() {
+   console.log("Hello");
++  console.log("Updated");
++  console.log("New line");
+ }
+```
+
+**Invalid (raw code, no diff markers):**
+```
+function greet() {
+  console.log("Hello");
+  console.log("Updated");
+}
+```
+
+### Why Git Diff Matters
+
+The **Git Diff Viewer at the bottom** is crucial for effective code review because it:
+
+✅ Shows added lines in **green**  
+✅ Shows removed lines in **red**  
+✅ Displays context lines in **gray**  
+✅ Highlights syntax with color coding  
+✅ Makes it easy to spot changes at a glance  
+
+**If your diff doesn't appear:**
+1. Verify it's in valid **unified diff format**
+2. Check that it contains `---` and `+++` lines with file paths
+3. Try re-uploading or re-pasting the diff
+
+---
+
+## Chapter 4: AI Auditing Modes {#chapter-4-auditing-modes}
+
+### Overview
+
+PR-AI supports **four types of audits**, each designed for different review scenarios:
+
+| Audit Type | What It Does | Best For |
+|---|---|---|
+| **Pull Request Audit** | Analyzes a complete PR with all changes and comments | Full code review before merging |
+| **Commit Audit** | Focuses on changes in a single commit | Reviewing specific work, understanding commit history |
+| **Branch Audit** | Compares an entire branch against main | High-level branch review (currently main only) |
+| **Manual/Paste Audit** | Audits code or diffs you paste manually | Quick reviews, snippets, external code samples |
+
+### How Audits Work
+
+**The AI Automatically:**
+
+1. ✅ Reads all changed lines in the code
+2. ✅ Analyzes the diff context (lines before/after changes)
+3. ✅ Reviews pull request metadata (title, description)
+4. ✅ Extracts and incorporates any PR comments or discussions
+5. ✅ Runs automated checks for:
+   - Security vulnerabilities
+   - Performance issues
+   - Code style violations
+   - Logic errors
+   - Dependency risks
+   - Best practice violations
+
+**The AI Returns:**
+
+- A structured **summary** of findings
+- **Risk signals** (high/medium/low severity)
+- Specific line-by-line insights
+- Architecture impact analysis
+- Recommendations for improvement
+- **Mermaid diagrams** (if relevant)
+
+### Understanding Audit Limitations
+
+⚠️ **Important:** PR-AI is in **early stage development**. You should expect:
+
+- Occasional inaccurate suggestions
+- Sometimes missing obvious issues
+- AI models making reasoning mistakes
+- False positives or negatives
+- Improved accuracy as the tool evolves
+
+**Always use PR-AI as an assistant**, not a replacement for human review. Critical code should still be reviewed by team members.
+
+---
+
+## Chapter 5: DocGen Mode - Automatic Documentation {#chapter-5-docgen}
+
+### What is DocGen?
+
+DocGen (Documentation Generation) mode enables the AI to automatically generate comprehensive documentation from your code, including:
+
+✅ README.md files  
+✅ Setup instructions  
+✅ API documentation  
+✅ Architecture guides  
+✅ Technical design documents  
+
+### Enabling DocGen Mode
+
+**Method 1: Via Apps Menu**
+
+1. Click **"Apps"** in the sidebar
+2. Find **"DocGen"** in the list
+3. Click **"Activate"**
+4. A golden badge appears in the chat area showing DocGen is active
+
+**Method 2: Via Settings Modal**
+
+1. Click **"Settings"** (gear icon) in sidebar
+2. Scroll to **"Applications"** section
+3. Toggle **"DocGen"** on
+4. The feature activates immediately
+
+**Method 3: Direct Toggle**
+
+The golden **"DocGen"** chip appears in the chat tools when available. Click it to toggle on/off.
+
+### Using DocGen
+
+**Once Enabled:**
+
+1. The AI detects document-generation requests in your prompts
+2. Instead of code review mode, it switches to document generation
+3. You can ask:
+   - "Generate a README for this project"
+   - "Create API documentation"
+   - "Write a setup guide"
+   - "Document the architecture"
+
+**Example Prompts for DocGen:**
+
+```
+"Generate a comprehensive README for this codebase"
+"Create a technical architecture document"
+"Write setup instructions for developers"
+"Document all API endpoints"
+```
+
+**The AI Will:**
+
+- Analyze your code
+- Extract key components and functions
+- Generate well-structured markdown
+- Include code examples
+- Provide clear instructions
+
+### DocGen Output Format
+
+Documentation is generated in **Markdown format** (.md), ready to:
+- Copy and paste into your GitHub repo
+- Share with the team
+- Convert to PDF or other formats
+- Use as-is or customize further
+
+### Important Notes
+
+⚠️ If the AI detects a document-generation intent but DocGen isn't active, it will prompt you to:
+- Turn on DocGen mode in Apps
+- Re-send your request
+- It will then process in documentation mode
+
+---
+
+## Chapter 6: Voice Interactions {#chapter-6-voice}
+
+### Voice Review Workflow
+
+PR-AI supports **voice-to-AI conversations**, allowing you to:
+
+✅ Speak prompts naturally instead of typing  
+✅ Keep your hands free during code review  
+✅ Speed up review discussions  
+✅ Use natural language effortlessly  
+
+### Using Voice
+
+**Step-by-Step:**
+
+1. **Click the Microphone button** (🎤) in the chat tools
+   - The button changes color (usually blue/animated)
+   - A timer appears showing recording duration
+2. **Speak your question or prompt naturally**
+   - "What are the security risks in this PR?"
+   - "Check for performance issues"
+   - "Explain this function"
+3. **Stop speaking** (button turns back normal) or wait for silence detection
+   - The UI may auto-detect when you've finished
+   - Or press the microphone button again to stop recording
+4. **The audio is transcribed and sent** to the AI
+5. **The AI responds** with its analysis
+
+### Voice Button Locations
+
+**In Chat Area:**
+- Located in the **chat tools row** near the Plus (+) button
+- Always visible when you're in the Auditor
+
+**Floating Action Button (FAB):**
+- A separate **voice button appears in the bottom-right corner** of the screen
+- Useful for quick voice prompts without scrolling to chat area
+- Works the same as the main microphone button
+
+### Supported Languages
+
+Voice transcription supports multiple languages:
+- English (US, UK, AU, etc.)
+- Spanish
+- French
+- German
+- And many more
+
+You can configure your default language in **Settings** → **Voice** section.
+
+### Troubleshooting Voice
+
+**If microphone doesn't work:**
+1. Check browser permissions (allow microphone access)
+2. Ensure your browser supports Web Audio API
+3. Try a different browser (Chrome, Firefox, Safari)
+4. Check microphone hardware is working
+
+**If transcription is inaccurate:**
+1. Speak more clearly and slowly
+2. Reduce background noise
+3. Use a higher-quality microphone
+4. Try shorter, more specific prompts
+
+---
+
+## Chapter 7: Git Diffs Visualization {#chapter-7-diffs}
+
+### Understanding the Diff Viewer
+
+The **Git Diff Viewer** appears at the bottom of the Auditor workspace and shows:
+
+✅ **Side-by-side or unified view** of code changes  
+✅ **Added lines** (typically green)  
+✅ **Removed lines** (typically red)  
+✅ **Context lines** (unchanged, gray background)  
+✅ **Syntax highlighting** for better readability  
+✅ **File headers** showing file names and paths  
+✅ **Line numbers** for reference  
+
+### When Does the Diff Viewer Appear?
+
+The diff viewer only appears after you've:
+
+1. **Imported a repository** (GitHub PR, commit, or branch)
+2. **Uploaded a diff file** (.diff or .patch)
+3. **Pasted valid diff-formatted code** (with `---` and `+++` markers)
+
+**If you paste raw code without diff formatting**, the AI can still analyze it, but the diff viewer won't render.
+
+### Reading the Diff Viewer
+
+**Example diff:**
+```
+--- a/src/auth.js
++++ b/src/auth.js
+@@ -15,6 +15,8 @@ function authenticate() {
+   const token = getToken();
++  // Added validation
++  if (!token) return null;
+   return validateToken(token);
+ }
+```
+
+**Color Coding:**
+- 🟢 **Green lines with +** = New code added
+- 🔴 **Red lines with -** = Code removed
+- ⚪ **White/gray lines** = Context (unchanged code)
+- 🔵 **Blue headers** = File information
+
+**Header Example:**
+```
+--- a/src/index.js      ← Old file path
++++ b/src/index.js      ← New file path
+@@ -10,5 +10,7 @@    ← Hunk header (line numbers)
+```
+
+### Interacting with the Diff
+
+**Click on a line** to:
+- Highlight it
+- Reference it in your chat with the AI
+- Ask specific questions about that change
+
+**Scroll through the diff** to:
+- Review all changes in a file
+- See multiple files if PR contains many changes
+- Understand the full scope of changes
+
+### Diff Viewer Keyboard Shortcuts
+
+| Shortcut | Action |
+|---|---|
+| `↑` / `↓` | Scroll through diff |
+| `Ctrl+F` | Search within diff |
+| `+` / `-` | Zoom in/out (browser) |
+
+### What If Diff Doesn't Appear?
+
+**Issue:** You uploaded a file or pasted code, but the diff viewer at the bottom is empty.
+
+**Solutions:**
+
+1. **Verify diff format** - Is your content in valid unified diff format?
+   - Valid: Content starts with `---` file path line
+   - Invalid: Raw code without diff markers
+2. **Check file type** - Ensure uploaded file is `.diff`, `.patch`, or text
+3. **Re-upload/paste** - Try uploading or pasting the content again
+4. **Still can't see it?** - The AI can still analyze raw code; just ask questions in chat
+
+---
+
+## Chapter 8: Advanced Features {#chapter-8-advanced}
+
+### Mermaid Diagrams
+
+PR-AI uses **Mermaid.js** to automatically generate visual diagrams of:
+
+✅ **Architecture diagrams** - Component relationships  
+✅ **Flow charts** - Process logic and workflows  
+✅ **Sequence diagrams** - Method call sequences  
+✅ **State diagrams** - State transitions  
+✅ **Entity-relationship diagrams** - Database schemas  
+
+**How Diagrams Are Triggered:**
+
+The AI automatically generates diagrams when analyzing code that involves:
+- Complex workflows or pipelines
+- Multiple interacting components
+- Database relationships
+- Authentication or security flows
+- Business logic with decision trees
+
+**Viewing Diagrams:**
+
+1. Diagrams appear in the **chat response** area
+2. They're rendered as interactive visualizations
+3. Hover over nodes to see details
+4. Some diagrams allow zooming/panning
+5. Right-click to export as image (browser-dependent)
+
+**Example Diagram Prompt:**
+```
+"Create a diagram showing how the authentication flow works"
+"Visualize the database schema for this module"
+"Show me the component architecture"
+```
+
+### Context-Aware Questioning
+
+Once you've loaded a code audit, the AI **maintains context** about:
+
+✅ The specific files changed  
+✅ The commit/PR metadata (title, description)  
+✅ Comments from pull request discussions  
+✅ The complete diff of all changes  
+
+**This means:**
+
+- You can ask **follow-up questions** without re-explaining the code
+- The AI understands **pronouns** like "this function" or "these changes"
+- You can ask **deeper questions** like "What about error handling here?"
+- You can request **different perspectives** like "What about performance?"
+
+**Example Follow-up Chat:**
+
+```
+You: "Audit this PR"
+AI: [Provides full analysis]
+
+You: "What about security?"
+AI: [Analyzes security implications specifically]
+
+You: "Can this cause any race conditions?"
+AI: [Analyzes concurrency and threading issues]
+
+You: "Suggest optimizations"
+AI: [Proposes performance improvements]
+```
+
+### Document Upload During Review
+
+**Upload external context** to help the AI understand requirements:
+
+1. Click the **Plus (+) button** in chat tools
+2. Select **"Upload file"** or drag-and-drop
+3. Upload relevant documents:
+   - Technical specifications
+   - Architecture diagrams
+   - Design documents
+   - API specifications
+   - Internal coding standards
+
+The AI will reference these documents in its analysis.
+
+**Supported Formats:**
+- `.pdf` - PDF documents
+- `.md` - Markdown files
+- `.txt` - Text files
+- `.json` - Configuration files
+- Images (`.jpg`, `.png`) - For visual references
+
+---
+
+## Chapter 9: API Key Management {#chapter-9-api-keys}
+
+### Two-Mode Key System
+
+PR-AI supports **two ways** to handle OpenAI API keys:
+
+#### **Mode 1: Developer Key (Shared/Free)**
+
+- Uses a **shared developer API key** provided by PR-AI
+- No cost to you (PR-AI covers API costs for free tier)
+- Limited usage quotas
+- Good for: Getting started, light usage, teams
+
+**How to Use:**
+1. Sign up for PR-AI
+2. You're automatically in "Developer" mode
+3. Start auditing immediately
+4. No API key needed
+
+#### **Mode 2: Personal Key (Your Own)**
+
+- You provide **your own OpenAI API key**
+- You control billing and costs
+- Full quota limits (your OpenAI account limits)
+- Good for: Heavy usage, enterprises, cost control, privacy
+
+**How to Set Up:**
+
+1. Get your OpenAI API key:
+   - Go to [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+   - Create a new API key
+   - Copy the key (you'll only see it once)
+
+2. Add it to PR-AI:
+   - Click **Settings** in sidebar
+   - Go to **"API Keys"** section (or **"Apps"** → **"AI Keys"**)
+   - Paste your OpenAI key
+   - Click **"Save"**
+
+3. Switch to Personal mode:
+   - Once saved, click the toggle to switch to **"Personal"** mode
+   - All subsequent audits use your key
+   - You're billed directly through OpenAI
+
+### Switching Between Modes
+
+**In Settings:**
+
+1. Click **Settings** (gear icon) in sidebar
+2. Find **"API Key Mode"** section
+3. Toggle between:
+   - **Developer** - Uses shared key
+   - **Personal** - Uses your key
+
+**Visual Indicator:**
+
+- Shows your current mode
+- Shows masked version of personal key (if saved)
+- Shows remaining quota if using developer key
+
+### Managing Your Personal Key
+
+**View your masked key:**
+- Settings shows `sk-••••••••••••••••1234` (last 4 characters visible)
+
+**Remove your key:**
+- In Settings, click **"Remove"** next to your key
+- You'll return to Developer mode
+
+**Change your key:**
+- Remove the old key
+- Add a new key
+- Verify it works with a test audit
+
+### Billing Considerations
+
+**Developer Mode (Free Tier):**
+- ✅ $0 out of pocket
+- ❌ Limited audits per month
+- ❌ Slower response times during peak usage
+- ❌ May have queue delays
+
+**Personal Mode (Your Key):**
+- 💰 Pay per API call to OpenAI
+- ✅ Unlimited audits (within your account limits)
+- ✅ Priority access (your key = your priority)
+- ✅ Better performance
+
+**Estimated Costs** (using Personal Key):
+
+| Audit Type | Estimated Cost |
+|---|---|
+| Small PR (< 50 lines) | $0.01 - $0.05 |
+| Medium PR (50-500 lines) | $0.05 - $0.20 |
+| Large PR (500+ lines) | $0.20 - $1.00 |
+| DocGen output | $0.10 - $0.50 |
+
+*Costs depend on model choice, token usage, and current OpenAI pricing*
+
+---
+
+## Chapter 10: Roadmap & Known Issues {#chapter-10-roadmap}
+
+### What's Coming Soon 🚀
+
+PR-AI has an exciting roadmap with features arriving soon:
+
+**Inline Code Comments**
+- AI will add comments directly on specific lines of code
+- Comments appear in the PR before submission
+- Manual approval before posting to GitHub/GitLab
+
+**Extensive Technical Reports**
+- Auto-generate detailed PDF reports
+- Include metrics, trends, and recommendations
+- Share reports with stakeholders
+
+**Test Plan Generation**
+- AI creates comprehensive test plans
+- Includes edge cases and test coverage suggestions
+- Exportable to CI/CD systems
+
+**QA Documentation**
+- Automated QA checklists
+- Test case generation
+- Bug severity classification
+
+**Commit & Push Workflows**
+- Instruct the AI to prepare commits
+- "Make these changes" → AI suggests commits
+- Prepare code for pushing without manual work
+
+**Multi-Branch Comparisons**
+- Compare any branch with any other branch (not just main)
+- Branch-to-branch diffs
+- Multiple branch analysis
+
+**Performance Profiling**
+- Analyze code for performance bottlenecks
+- Suggest optimizations
+- Profile memory usage patterns
+
+---
+
+### Known Issues & Bugs ⚠️
+
+PR-AI is in **early stage development**. Expect these known issues:
+
+#### **False Positives**
+- AI may flag safe code as risky
+- Sometimes suggests unnecessary changes
+- Not always 100% accurate in analysis
+
+**Workaround:** Cross-check AI suggestions with your domain knowledge
+
+#### **Incomplete Diffs**
+- Large files (>10MB) may not render fully in diff viewer
+- Some binary files are skipped
+- Some special characters may not display
+
+**Workaround:** Review large files in chunks; upload split diffs
+
+#### **Voice Transcription Errors**
+- Accents may cause transcription mistakes
+- Background noise affects accuracy
+- Short words sometimes misheard
+
+**Workaround:** Speak clearly; use typed prompts for critical reviews
+
+#### **Diagram Generation**
+- Complex code may not generate useful diagrams
+- Some logic flows may be oversimplified
+- Mermaid rendering has browser compatibility issues
+
+**Workaround:** Request specific diagram types; use typed descriptions
+
+#### **Performance on Large PRs**
+- PRs over 5000 lines may take longer to analyze
+- API timeouts on extremely complex changes
+- Response times slower during peak hours
+
+**Workaround:** Split large PRs; use during off-peak hours; request personal key for priority
+
+#### **Session Timeouts**
+- Long inactive periods may disconnect
+- Voice recording may stop unexpectedly
+- Chat history may not persist on browser clear
+
+**Workaround:** Save important audits; restart if issues occur; clear cache periodically
+
+### Reporting Bugs
+
+If you find an issue:
+
+1. **Take a screenshot** of the problem
+2. **Note the steps** to reproduce it
+3. **Provide the code** (if possible) that triggered the issue
+4. **Contact support** or use the feedback button in the app
+
+---
+
+### Performance Tips 💡
+
+**For best results:**
+
+1. **Use recent browsers** (Chrome, Firefox, Safari, Edge)
+2. **Keep diffs under 2000 lines** per audit
+3. **Use specific, clear prompts** instead of vague questions
+4. **Enable personal API key** for consistent performance
+5. **Audit during off-peak hours** for faster responses
+6. **Clear browser cache** if experiencing slowdowns
+7. **Upload documents** to provide better context
+
+---
+
+### Frequently Asked Questions
+
+**Q: Is my code secure?**
+A: All code is processed securely. With a personal API key, your code is sent to OpenAI for analysis. With the developer key, code is processed with enterprise-grade privacy safeguards. Never upload highly sensitive credentials or private keys.
+
+**Q: Can I use PR-AI offline?**
+A: No, PR-AI requires internet and connection to OpenAI/Gemini APIs. Offline analysis is not currently supported.
+
+**Q: How do I cancel my personal API key?**
+A: Go to Settings → API Keys → Remove. You'll return to Developer mode immediately.
+
+**Q: Can I export the audit results?**
+A: Yes, you can copy chat responses. Export of audit reports as PDF is coming soon.
+
+**Q: What if I hit my API quota?**
+A: If using personal key, upgrade your OpenAI plan. If using developer key, wait for the monthly reset.
+
+---
+
+## Quick Reference
+
+### Keyboard Shortcuts
+
+| Shortcut | Action |
+|---|---|
+| `Enter` | Send message |
+| `Ctrl+Shift+V` | Open paste dialog |
+| `Ctrl+K` | Open command menu |
+| `/` | Suggest quick prompts |
+
+### Button Reference
+
+| Button | Location | Function |
+|---|---|---|
+| Import | Top right | Import from repos/files |
+| Model Select | Top right | Choose AI model |
+| Send (→) | Chat area | Submit message |
+| Mic (🎤) | Chat tools | Voice recording |
+| Plus (+) | Chat tools | Upload/paste content |
+| DocGen | Chat tools | Toggle documentation mode |
+| Settings | Sidebar bottom | Configure preferences |
+| Apps | Sidebar top | Enable/disable features |
+
+### Common Prompts
+
+```
+"Audit this pull request for security issues"
+"Check for performance problems"
+"Suggest refactoring opportunities"
+"Explain what this code does"
+"Look for bugs in this logic"
+"Is this code maintainable?"
+"What are the risks in these changes?"
+"Generate a README for this project"
+"Create an architecture diagram"
+```
+
+---
+
+## Support & Feedback
+
+- **Documentation:** Visit the help section in-app
+- **Feedback:** Use the feedback button in settings
+- **Bugs:** Report via the issues form in the app
+- **Contact:** reach out through PR-AI official channels
+
+---
+
+**Last Updated:** May 2026  
+**PR-AI Version:** 1.0  
+**Status:** Early Release (Beta)
+
+---
+
+# END OF DOCUMENT
+```
+
+---
+
+## 📋 How to Use This with Gemini
+
+Copy the entire document above and paste it into Gemini with this prompt:
+
+```
+I have a comprehensive user guide for a web application called PR-AI. 
+Please format this into an attractive HTML/CSS structure suitable for a website landing page. 
+
+Requirements:
+1. Create a left-side navigation with collapsible chapters
+2. Make it responsive (mobile-friendly)
+3. Use a modern color scheme (dark mode support)
+4. Add search functionality for users to find topics
+5. Include code blocks with syntax highlighting
+6. Make tables look professional
+7. Add icons to section headers
+8. Include a "Copy to clipboard" button for code examples
+9. Add breadcrumb navigation
+10. Create a "Print" friendly version
+
+Please also suggest where on the website to place this documentation and how to link to it from the main help menu.
+```
+
+---
+
+## 🎯 Where to Place on Your Website
+
+Based on https://bolitupac.github.io/My-Websit/, I recommend:
+
+1. **Add a "Documentation" link** in the main navigation (next to "Features", "FAQ")
+2. **Create a new page**: `/documentation.html` or `/help.html`
+3. **Link from homepage** - Add "Read Docs" button in the CTA section
+4. **Link from FAQ** - "For detailed guides, see our documentation"
+5. **Create a "Help Center"** subdirectory if multiple docs grow
+
+---
+
+**Now you have a complete, production-ready help document!** 🎉
+
+Would you like me to create the HTML/CSS template to go with this documentation, or help with anything else?

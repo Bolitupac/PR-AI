@@ -20,6 +20,7 @@ import { fetchGitPullComments } from './diff-comments/api';
 import { initAppsModal } from './document-generator/apps-modal';
 import { initDocGenMode } from './document-generator/doc-gen-mode';
 import { appendRepoParams, buildVcsUrl } from '../../shared/vcs-repo-query.js';
+import { createLoadingProgress } from './loading-progress';
 
 export function initAuditorPage() {
     if (!document.getElementById('ai-response-area')) return;
