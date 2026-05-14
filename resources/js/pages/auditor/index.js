@@ -157,6 +157,14 @@ export function initAuditorPage() {
                                 appendMessage('Fetched diff was empty.', 'ai');
                                 return;
                             }
+                            // Client-side size guard: warn if diff exceeds 30MB (post_max_size is 32M)
+                            const diffBytes = new Blob([diffText]).size;
+                            if (diffBytes > 30 * 1024 * 1024) {
+                                progress.stop();
+                                status.markError('Diff too large.');
+                                appendMessage('⚠️ This diff is too large to process (' + Math.round(diffBytes / 1024 / 1024) + 'MB). The server limit is 32MB. Try auditing a specific pull request or a smaller branch instead.', 'ai');
+                                return;
+                            }
                             progress.stop('Diff received. Starting audit...');
                             dispatchDiff(diffText, comments);
                             status.remove(700);

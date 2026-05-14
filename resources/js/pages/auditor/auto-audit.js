@@ -206,6 +206,11 @@ export function initAutoAudit() {
                     appendMessage('Your session has expired. Please refresh the page and try again.', 'ai');
                     return;
                 }
+                if (res.status === 413) {
+                    status.markError('Diff too large.');
+                    appendMessage('⚠️ This diff is too large to process. Try auditing a specific pull request or a smaller branch instead.', 'ai');
+                    return;
+                }
                 const contentType = res.headers.get('content-type') || '';
                 let errorMessage = 'Audit request failed.';
                 if (contentType.includes('application/json')) {

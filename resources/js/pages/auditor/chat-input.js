@@ -345,6 +345,11 @@ export function initChatInput() {
                     requestState.replyNode = appendMessage('Your session has expired. Please refresh the page and try again.', 'ai');
                     return false;
                 }
+                if (res.status === 413) {
+                    status.markError('Diff too large.');
+                    requestState.replyNode = appendMessage('⚠️ This diff is too large to process. Try auditing a specific pull request or a smaller branch instead.', 'ai');
+                    return false;
+                }
                 const contentType = res.headers.get('content-type') || '';
                 let message = 'Chat request failed.';
                 if (contentType.includes('application/json')) {

@@ -45,7 +45,7 @@ class AuditDiffController extends Controller
             'linked_issues' => ['nullable', 'string', 'max:4000'],
             'context' => ['nullable', 'string', 'max:4000'],
             'file_name' => ['nullable', 'string', 'max:255'],
-            'diff_text' => ['required', 'string', 'max:2000000'],
+            'diff_text' => ['required', 'string', 'max:10000000'],
             'model' => ['nullable', 'string', 'max:120'],
         ]);
 
@@ -58,7 +58,7 @@ class AuditDiffController extends Controller
         $auditTitle = (string) ($payload['audit_title'] ?? '');
         $auditKind = (string) ($payload['audit_kind'] ?? '');
         $auditStatus = (string) ($payload['audit_status'] ?? '');
-        $diffText = (string) $payload['diff_text'];
+        $diffText = $this->truncateDiffIfNeeded((string) $payload['diff_text'], $auditTitle);
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
         $prTitle = (string) ($payload['pr_title'] ?? '');
         $prDescription = (string) ($payload['pr_description'] ?? '');
@@ -186,7 +186,7 @@ class AuditDiffController extends Controller
             'linked_issues' => ['nullable', 'string', 'max:4000'],
             'context' => ['nullable', 'string', 'max:4000'],
             'file_name' => ['nullable', 'string', 'max:255'],
-            'diff_text' => ['required', 'string', 'max:2000000'],
+            'diff_text' => ['required', 'string', 'max:10000000'],
             'model' => ['nullable', 'string', 'max:120'],
         ]);
 
@@ -199,7 +199,7 @@ class AuditDiffController extends Controller
         $auditTitle = (string) ($payload['audit_title'] ?? '');
         $auditKind = (string) ($payload['audit_kind'] ?? '');
         $auditStatus = (string) ($payload['audit_status'] ?? '');
-        $diffText = (string) $payload['diff_text'];
+        $diffText = $this->truncateDiffIfNeeded((string) $payload['diff_text'], (string) ($payload['audit_title'] ?? ''));
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
         $prTitle = (string) ($payload['pr_title'] ?? '');
         $prDescription = (string) ($payload['pr_description'] ?? '');
@@ -471,6 +471,33 @@ class AuditDiffController extends Controller
             'commit_audit' => trim("{$repo} commit audit {$commitHash}"),
             default => trim($fileName !== '' ? "{$fileName} {$auditKind}" : "{$repo} audit"),
         };
+    }
+
+    /**
+     * Truncates diff to a safe token budget for the AI model.
+     * Keeps file headers so context is preserved. Appends a notice.
+     */
+    private function truncateDiffIfNeeded(string $diffText, string $auditTitle = '', int $maxChars = 120000): string
+    {
+        if (strlen($diffText) <= $maxChars) {
+            return $diffText;
+        }
+
+        // Truncate at a line boundary to avoid breaking mid-hunk
+        $truncated = substr($diffText, 0, $maxChars);
+        $lastNewline = strrpos($truncated, "\n");
+        if ($lastNewline !== false) {
+            $truncated = substr($truncated, 0, $lastNewline);
+        }
+
+        $originalKb = round(strlen($diffText) / 1024);
+        $keptKb = round(strlen($truncated) / 1024);
+        $notice = "\n\n# ⚠️ Diff Truncated\n";
+        $notice .= "# This diff was {$originalKb}KB which exceeds the AI context limit.\n";
+        $notice .= "# Only the first {$keptKb}KB has been sent for analysis.\n";
+        $notice .= "# For full analysis, audit individual pull requests or specific files.\n";
+
+        return $truncated . $notice;
     }
 
     private function extractMeta(string $reply): array
