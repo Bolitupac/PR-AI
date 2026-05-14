@@ -201,9 +201,19 @@ export function initAutoAudit() {
 
             status.set('Backend responded.');
             if (!res.ok) {
-                const data = await res.json().catch(() => ({}));
+                if (res.status === 419) {
+                    status.markError('Session expired.');
+                    appendMessage('Your session has expired. Please refresh the page and try again.', 'ai');
+                    return;
+                }
+                const contentType = res.headers.get('content-type') || '';
+                let errorMessage = 'Audit request failed.';
+                if (contentType.includes('application/json')) {
+                    const data = await res.json().catch(() => ({}));
+                    errorMessage = data?.message || errorMessage;
+                }
                 status.markError('Audit failed.');
-                appendMessage(data?.message || 'Audit request failed.', 'ai');
+                appendMessage(errorMessage, 'ai');
                 return;
             }
 

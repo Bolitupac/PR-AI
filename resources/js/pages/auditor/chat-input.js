@@ -340,13 +340,16 @@ export function initChatInput() {
             }
             status.set('Backend responded.');
             if (!res.ok) {
-                const fallbackText = await res.text().catch(() => '');
+                if (res.status === 419) {
+                    status.markError('Session expired.');
+                    requestState.replyNode = appendMessage('Your session has expired. Please refresh the page and try again.', 'ai');
+                    return false;
+                }
+                const contentType = res.headers.get('content-type') || '';
                 let message = 'Chat request failed.';
-                try {
-                    const parsed = fallbackText ? JSON.parse(fallbackText) : null;
-                    message = parsed?.message || message;
-                } catch {
-                    if (fallbackText) message = fallbackText;
+                if (contentType.includes('application/json')) {
+                    const data = await res.json().catch(() => ({}));
+                    message = data?.message || message;
                 }
                 status.markError('Request failed.');
                 requestState.replyNode = appendMessage(message, 'ai');
