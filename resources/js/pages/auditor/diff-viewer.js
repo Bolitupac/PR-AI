@@ -113,6 +113,21 @@ export function initDiffViewer() {
         currentComments = Array.isArray(event?.detail?.comments) ? event.detail.comments : [];
         currentAiComments = [];
         renderCurrentDiff();
+        
+        const scrollBtn = document.getElementById('diff-ready-scroll-btn');
+        if (scrollBtn && currentDiffText) {
+            scrollBtn.style.display = 'block';
+            setTimeout(() => scrollBtn.style.opacity = '1', 10);
+            
+            scrollBtn.onclick = () => {
+                const diffSection = document.getElementById('diff2html-container');
+                if (diffSection) {
+                    diffSection.scrollIntoView({ behavior: 'smooth' });
+                }
+                scrollBtn.style.opacity = '0';
+                setTimeout(() => scrollBtn.style.display = 'none', 200);
+            };
+        }
     });
 
     document.addEventListener('auditor:ai-comments-updated', function (event) {

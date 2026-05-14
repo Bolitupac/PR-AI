@@ -69,7 +69,12 @@
     position: absolute;
     width: 20px !important;
     height: 20px !important;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition: opacity 0.2s ease, transform 0.2s ease, filter 0.2s ease;
+}
+
+html[data-theme="light"] .pr-cat-logo,
+html:not([data-theme]) .pr-cat-logo {
+    filter: brightness(0);
 }
 
 .sidebar-collapse-svg {

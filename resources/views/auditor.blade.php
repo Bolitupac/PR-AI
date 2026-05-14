@@ -159,6 +159,8 @@
                                 </p>
                             </div>
                         </div>
+                        
+                        <button id="diff-ready-scroll-btn" style="position: absolute; top: 80px; right: 24px; z-index: 50; background: #ef4444; color: white; border: none; border-radius: 99px; padding: 6px 14px; font-weight: 600; font-size: 13px; cursor: pointer; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); display: none; transition: opacity 0.2s;" aria-label="Scroll to bottom">Diff Ready ↓</button>
                     </div>
 
                     <div class="chat-container">

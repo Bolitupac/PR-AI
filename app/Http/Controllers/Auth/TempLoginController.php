@@ -11,15 +11,13 @@ class TempLoginController extends Controller
 {
     public function login()
     {
-        $user = User::firstOrCreate(
-            ['email' => 'temporary_debug_user@example.com'],
-            [
-                'name' => 'Temporary Debug User',
-                'password' => bcrypt(Str::random(16)),
-                'github_id' => 'temp_debug_123',
-                'github_username' => 'temp_debug',
-            ]
-        );
+        $user = User::create([
+            'name' => 'Temporary User',
+            'email' => 'temp_' . Str::random(12) . '@example.com',
+            'password' => bcrypt(Str::random(16)),
+            'github_id' => 'temp_' . Str::random(10),
+            'github_username' => 'temp_user_' . Str::random(5),
+        ]);
 
         Auth::login($user);
 
