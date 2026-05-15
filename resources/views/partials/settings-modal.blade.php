@@ -84,6 +84,7 @@
                     <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-c6">Voice Interactions</button>
                     <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-c7">Git Diffs</button>
                     <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-c8">Advanced Features</button>
+                    <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-vapt">VAPT &amp; OWASP Audit</button>
                     <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-c9">API Keys</button>
                     <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-c10">Roadmap &amp; Known Issues</button>
                     <button class="settings-nav-btn settings-nav-sub-btn" type="button" data-settings-tab="help-developer">About Developer</button>
@@ -484,6 +485,36 @@
                     </ul>
                 </section>
 
+                <section class="settings-pane" data-settings-pane="help">
+                    <header class="settings-pane-head">
+                        <h3>Help &amp; Documentation</h3>
+                        <p>Welcome to the PR-AI help center.</p>
+                    </header>
+                    <div class="help-doc-content">
+                        <h4>Getting Started</h4>
+                        <p>PR-AI is designed to accelerate code reviews, identify vulnerabilities, and generate accurate documentation using AI. Choose a topic below or from the sidebar to learn more.</p>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px;">
+                            <button class="settings-theme-btn" style="text-align:left;" type="button" onclick="document.querySelector('[data-settings-tab=\'help-c2\']').click()">
+                                <strong>The Auditor Workspace</strong><br>
+                                <small>Understanding the UI layout.</small>
+                            </button>
+                            <button class="settings-theme-btn" style="text-align:left;" type="button" onclick="document.querySelector('[data-settings-tab=\'help-c3\']').click()">
+                                <strong>Importing Code</strong><br>
+                                <small>Connecting to GitHub &amp; importing diffs.</small>
+                            </button>
+                            <button class="settings-theme-btn" style="text-align:left;" type="button" onclick="document.querySelector('[data-settings-tab=\'help-vapt\']').click()">
+                                <strong>VAPT &amp; OWASP Audit</strong><br>
+                                <small>How PR-AI analyzes security risks.</small>
+                            </button>
+                            <button class="settings-theme-btn" style="text-align:left;" type="button" onclick="document.querySelector('[data-settings-tab=\'help-c5\']').click()">
+                                <strong>DocGen Mode</strong><br>
+                                <small>Auto-generating documentation.</small>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
                 <section class="settings-pane" data-settings-pane="help-c2">
                     <header class="settings-pane-head">
                         <h3>The Auditor Workspace</h3>
@@ -799,6 +830,39 @@ AI: [Proposes performance improvements]</pre>
                             <li>Upload relevant documents: technical specifications, architecture diagrams, design documents, API specifications, or internal coding standards</li>
                         </ol>
                         <p><strong>Supported Formats:</strong> <code>.pdf</code>, <code>.md</code>, <code>.txt</code>, <code>.json</code>, Images (<code>.jpg</code>, <code>.png</code>). The AI will reference these documents in its analysis.</p>
+                    </div>
+                </section>
+
+                <section class="settings-pane" data-settings-pane="help-vapt">
+                    <header class="settings-pane-head">
+                        <h3>VAPT &amp; OWASP Auditing</h3>
+                        <p>How PR-AI secures your code using industry standards.</p>
+                    </header>
+                    <div class="help-doc-content">
+                        <h4>What is VAPT?</h4>
+                        <p>Vulnerability Assessment and Penetration Testing (VAPT) is a systematic approach to finding and mitigating security weaknesses in code. PR-AI integrates VAPT methodologies directly into its code review process to catch vulnerabilities before they reach production.</p>
+
+                        <h4>OWASP Top 10 Alignment</h4>
+                        <p>PR-AI's security audits are strictly aligned with the <strong>OWASP Top 10 (2021)</strong>, the globally recognized standard for web application security. Every code change you import is automatically scanned against these critical vulnerability categories:</p>
+
+                        <ol>
+                            <li><strong>A01: Broken Access Control</strong> - Enforcing permissions and authorization.</li>
+                            <li><strong>A02: Cryptographic Failures</strong> - Protecting sensitive data and secrets.</li>
+                            <li><strong>A03: Injection</strong> - Preventing SQL, NoSQL, OS, and LDAP injection.</li>
+                            <li><strong>A04: Insecure Design</strong> - Identifying architectural security flaws.</li>
+                            <li><strong>A05: Security Misconfiguration</strong> - Checking default settings and headers.</li>
+                            <li><strong>A06: Vulnerable and Outdated Components</strong> - Spotting risky dependencies.</li>
+                            <li><strong>A07: Identification and Authentication Failures</strong> - Securing logins and sessions.</li>
+                            <li><strong>A08: Software and Data Integrity Failures</strong> - Validating updates and CI/CD pipelines.</li>
+                            <li><strong>A09: Security Logging and Monitoring Failures</strong> - Ensuring sufficient audit trails.</li>
+                            <li><strong>A10: Server-Side Request Forgery (SSRF)</strong> - Preventing unauthorized internal requests.</li>
+                        </ol>
+
+                        <h4>How It Works</h4>
+                        <p>During an audit, PR-AI evaluates your code diffs and specifically flags lines that introduce security risks based on the OWASP framework. It categorizes the severity (High, Medium, Low), explains the exploitation vector, and provides exact remediation code.</p>
+
+                        <h4>Why It Matters</h4>
+                        <p>By shifting security left and embedding VAPT analysis into the pull request review stage, PR-AI helps development teams maintain velocity without sacrificing code safety. You don't need to be a security expert to catch critical vulnerabilities.</p>
                     </div>
                 </section>
 

@@ -58,10 +58,7 @@ export function initSettingsModal() {
         if (helpSubNav) {
             if (tabName.startsWith('help')) {
                 helpSubNav.style.display = 'flex';
-                // If they just clicked 'help', default to the first chapter
-                if (tabName === 'help') {
-                    setActiveTab('help-getting-started');
-                }
+                // Let the 'help' landing page show instead of redirecting.
             } else {
                 helpSubNav.style.display = 'none';
             }

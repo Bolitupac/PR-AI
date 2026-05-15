@@ -28,6 +28,7 @@ class User extends Authenticatable
         'github_token_expires_at',
         'custom_openai_api_key',
         'ai_key_mode',
+        'ai_preferences',
     ];
 
     /**
@@ -55,6 +56,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'github_token_expires_at' => 'datetime',
             'custom_openai_api_key' => 'encrypted',
+            'ai_preferences' => 'array',
         ];
     }
 

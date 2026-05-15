@@ -26,7 +26,7 @@ class OpenAiSimpleChatService
     // Sends one user message plus short chat history to preserve context.
     public function replyWithHistory(string $message, array $history = [], ?string $selectedModel = null, ?User $user = null): string
     {
-        $messages = $this->buildHistoryMessages($message, $history);
+        $messages = $this->buildHistoryMessages($message, $history, $user);
 
         return $this->sendMessages($messages, $selectedModel, $user);
     }
@@ -59,7 +59,7 @@ class OpenAiSimpleChatService
         }
 
         $url = rtrim($baseUrl, '/').'/chat/completions';
-        $messages = $this->buildHistoryMessages($message, $history);
+        $messages = $this->buildHistoryMessages($message, $history, $user);
 
         try {
             $response = Http::withToken($apiKey)
@@ -158,7 +158,7 @@ class OpenAiSimpleChatService
         }
 
         $url = rtrim($baseUrl, '/').'/chat/completions';
-        $messages = $this->buildHistoryMessages($message, $history);
+        $messages = $this->buildHistoryMessages($message, $history, $user);
 
         try {
             $response = Http::withToken($apiKey)
@@ -377,31 +377,66 @@ class OpenAiSimpleChatService
         }
     }
 
-    private function buildHistoryMessages(string $message, array $history): array
+    private function buildHistoryMessages(string $message, array $history, ?User $user = null): array
     {
-        $systemPrompt = (string) config('openai.chat_system_prompt', self::SYSTEM_PROMPT);
+        $basePrompt = (string) config('openai.chat_system_prompt', self::SYSTEM_PROMPT);
+
+        // Inject user's saved AI preferences into the system prompt
+        $prefsExtra = '';
+        if ($user !== null && is_array($user->ai_preferences) && count($user->ai_preferences) > 0) {
+            $prefs = $user->ai_preferences;
+
+            $personalityMap = [
+                'balanced'   => 'You are a balanced code reviewer — thorough but not overwhelming.',
+                'strict'     => 'You are strict and concise. Be direct, flag every issue, keep responses short and precise.',
+                'mentor'     => 'You are a friendly mentor. Be encouraging, explain your reasoning, and guide the developer gently.',
+                'architect'  => 'You are architecture-first. Focus on design patterns, system design, scalability, and structural concerns before style issues.',
+            ];
+            $verbosityMap = [
+                'short'    => 'Keep your responses SHORT — one to three sentences unless detail is critical.',
+                'medium'   => 'Keep your responses MEDIUM length — balanced between depth and brevity.',
+                'detailed' => 'Give DETAILED responses — be comprehensive, include examples, explain reasoning fully.',
+            ];
+            $toneMap = [
+                'supportive' => 'Use a supportive, positive tone.',
+                'neutral'    => 'Use a neutral, professional tone.',
+                'direct'     => 'Use a direct, no-nonsense tone.',
+            ];
+
+            $personality  = $personalityMap[$prefs['personality'] ?? '']  ?? '';
+            $verbosity    = $verbosityMap[$prefs['verbosity']   ?? '']    ?? '';
+            $tone         = $toneMap[$prefs['tone']             ?? '']    ?? '';
+            $customPrompt = trim((string) ($prefs['custom_prompt'] ?? ''));
+
+            $parts = array_filter([$personality, $verbosity, $tone, $customPrompt]);
+            if (count($parts) > 0) {
+                $prefsExtra = "\n\nUSER AI PREFERENCES:\n".implode("\n", $parts);
+            }
+        }
+
+        $systemPrompt = $basePrompt.$prefsExtra;
 
         $messages = [
             [
-                'role' => 'system',
+                'role'    => 'system',
                 'content' => $systemPrompt,
             ],
         ];
 
         foreach (array_slice($history, -20) as $item) {
-            $role = (string) ($item['role'] ?? '');
+            $role    = (string) ($item['role'] ?? '');
             $content = trim((string) ($item['content'] ?? ''));
             if (!in_array($role, ['user', 'assistant'], true) || $content === '') {
                 continue;
             }
             $messages[] = [
-                'role' => $role,
+                'role'    => $role,
                 'content' => $content,
             ];
         }
 
         $messages[] = [
-            'role' => 'user',
+            'role'    => 'user',
             'content' => $message,
         ];
 

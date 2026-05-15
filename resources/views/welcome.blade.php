@@ -239,6 +239,43 @@
                 </div>
             </section>
 
+            <section class="security-section" id="security" data-reveal style="padding: 6rem 5%; background: var(--surface); position: relative; overflow: hidden; border-top: 1px solid var(--border);">
+                <div class="bg-orb bg-orb--three" aria-hidden="true" style="top: 20%; left: -10%; opacity: 0.1;"></div>
+                <div class="section-copy" data-reveal style="max-width: 800px; margin: 0 auto 4rem auto; text-align: center;">
+                    <span class="section-tag" style="background: rgba(255, 50, 50, 0.1); color: #ff5555;">VAPT &amp; OWASP Top 10</span>
+                    <h2 style="font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; margin-bottom: 1.5rem; letter-spacing: -0.02em;">Code reviews that think like hackers</h2>
+                    <p style="font-size: 1.125rem; color: var(--text-muted); line-height: 1.6;">
+                        PR-AI doesn't just check for syntax errors or code style. It performs a Vulnerability Assessment and Penetration Testing (VAPT) analysis on every pull request, strictly aligned with the OWASP Top 10 standard.
+                    </p>
+                </div>
+
+                <div class="security-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; max-width: 1200px; margin: 0 auto; position: relative; z-index: 2;">
+                    <div class="security-card" data-reveal style="background: var(--surface-raised); border: 1px solid var(--border); padding: 2rem; border-radius: 16px; transition: transform 0.3s ease, border-color 0.3s ease;">
+                        <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(255, 50, 50, 0.1); color: #ff5555; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Injection Prevention</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9375rem; line-height: 1.5;">Automatically detects SQL, NoSQL, OS, and LDAP injection flaws before they reach your production environment.</p>
+                    </div>
+
+                    <div class="security-card" data-reveal style="background: var(--surface-raised); border: 1px solid var(--border); padding: 2rem; border-radius: 16px; transition: transform 0.3s ease, border-color 0.3s ease;">
+                        <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(0, 200, 255, 0.1); color: #00c8ff; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        </div>
+                        <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Access Control</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9375rem; line-height: 1.5;">Spots broken authentication, missing role checks, and unauthorized data access routes during the review stage.</p>
+                    </div>
+
+                    <div class="security-card" data-reveal style="background: var(--surface-raised); border: 1px solid var(--border); padding: 2rem; border-radius: 16px; transition: transform 0.3s ease, border-color 0.3s ease;">
+                        <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(150, 100, 255, 0.1); color: #9664ff; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        </div>
+                        <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Cryptographic Failures</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9375rem; line-height: 1.5;">Flags hardcoded secrets, weak encryption algorithms, and insecure data transmission protocols in your diffs.</p>
+                    </div>
+                </div>
+            </section>
+
             <section class="help-section" id="help" data-reveal>
                 <div class="section-copy" data-reveal>
                     <span class="section-tag">Help section</span>
