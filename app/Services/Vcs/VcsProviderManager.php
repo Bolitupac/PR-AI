@@ -69,8 +69,16 @@ class VcsProviderManager
                     'state' => $connection ? 'Connected' : ($key === 'github' ? 'Sign in required' : 'Not connected'),
                     'profile' => $profile,
                     'connection_meta' => $connection ? collect($connection)->except(['token'])->all() : [],
-                    'connect_url' => $key === 'github' ? route('github.redirect') : route('vcs.connections.store', ['provider' => $key]),
-                    'disconnect_url' => $key === 'github' ? route('logout') : route('vcs.connections.destroy', ['provider' => $key]),
+                    'connect_url' => match ($key) {
+                        'github' => route('github.redirect'),
+                        'gitlab' => route('gitlab.redirect'),
+                        default => route('vcs.connections.store', ['provider' => $key]),
+                    },
+                    'disconnect_url' => match ($key) {
+                        'github' => route('logout'),
+                        'gitlab' => route('vcs.connections.destroy', ['provider' => 'gitlab']),
+                        default => route('vcs.connections.destroy', ['provider' => $key]),
+                    },
                 ];
             })
             ->values()
@@ -106,7 +114,11 @@ class VcsProviderManager
 
     public function connectTarget(string $provider): string
     {
-        return $provider === 'github' ? route('github.redirect') : '#settings-vcs';
+        return match ($provider) {
+            'github' => route('github.redirect'),
+            'gitlab' => route('gitlab.redirect'),
+            default => '#settings-vcs',
+        };
     }
 
     public function failureMessage(string $provider, int $status, string $fallback): string

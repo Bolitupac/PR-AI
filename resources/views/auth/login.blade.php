@@ -78,20 +78,21 @@
         }
 
         .auth-shell {
-            width: min(100%, 1060px);
+            width: min(100%, 530px);
         }
 
         .auth-card {
             display: grid;
-            grid-template-columns: minmax(320px, 1.05fr) minmax(380px, 1.1fr);
+            grid-template-columns: 1fr;
             overflow: hidden;
-            border-radius: 20px;
+            border-radius: 8px;
             border: 1px solid rgba(255, 255, 255, 0.28);
             background: rgba(255, 255, 255, 0.1);
             box-shadow: var(--shadow);
         }
 
         .auth-visual {
+            display: none;
             position: relative;
             overflow: hidden;
             padding: 40px 38px 34px;
@@ -471,60 +472,18 @@
                 </a>
 
                 <h2>Sign in to your account</h2>
-                <p class="auth-panel-sub">
-                    Don&apos;t have an account? Sign in with GitHub and PR ai will create one automatically for you.
-                </p>
 
                 @if (session('auth_error'))
                     <div class="auth-error">{{ session('auth_error') }}</div>
                 @endif
 
-                <p class="auth-provider-label">Use one of the following systems:</p>
-
-                <div class="auth-provider-list">
+                <div class="auth-provider-list" style="margin-top: 28px;">
                     <a href="{{ route('github.redirect') }}" class="auth-provider">
                         <img src="{{ asset('images/github.png') }}" alt="">
                         <span>GitHub</span>
                     </a>
 
-                    <form action="{{ route('temp.login') }}" method="POST" style="margin: 0;">
-                        @csrf
-                        <button type="submit" class="auth-provider" style="width: 100%; border: none; cursor: pointer; background: linear-gradient(135deg, #304cff, #1e2e99);">
-                            <span>TEMPORARY LOGIN</span>
-                        </button>
-                    </form>
-
-                    <div class="auth-provider-disabled" aria-disabled="true">
-                        <span class="provider-icon provider-icon--azure">
-                            <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M9.941 0 5.61 9.628 1 16.2h4.03l1.85-2.94 4.62 2.94H18L9.941 0z" fill="#0078D4"/>
-                                <path d="M5.61 9.628 9.26.86 6.26 0 0 16.2h4.03l1.58-3.97 4.35-2.6h-4.35z" fill="#0078D4"/>
-                            </svg>
-                        </span>
-                        <span>Azure DevOps</span>
-                    </div>
-                </div>
-
-                <div class="auth-divider">or</div>
-
-                <div class="auth-provider-list">
-                    <div class="auth-provider-disabled" aria-disabled="true">
-                        <span class="provider-icon provider-icon--bitbucket">
-                            <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M1.03 1a.5.5 0 0 0-.496.578l2.446 14.898a.5.5 0 0 0 .487.407h11.17a.5.5 0 0 0 .497-.42l2.382-14.885a.5.5 0 0 0-.496-.578H1.03zm9.903 10.265H7.05L6.16 6.735h5.604l-.831 4.53z" fill="#2684FF"/>
-                                <path d="M16.353 6.735h-4.589l-.831 4.53H7.05l-3.89 4.657a.5.5 0 0 0 .328.16h11.17a.5.5 0 0 0 .497-.42l1.198-8.927z" fill="url(#bb_grad)"/>
-                                <defs>
-                                    <linearGradient id="bb_grad" x1="17.089" y1="8.207" x2="11.322" y2="15.052" gradientUnits="userSpaceOnUse">
-                                        <stop stop-color="#0052CC"/>
-                                        <stop offset="1" stop-color="#2684FF"/>
-                                    </linearGradient>
-                                </defs>
-                            </svg>
-                        </span>
-                        <span>Bitbucket</span>
-                    </div>
-
-                    <div class="auth-provider-disabled" aria-disabled="true">
+                    <a href="{{ route('gitlab.redirect') }}" class="auth-provider">
                         <span class="provider-icon provider-icon--gitlab">
                             <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M9 17.09 12.42 6.85H5.58L9 17.09z" fill="#FC6D26"/>
@@ -537,19 +496,14 @@
                             </svg>
                         </span>
                         <span>GitLab</span>
-                    </div>
-                </div>
+                    </a>
 
-                <p class="auth-terms">
-                    Signing in means you are accepting the PR ai access flow for GitHub-based authentication. More providers will be enabled later.
-                </p>
-
-                <div class="auth-privacy">
-                    <div class="auth-privacy-icon">P</div>
-                    <div>
-                        <strong>Your access is important</strong>
-                        <p>GitHub is the only live sign-in provider right now. Azure, Bitbucket, and GitLab are shown here as upcoming options and are intentionally disabled.</p>
-                    </div>
+                    <form action="{{ route('temp.login') }}" method="POST" style="margin: 0;">
+                        @csrf
+                        <button type="submit" class="auth-provider" style="width: 100%; border: none; cursor: pointer; background: linear-gradient(135deg, #304cff, #1e2e99);">
+                            <span>TEMPORARY LOGIN</span>
+                        </button>
+                    </form>
                 </div>
             </div>
         </section>

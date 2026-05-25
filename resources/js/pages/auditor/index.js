@@ -77,7 +77,10 @@ export function initAuditorPage() {
             return await res.text();
         }
         if (pending?.commitHash) {
-            const res = await fetch(`/api/git/commit-diff?commit=${encodeURIComponent(pending.commitHash)}`);
+            const url = new URL(buildVcsUrl(vcsApiBase, provider, 'commit-diff'), window.location.origin);
+            appendRepoParams(url, repoPayload);
+            url.searchParams.set('commit', pending.commitHash);
+            const res = await fetch(url.toString());
             if (!res.ok) throw new Error('Failed to fetch commit diff');
             return await res.text();
         }

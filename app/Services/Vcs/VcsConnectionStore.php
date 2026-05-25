@@ -5,6 +5,7 @@ namespace App\Services\Vcs;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Crypt;
 
 class VcsConnectionStore
 {
@@ -14,6 +15,7 @@ class VcsConnectionStore
     {
         return match ($provider) {
             'github' => $this->githubConnection($user),
+            'gitlab' => $this->gitlabConnection($user, $request),
             default => $this->sessionConnection($provider, $request),
         };
     }
@@ -33,6 +35,10 @@ class VcsConnectionStore
     {
         if ($provider === 'github') {
             return;
+        }
+
+        if ($provider === 'gitlab') {
+            $this->forgetGitLabOAuth($request->user());
         }
 
         $connections = $request->session()->get(self::SESSION_KEY, []);
@@ -58,7 +64,66 @@ class VcsConnectionStore
             'avatar_url' => $user->github_username
                 ? sprintf('https://github.com/%s.png', rawurlencode((string) $user->github_username))
                 : null,
+            'auth' => 'oauth',
         ];
+    }
+
+    private function gitlabConnection(?User $user, Request $request): ?array
+    {
+        $oauth = $this->gitlabOAuthConnection($user);
+        if ($oauth !== null) {
+            return $oauth;
+        }
+
+        $session = $this->sessionConnection('gitlab', $request);
+        if ($session === null) {
+            return null;
+        }
+
+        $session['auth'] = 'pat';
+
+        return $session;
+    }
+
+    private function gitlabOAuthConnection(?User $user): ?array
+    {
+        if (!$user?->gitlab_access_token) {
+            return null;
+        }
+
+        try {
+            $token = Crypt::decryptString((string) $user->gitlab_access_token);
+        } catch (\Throwable) {
+            return null;
+        }
+
+        $baseUrl = trim((string) ($user->gitlab_base_url ?? '')) ?: 'https://gitlab.com';
+
+        return [
+            'token' => $token,
+            'username' => (string) ($user->gitlab_username ?? ''),
+            'name' => (string) ($user->name ?? $user->gitlab_username ?? 'GitLab User'),
+            'avatar_url' => $user->gitlab_avatar_url,
+            'base_url' => $baseUrl,
+            'auth' => 'oauth',
+        ];
+    }
+
+    private function forgetGitLabOAuth(?User $user): void
+    {
+        if (!$user) {
+            return;
+        }
+
+        $user->forceFill([
+            'gitlab_id' => null,
+            'gitlab_username' => null,
+            'gitlab_avatar_url' => null,
+            'gitlab_base_url' => null,
+            'gitlab_access_token' => null,
+            'gitlab_refresh_token' => null,
+            'gitlab_token_expires_at' => null,
+        ])->save();
     }
 
     private function sessionConnection(string $provider, Request $request): ?array

@@ -134,6 +134,61 @@ class VcsRepositoryController extends Controller
         return response()->json(['pulls' => $result['data']]);
     }
 
+    public function recentCommits(Request $request, string $provider): JsonResponse
+    {
+        $resolved = $this->resolveProvider($provider, $request, 'Connect the provider to load recent commits.', 'commits');
+        if ($resolved instanceof JsonResponse) {
+            return $resolved;
+        }
+
+        [$service, $connection] = $resolved;
+        $result = $service->getRecentCommits($connection, 15);
+        if (!$result['ok']) {
+            $status = (int) ($result['status'] ?? 500);
+            $payload = [
+                'commits' => [],
+                'message' => $result['message']
+                    ?? $this->vcsProviderManager->failureMessage($provider, $status, 'Could not load recent commits.'),
+                'connect_url' => $this->vcsProviderManager->connectTarget($provider),
+                'auth_required' => $status === 401,
+            ];
+
+            return response()->json($payload, $status);
+        }
+
+        return response()->json(['commits' => $result['data']]);
+    }
+
+    public function commitDiff(Request $request, string $provider): Response|JsonResponse
+    {
+        $resolved = $this->resolveProvider($provider, $request, 'Connect the provider to load commit diffs.');
+        if ($resolved instanceof JsonResponse) {
+            return $resolved;
+        }
+
+        [$service, $connection, $repo] = $resolved;
+        $commit = trim((string) $request->query('commit', ''));
+
+        if ($repo['repo'] === '') {
+            return response()->json(['message' => 'Select a valid repository first.'], 422);
+        }
+
+        if (!preg_match('/^[0-9a-f]{7,40}$/i', $commit)) {
+            return response()->json(['message' => 'Invalid commit hash'], 422);
+        }
+
+        $result = $service->getCommitDiff($connection, $repo, $commit);
+        if (!$result['ok']) {
+            return response()->json([
+                'message' => $this->vcsProviderManager->failureMessage($provider, $result['status'], 'Failed to load commit diff.'),
+                'connect_url' => $this->vcsProviderManager->connectTarget($provider),
+                'auth_required' => true,
+            ], $result['status']);
+        }
+
+        return response($result['data'], 200, ['Content-Type' => 'text/plain; charset=utf-8']);
+    }
+
     public function pullComments(Request $request, string $provider): JsonResponse
     {
         $resolved = $this->resolveProvider($provider, $request, 'Connect the provider to load pull request comments.', 'comments');

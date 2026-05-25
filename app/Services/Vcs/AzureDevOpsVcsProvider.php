@@ -280,6 +280,25 @@ class AzureDevOpsVcsProvider implements VcsProviderInterface
         return $this->buildDiffFromVersions($connection, $repo, $base, 'branch', $head, 'branch');
     }
 
+    public function getCommitDiff(array $connection, array $repo, string $commit): array
+    {
+        $details = $this->client($connection)->get($this->repositoryApiBase($connection, $repo).'/commits/'.$commit, [
+            'api-version' => '7.1',
+        ]);
+
+        if ($details->failed()) {
+            return ['ok' => false, 'status' => $details->status(), 'data' => ''];
+        }
+
+        $parents = $details->json('parents') ?? [];
+        $parentId = $parents[0]['commitId'] ?? null;
+        if (!$parentId) {
+            return ['ok' => false, 'status' => 422, 'message' => 'Cannot diff root commit without a parent.'];
+        }
+
+        return $this->buildDiffFromVersions($connection, $repo, $parentId, 'commit', $commit, 'commit');
+    }
+
     private function buildDiffFromVersions(array $connection, array $repo, string $baseVersion, string $baseType, string $targetVersion, string $targetType): array
     {
         $diffResponse = $this->client($connection)->get($this->repositoryApiBase($connection, $repo).'/diffs/commits', [

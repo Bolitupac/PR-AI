@@ -264,6 +264,11 @@ class BitbucketVcsProvider implements VcsProviderInterface
         return ['ok' => true, 'status' => 200, 'data' => $response->body()];
     }
 
+    public function getCommitDiff(array $connection, array $repo, string $commit): array
+    {
+        return ['ok' => false, 'status' => 501, 'message' => 'Commit diffs are not supported for Bitbucket yet.'];
+    }
+
     private function getComments(array $connection, array $repo, string $pullNumber): array
     {
         [$workspace, $slug] = $this->repoParts($connection, $repo);

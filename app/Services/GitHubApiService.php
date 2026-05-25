@@ -216,7 +216,7 @@ class GitHubApiService
                 foreach (array_reverse($pushCommits) as $commit) {
                     $commits[] = [
                         'repo' => $repoName,
-                        'hash' => substr($commit['sha'] ?? '', 0, 7),
+                        'hash' => (string) ($commit['sha'] ?? ''),
                         'message' => $commit['message'] ?? '',
                         'author' => $commit['author']['name'] ?? $username,
                         'time' => \Illuminate\Support\Carbon::parse($event['created_at'])->diffForHumans(),
@@ -363,5 +363,31 @@ class GitHubApiService
         }
 
         return ['ok' => true, 'status' => 200, 'data' => $response->body()];
+    }
+
+    /**
+     * Fetches unified diff text for a single commit.
+     */
+    public function getCommitDiff(string $encryptedToken, string $repo, string $commit): array
+    {
+        $response = $this->client($encryptedToken)->get("https://api.github.com/repos/{$repo}/commits/{$commit}");
+
+        if ($response->failed()) {
+            return ['ok' => false, 'status' => $response->status(), 'data' => ''];
+        }
+
+        $entries = collect($response->json('files') ?? [])
+            ->map(fn (array $file) => [
+                'old_path' => $file['filename'] ?? '',
+                'new_path' => $file['filename'] ?? '',
+                'diff' => $file['patch'] ?? '',
+                'new_file' => ($file['status'] ?? '') === 'added',
+                'deleted_file' => ($file['status'] ?? '') === 'removed',
+            ])
+            ->all();
+
+        $diff = app(\App\Services\Vcs\UnifiedDiffBuilder::class)->fromEntries($entries);
+
+        return ['ok' => true, 'status' => 200, 'data' => $diff];
     }
 }

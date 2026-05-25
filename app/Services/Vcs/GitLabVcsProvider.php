@@ -24,8 +24,8 @@ class GitLabVcsProvider implements VcsProviderInterface
     {
         return [
             'username' => (string) ($connection['username'] ?? ''),
-            'name' => (string) ($connection['username'] ?? 'GitLab user'),
-            'avatar_url' => null,
+            'name' => (string) ($connection['name'] ?? $connection['username'] ?? 'GitLab user'),
+            'avatar_url' => $connection['avatar_url'] ?? null,
         ];
     }
 
@@ -171,16 +171,20 @@ class GitLabVcsProvider implements VcsProviderInterface
 
         $events = collect($response->json() ?? []);
         $commits = [];
+        $projectIds = [];
 
-        // In GitLab events, push_data only contains tip commit info (commit_title, commit_to, commit_count).
-        // Since we want recent commits, showing the tip commit of each push is usually sufficient for a global feed.
         foreach ($events as $event) {
             $pushData = $event['push_data'] ?? null;
             if ($pushData && !empty($pushData['commit_to'])) {
+                $projectId = $event['project_id'] ?? null;
+                if ($projectId !== null) {
+                    $projectIds[(string) $projectId] = true;
+                }
+
                 $commits[] = [
-                    'repo' => '', // We don't have project path easily without another API call or using project_id. We'll leave it empty or map it if possible.
-                    'repo_id' => $event['project_id'] ?? null, // Store ID to fetch repo name later or just rely on ID
-                    'hash' => substr($pushData['commit_to'], 0, 7),
+                    'repo' => '',
+                    'repo_id' => $projectId !== null ? (string) $projectId : null,
+                    'hash' => (string) $pushData['commit_to'],
                     'message' => $pushData['commit_title'] ?? 'Updated repository',
                     'author' => $event['author']['name'] ?? $event['author']['username'] ?? 'GitLab User',
                     'time' => \Illuminate\Support\Carbon::parse($event['created_at'])->diffForHumans(),
@@ -192,12 +196,11 @@ class GitLabVcsProvider implements VcsProviderInterface
             }
         }
 
-        // Optional: map repo_ids to names if we need to. But let's fetch projects from getRepos if we need mapping,
-        // or just return without repo name for now. We can fetch /projects/ID to get the path_with_namespace.
-        // For performance, we'll just format the repo as "Project ID: X" if we don't have the map.
+        $projectMap = $this->projectPathMap($connection, array_keys($projectIds));
+
         foreach ($commits as &$commit) {
-            $commit['repo'] = 'Project ' . $commit['repo_id'];
-            unset($commit['repo_id']);
+            $projectId = (string) ($commit['repo_id'] ?? '');
+            $commit['repo'] = $projectMap[$projectId]['full_name'] ?? ($projectId !== '' ? 'Project '.$projectId : '');
         }
 
         return ['ok' => true, 'status' => 200, 'data' => $commits];
@@ -317,6 +320,51 @@ class GitLabVcsProvider implements VcsProviderInterface
         $diff = $this->diffBuilder->fromEntries($response->json('diffs') ?? []);
 
         return ['ok' => true, 'status' => 200, 'data' => $diff];
+    }
+
+    public function getCommitDiff(array $connection, array $repo, string $commit): array
+    {
+        $response = $this->client($connection)->get(
+            $this->projectPath($connection, $repo).'/repository/commits/'.rawurlencode($commit).'/diff'
+        );
+
+        if ($response->failed()) {
+            return ['ok' => false, 'status' => $response->status(), 'data' => ''];
+        }
+
+        $diff = $this->diffBuilder->fromEntries($response->json() ?? []);
+
+        return ['ok' => true, 'status' => 200, 'data' => $diff];
+    }
+
+    /**
+     * @param  array<int, string>  $projectIds
+     * @return array<string, array{full_name:string}>
+     */
+    private function projectPathMap(array $connection, array $projectIds): array
+    {
+        $projectIds = array_values(array_filter($projectIds, fn (string $id) => $id !== ''));
+        if ($projectIds === []) {
+            return [];
+        }
+
+        $response = $this->client($connection)->get($this->apiBase($connection).'/projects', [
+            'ids' => $projectIds,
+            'simple' => true,
+            'per_page' => count($projectIds),
+        ]);
+
+        if ($response->failed()) {
+            return [];
+        }
+
+        return collect($response->json() ?? [])
+            ->mapWithKeys(function (array $project) {
+                $id = isset($project['id']) ? (string) $project['id'] : '';
+
+                return $id === '' ? [] : [$id => ['full_name' => (string) ($project['path_with_namespace'] ?? '')]];
+            })
+            ->all();
     }
 
     private function getDiscussions(array $connection, array $repo, string $pullNumber): array

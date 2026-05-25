@@ -142,6 +142,8 @@ PR-AI supports multiple import methods. Here's how to use each:
 3. **Choose a provider** (GitHub, GitLab, Bitbucket, Azure)
 4. You'll be redirected to the **Imports page**
 
+**GitHub & GitLab sign-in:** Use **Sign in with GitHub** or **Sign in with GitLab** on the login page. No manual token is required for gitlab.com or github.com. Self-hosted GitLab can use **Settings → GitLab** with a Personal Access Token and custom base URL.
+
 **On the Imports Page:**
 
 - **Recent Pull Requests** panel (left) shows your latest PRs
@@ -160,7 +162,7 @@ PR-AI supports multiple import methods. Here's how to use each:
 
 ⚠️ **Important:** Branch audits compare the **selected branch with the main branch**. This gives you a high-level view of all changes introduced on that branch.
 
-**Current Limitation:** For now, you can audit **main branch only**. PRs and commits audits are fully supported.
+**Branch audits** compare a selected branch to a base branch. **Pull request / merge request** and **commit** audits load remote diffs from GitHub or GitLab into the Auditor.
 
 **Selecting a Pull Request:**
 

@@ -25,6 +25,7 @@
                 $provider['key'] => [
                     'label' => $provider['name'],
                     'connected' => (bool) ($provider['connected'] ?? false),
+                    'connect_url' => $provider['connect_url'] ?? '#settings-vcs',
                 ],
             ];
         })->all();

@@ -29,7 +29,7 @@ function renderCommits(panel, commits, provider) {
             <li class="imports-history-item imports-activity-item imports-commit-item">
                 <div class="imports-activity-flex imports-commit-flex">
                     <div class="imports-activity-main imports-commit-main">
-                        <code class="imports-activity-badge imports-commit-hash">${escapeHtml(commit.hash || '—')}</code>
+                        <code class="imports-activity-badge imports-commit-hash">${escapeHtml((commit.hash || '').slice(0, 7) || '—')}</code>
                         <span class="imports-activity-title imports-commit-msg">${escapeHtml(commit.message || '')}</span>
                     </div>
                     <div class="imports-activity-meta imports-commit-meta">
@@ -41,6 +41,7 @@ function renderCommits(panel, commits, provider) {
                         data-commit="${escapeHtml(commit.hash || '')}"
                         data-title="${escapeHtml(commit.message || '')}"
                         data-repo="${escapeHtml(commit.repo || '')}"
+                        data-repo-id="${escapeHtml(commit.repo_id || '')}"
                         data-provider="${escapeHtml(provider || 'github')}"
                         aria-label="Audit commit">
                         Audit
@@ -85,6 +86,7 @@ export async function initRecentCommitsPanel(apiBase, provider, setImportStatus)
         const commitHash = button.dataset.commit;
         const title = button.dataset.title || 'Commit audit';
         const repo = button.dataset.repo || 'repo';
+        const repoId = button.dataset.repoId || null;
         const providerStr = button.dataset.provider || 'github';
 
         if (!commitHash) return;
@@ -96,6 +98,7 @@ export async function initRecentCommitsPanel(apiBase, provider, setImportStatus)
             startAuditSession(buildCommitAuditPayload({
                 provider: providerStr,
                 repo,
+                repoId,
                 commitHash,
                 title,
             }));

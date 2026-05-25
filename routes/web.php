@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuditorController;
 use App\Http\Controllers\Auth\GitHubOAuthController;
+use App\Http\Controllers\Auth\GitLabOAuthController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\GitHubRepositoryController;
 use App\Http\Controllers\GitCommitController;
@@ -33,6 +34,8 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/auth/github', [GitHubOAuthController::class, 'redirect'])->name('github.redirect');
     Route::get('/auth/github/callback', [GitHubOAuthController::class, 'callback'])->name('github.callback');
+    Route::get('/auth/gitlab', [GitLabOAuthController::class, 'redirect'])->name('gitlab.redirect');
+    Route::get('/auth/gitlab/callback', [GitLabOAuthController::class, 'callback'])->name('gitlab.callback');
     Route::post('/auth/temp-login', [App\Http\Controllers\Auth\TempLoginController::class, 'login'])->name('temp.login');
 });
 
@@ -59,6 +62,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/vcs/{provider}/pull-comments', [VcsRepositoryController::class, 'pullComments'])->name('vcs.pull-comments');
     Route::get('/api/vcs/{provider}/pull-diff', [VcsRepositoryController::class, 'pullDiff'])->name('vcs.pull-diff');
     Route::get('/api/vcs/{provider}/branch-diff', [VcsRepositoryController::class, 'branchDiff'])->name('vcs.branch-diff');
+    Route::get('/api/vcs/{provider}/commit-diff', [VcsRepositoryController::class, 'commitDiff'])->name('vcs.commit-diff');
     Route::get('/api/git/commit-diff', [GitCommitController::class, 'diff'])
         ->name('git.commit-diff');
     Route::post('/api/ai/chat', [SimpleChatController::class, 'chat'])->name('ai.chat');

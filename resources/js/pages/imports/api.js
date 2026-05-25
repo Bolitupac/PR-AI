@@ -69,8 +69,11 @@ export async function fetchBranchDiff(apiBase, provider, repo, base, head) {
     return await response.text();
 }
 
-export async function fetchCommitDiff(commitHash) {
-    const response = await fetch(`/api/git/commit-diff?commit=${encodeURIComponent(commitHash)}`);
+export async function fetchCommitDiff(apiBase, provider, repo, commitHash) {
+    const url = new URL(buildVcsUrl(apiBase, provider, 'commit-diff'), window.location.origin);
+    appendRepoParams(url, repo);
+    url.searchParams.set('commit', String(commitHash));
+    const response = await fetch(url.toString());
     if (!response.ok) throw new Error('Failed to fetch commit diff');
     return await response.text();
 }

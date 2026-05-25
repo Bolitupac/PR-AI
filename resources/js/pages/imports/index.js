@@ -45,7 +45,7 @@ export async function initImportsPage() {
 
     const isConnectedProvider = () => Boolean(providerConfig?.[currentProvider]?.connected);
     const providerLabel = () => providerConfig?.[currentProvider]?.label || currentProvider;
-    const providerConnectTarget = () => '#settings-vcs';
+    const providerConnectTarget = () => providerConfig?.[currentProvider]?.connect_url || '#settings-vcs';
 
     const getProviderSvg = (provider) => {
         switch(provider) {

@@ -26,6 +26,13 @@ class User extends Authenticatable
         'github_access_token',
         'github_refresh_token',
         'github_token_expires_at',
+        'gitlab_id',
+        'gitlab_username',
+        'gitlab_avatar_url',
+        'gitlab_base_url',
+        'gitlab_access_token',
+        'gitlab_refresh_token',
+        'gitlab_token_expires_at',
         'custom_openai_api_key',
         'ai_key_mode',
         'ai_preferences',
@@ -41,6 +48,8 @@ class User extends Authenticatable
         'remember_token',
         'github_access_token',
         'github_refresh_token',
+        'gitlab_access_token',
+        'gitlab_refresh_token',
         'custom_openai_api_key',
     ];
 
@@ -55,6 +64,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'github_token_expires_at' => 'datetime',
+            'gitlab_token_expires_at' => 'datetime',
             'custom_openai_api_key' => 'encrypted',
             'ai_preferences' => 'array',
         ];

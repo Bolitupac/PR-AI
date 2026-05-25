@@ -444,6 +444,8 @@
                                         </form>
                                     @elseif($isGitHubProvider)
                                         <a class="settings-vcs-logout" href="{{ route('github.redirect') }}">Connect</a>
+                                    @elseif($provider['key'] === 'gitlab' && !$isConnected)
+                                        <a class="settings-vcs-logout" href="{{ route('gitlab.redirect') }}">Connect</a>
                                     @elseif($isConnected)
                                         <form action="{{ route('vcs.connections.destroy', ['provider' => $provider['key']]) }}" method="POST" class="settings-vcs-logout-form">
                                             @csrf
@@ -492,7 +494,7 @@
                     </header>
                     <div class="help-doc-content">
                         <h4>Getting Started</h4>
-                        <p>PR-AI is designed to accelerate code reviews, identify vulnerabilities, and generate accurate documentation using AI. Choose a topic below or from the sidebar to learn more.</p>
+                        <p>PR-AI accelerates code reviews, security checks, and documentation with AI. Sign in with <strong>GitHub</strong> or <strong>GitLab</strong> on the login page, then use <strong>Imports</strong> to browse repos or the <strong>Auditor</strong> to review diffs. Full details are in <code>APP.md</code> in the project repository.</p>
 
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px;">
                             <button class="settings-theme-btn" style="text-align:left;" type="button" onclick="document.querySelector('[data-settings-tab=\'help-c2\']').click()">
@@ -501,7 +503,7 @@
                             </button>
                             <button class="settings-theme-btn" style="text-align:left;" type="button" onclick="document.querySelector('[data-settings-tab=\'help-c3\']').click()">
                                 <strong>Importing Code</strong><br>
-                                <small>Connecting to GitHub &amp; importing diffs.</small>
+                                <small>GitHub, GitLab OAuth, and diffs.</small>
                             </button>
                             <button class="settings-theme-btn" style="text-align:left;" type="button" onclick="document.querySelector('[data-settings-tab=\'help-vapt\']').click()">
                                 <strong>VAPT &amp; OWASP Audit</strong><br>
@@ -572,7 +574,11 @@
                         <p><strong>On the Imports Page:</strong> The Recent Pull Requests panel (left) shows your latest PRs. The Recent Commits panel shows recent commits. The main panel displays all your repositories.</p>
                         <p>Click on a repository to expand it and see Branches, Pull Requests, and Commits.</p>
 
-                        <p>⚠️ <strong>Branch Audits Explained:</strong> Branch audits compare the <strong>selected branch with the main branch</strong>. This gives you a high-level view of all changes introduced on that branch. For now, you can audit <strong>main branch only</strong>. PR and commit audits are fully supported.</p>
+                        <h4>GitHub and GitLab sign-in</h4>
+                        <p>Use <strong>Sign in with GitHub</strong> or <strong>Sign in with GitLab</strong> on the login page. After sign-in, Imports and Auditor use your OAuth token automatically—no manual token paste required for gitlab.com or github.com.</p>
+                        <p>For self-hosted GitLab, sign in with OAuth when supported, or paste a Personal Access Token under Settings → GitLab (optional base URL).</p>
+
+                        <p><strong>Branch audits</strong> compare the selected branch with a base branch. <strong>Pull request</strong> and <strong>commit</strong> audits load diffs from GitHub or GitLab APIs and open in the Auditor.</p>
 
                         <h4>Method 2: Upload a Diff File</h4>
                         <ol>

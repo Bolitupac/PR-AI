@@ -29,4 +29,6 @@ interface VcsProviderInterface
     public function getPullDiff(array $connection, array $repo, string $pullNumber): array;
 
     public function getBranchDiff(array $connection, array $repo, string $base, string $head): array;
+
+    public function getCommitDiff(array $connection, array $repo, string $commit): array;
 }

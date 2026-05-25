@@ -40,7 +40,11 @@ export function initGitRepoModal() {
     let repoIndex = new Map();
 
     const providerLabel = () => providerConfig?.[currentProvider]?.label || currentProvider;
-    const connectUrl = () => currentProvider === 'github' ? '/auth/github' : '#settings-vcs';
+    const connectUrl = () => {
+        if (currentProvider === 'github') return '/auth/github';
+        if (currentProvider === 'gitlab') return '/auth/gitlab';
+        return '#settings-vcs';
+    };
     const reposUrl = () => useLegacyGithubRoutes ? legacyReposUrl : buildVcsUrl(apiBase, currentProvider, 'repos');
     const pullsUrl = () => useLegacyGithubRoutes ? legacyPullsUrl : buildVcsUrl(apiBase, currentProvider, 'pulls');
     const pullDiffUrl = () => useLegacyGithubRoutes ? legacyPullDiffUrl : buildVcsUrl(apiBase, currentProvider, 'pull-diff');

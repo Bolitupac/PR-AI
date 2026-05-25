@@ -88,4 +88,9 @@ class GitHubVcsProvider implements VcsProviderInterface
     {
         return $this->gitHubApiService->getBranchDiff((string) $connection['token'], (string) ($repo['repo'] ?? ''), $base, $head);
     }
+
+    public function getCommitDiff(array $connection, array $repo, string $commit): array
+    {
+        return $this->gitHubApiService->getCommitDiff((string) $connection['token'], (string) ($repo['repo'] ?? ''), $commit);
+    }
 }
