@@ -455,14 +455,10 @@
                                     @endif
                                 </div>
 
-                                @unless($isGitHubProvider)
+                                @unless($isGitHubProvider || $provider['key'] === 'gitlab')
                                     <div class="settings-api-box" style="margin-top:16px; width:100%;">
                                         <form action="{{ route('vcs.connections.store', ['provider' => $provider['key']]) }}" method="POST" style="display:grid; gap:12px;">
                                             @csrf
-                                            @if($provider['key'] === 'gitlab')
-                                                <input class="settings-api-input" name="base_url" type="url" value="{{ old('base_url', $connectionMeta['base_url'] ?? 'https://gitlab.com') }}" placeholder="GitLab base URL">
-                                                <input class="settings-api-input" name="username" type="text" value="{{ old('username', $connectionMeta['username'] ?? '') }}" placeholder="GitLab username (optional)">
-                                            @endif
 
                                             @if($provider['key'] === 'bitbucket')
                                                 <input class="settings-api-input" name="workspace" type="text" value="{{ old('workspace', $connectionMeta['workspace'] ?? '') }}" placeholder="Workspace slug">
