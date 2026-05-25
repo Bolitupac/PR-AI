@@ -79,7 +79,7 @@ Both providers support the same Imports and Auditor flows when the user is signe
 | PR/MR diff → Auditor | Yes | Yes |
 | Branch compare diff | Yes | Yes |
 | Commit diff → Auditor | Yes | Yes (`/api/vcs/{provider}/commit-diff`) |
-| Merge conflict import | Yes | Yes (Imports **Merge Conflicts** panel → conflict viewer + audit) |
+| Merge conflict import | Yes (metadata only) | Yes (API hunks when GitLab returns `/conflicts`) |
 | AI audit + chat | Yes | Yes (includes **Merge Conflict Risk** on normal PR/branch audits) |
 
 Commit audits load diffs from the **remote provider API**, not from a local `git show` in the app container (legacy `/api/git/commit-diff` remains for local-only use).
@@ -176,6 +176,15 @@ Register OAuth callback URLs for `http://127.0.0.1:8000` (or your local `APP_URL
 | Auditor UI | `resources/js/pages/auditor/` |
 
 ---
+
+## Merge conflict data sources
+
+| Provider | List conflicts | Line-level hunks in app |
+|----------|----------------|-------------------------|
+| GitHub | Yes — per-PR `mergeable` + `mergeable_state: dirty` via detail API | **No** — REST does not expose conflict markers; UI shows metadata-only panel |
+| GitLab | Yes — open MRs with `cannot_be_merged` / conflict status | **Yes** — when `merge_requests/:iid/conflicts` returns marker content |
+
+GitHub imports still run a metadata-based AI audit (causes, local git steps, agent prompt) without fabricating `<<<<<<<` hunks.
 
 ## Roadmap ideas
 

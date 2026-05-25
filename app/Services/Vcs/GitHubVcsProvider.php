@@ -96,7 +96,11 @@ class GitHubVcsProvider implements VcsProviderInterface
 
     public function getRecentMergeConflicts(array $connection, int $limit = 10): array
     {
-        return $this->gitHubApiService->getRecentMergeConflicts((string) $connection['token'], $limit);
+        return $this->gitHubApiService->getRecentMergeConflicts(
+            (string) $connection['token'],
+            (string) ($connection['username'] ?? ''),
+            $limit
+        );
     }
 
     public function getMergeConflicts(array $connection, array $repo, string $pullNumber): array

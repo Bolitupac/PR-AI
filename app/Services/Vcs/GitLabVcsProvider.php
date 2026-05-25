@@ -417,6 +417,8 @@ class GitLabVcsProvider implements VcsProviderInterface
         }
 
         $files = $this->mergeConflictParser->parseFiles($rawFiles);
+        $hasHunks = $files !== [];
+        $hasConflicts = $hasHunks || ($mr['merge_status'] ?? '') === 'cannot_be_merged';
 
         return [
             'ok' => true,
@@ -428,9 +430,14 @@ class GitLabVcsProvider implements VcsProviderInterface
                 'title' => $mr['title'] ?? '',
                 'base_ref' => $baseRef,
                 'head_ref' => $headRef,
-                'has_conflicts' => $files !== [] || ($mr['merge_status'] ?? '') === 'cannot_be_merged',
+                'has_conflicts' => $hasConflicts,
                 'mergeable_state' => $mr['detailed_merge_status'] ?? $mr['merge_status'] ?? null,
                 'files' => $files,
+                'has_hunks' => $hasHunks,
+                'conflict_source' => $hasHunks ? 'gitlab_api_hunks' : 'gitlab_metadata_only',
+                'message' => $hasHunks
+                    ? null
+                    : 'GitLab reports this merge request as conflicted but did not return parseable conflict marker content from the API.',
                 'suggested_git_commands' => [
                     'git fetch origin',
                     "git checkout {$headRef}",

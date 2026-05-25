@@ -152,21 +152,37 @@ class AuditPromptComposer
         $parts[] = 'BASE BRANCH: '.$baseBranch;
         $parts[] = 'HEAD BRANCH: '.$headBranch;
         $parts[] = '';
+        $conflictSource = (string) ($conflictPayload['conflict_source'] ?? '');
+        $hasHunks = (bool) ($conflictPayload['has_hunks'] ?? false) && !empty($conflictPayload['files']);
+        $metadataOnly = !$hasHunks || $conflictSource === 'github_metadata_only';
+
         $parts[] = 'MERGE CONFLICT PAYLOAD (structured):';
         $parts[] = json_encode($conflictPayload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) ?: '{}';
         $parts[] = '';
-        $parts[] = 'RAW CONFLICT DIFF TEXT:';
-        $parts[] = $diffText;
+        $parts[] = 'CONFLICT DATA MODE: '.($metadataOnly ? 'metadata_only (no line-level hunks available)' : 'provider_hunks');
+        $parts[] = '';
+        $parts[] = 'AUDIT CONTEXT TEXT:';
+        $parts[] = $diffText !== '' ? $diffText : 'No raw conflict marker diff text was available.';
         $parts[] = '';
         $parts[] = 'INSTRUCTIONS:';
-        $parts[] = '1. Explain what caused these merge conflicts in plain language (branch divergence, parallel edits, etc.).';
-        $parts[] = '2. List every conflicted file with exact line ranges and quote the OURS vs THEIRS snippets from the payload.';
-        $parts[] = '3. Provide numbered remediation steps for the human (git merge --abort, fetch, rebase/merge, resolve, add, commit, push).';
-        $parts[] = '4. Include a Mermaid flowchart TD diagram showing the conflict resolution flow (base, head, conflict hunks, resolution).';
-        $parts[] = '5. Start the visible response with the audit title as the first heading.';
+        $parts[] = '1. Start the visible response with the audit title as the first heading.';
+        $parts[] = '2. Explain what likely caused the merge conflict using repo, base/head branches, and provider metadata.';
+        if ($metadataOnly) {
+            $parts[] = '3. Clearly state that exact conflict hunks are NOT available from the provider API (especially GitHub REST). Do NOT invent file paths, line numbers, or <<<<<<< marker blocks.';
+            $parts[] = '4. Provide safe numbered steps to reproduce locally (fetch, checkout head, merge base, resolve, add, commit) and when to use git merge --abort.';
+            $parts[] = '5. Include a Mermaid flowchart TD for the recommended human resolution workflow (metadata-based, not fake hunks).';
+        } else {
+            $parts[] = '3. List every conflicted file with exact line ranges and quote OURS vs THEIRS snippets only from the payload files/hunks.';
+            $parts[] = '4. Provide numbered remediation steps (git merge --abort, fetch, rebase/merge, resolve, add, commit, push).';
+            $parts[] = '5. Include a Mermaid flowchart TD diagram showing the conflict resolution flow.';
+        }
         $parts[] = '';
         $parts[] = 'After the visible review, append [AGENT_FIX_PROMPT] with JSON: {title, prompt, files:[{path, lines, action}]}.';
-        $parts[] = 'The prompt must be VERY detailed for an AI coding agent (Cursor/Codex): include repository, branches, per-file code blocks with conflict markers, desired outcome, acceptance criteria, and git commands.';
+        if ($metadataOnly) {
+            $parts[] = 'The agent prompt must explain API limitations, give local reproduction commands, and describe how to resolve after running git merge—without fabricating specific conflict line content.';
+        } else {
+            $parts[] = 'The agent prompt must be VERY detailed for an AI coding agent (Cursor/Codex): include repository, branches, per-file code blocks with conflict markers, desired outcome, acceptance criteria, and git commands.';
+        }
         $parts[] = 'Close with [/AGENT_FIX_PROMPT]. Do not mention this block in visible prose.';
 
         return implode(PHP_EOL, $parts);

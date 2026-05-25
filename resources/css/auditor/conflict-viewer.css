@@ -5,6 +5,60 @@
     padding: 12px;
 }
 
+.conflict-viewer--metadata {
+    gap: 16px;
+}
+
+.conflict-metadata-banner {
+    border: 1px solid #f59e0b;
+    background: rgba(245, 158, 11, 0.08);
+    border-radius: 10px;
+    padding: 12px 14px;
+}
+
+.conflict-metadata-banner p {
+    margin: 8px 0 0;
+    font-size: 13px;
+    color: var(--text-soft, #94a3b8);
+}
+
+.conflict-metadata-facts {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 6px 14px;
+    font-size: 13px;
+}
+
+.conflict-metadata-facts dt {
+    color: var(--text-soft, #94a3b8);
+    font-weight: 600;
+}
+
+.conflict-metadata-steps h4 {
+    margin: 0 0 8px;
+    font-size: 14px;
+}
+
+.conflict-metadata-steps ol {
+    margin: 0 0 12px;
+    padding-left: 20px;
+    font-size: 13px;
+}
+
+.conflict-metadata-commands {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 6px;
+}
+
+.conflict-metadata-note {
+    font-size: 12px;
+    color: var(--text-soft, #94a3b8);
+    margin: 0;
+}
+
 .conflict-file-tabs {
     display: flex;
     flex-wrap: wrap;

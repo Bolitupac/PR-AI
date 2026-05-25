@@ -179,11 +179,13 @@ class VcsRepositoryController extends Controller
 
         $result = $service->getCommitDiff($connection, $repo, $commit);
         if (!$result['ok']) {
+            $status = (int) ($result['status'] ?? 500);
+
             return response()->json([
-                'message' => $this->vcsProviderManager->failureMessage($provider, $result['status'], 'Failed to load commit diff.'),
+                'message' => $this->vcsProviderManager->failureMessage($provider, $status, 'Failed to load commit diff.'),
                 'connect_url' => $this->vcsProviderManager->connectTarget($provider),
-                'auth_required' => true,
-            ], $result['status']);
+                'auth_required' => $status === 401,
+            ], $status);
         }
 
         return response($result['data'], 200, ['Content-Type' => 'text/plain; charset=utf-8']);
@@ -231,12 +233,15 @@ class VcsRepositoryController extends Controller
 
         $result = $service->getMergeConflicts($connection, $repo, $pullNumber);
         if (!$result['ok']) {
+            $status = (int) ($result['status'] ?? 500);
+
             return response()->json([
                 'ok' => false,
-                'message' => $this->vcsProviderManager->failureMessage($provider, $result['status'], 'Failed to load merge conflicts.'),
+                'message' => $result['message']
+                    ?? $this->vcsProviderManager->failureMessage($provider, $status, 'Failed to load merge conflicts.'),
                 'connect_url' => $this->vcsProviderManager->connectTarget($provider),
-                'auth_required' => true,
-            ], $result['status']);
+                'auth_required' => $status === 401,
+            ], $status);
         }
 
         return response()->json(['ok' => true, 'data' => $result['data']]);

@@ -1,5 +1,6 @@
 import { createInlineDiffCommentsController } from './diff-comments';
 import { initConflictViewer } from './conflict-viewer';
+import { isMetadataOnlyConflict } from './conflict-diff-text';
 
 function countDifferences(diffText) {
     if (!diffText) return 0;
@@ -66,6 +67,7 @@ export function initDiffViewer() {
     const container = document.getElementById('diff2html-container');
     const conflictContainer = document.getElementById('conflict-viewer-container');
     const badge = document.getElementById('diff-count-badge');
+    const modeBadge = document.getElementById('diff-mode-badge');
     const commentBadge = document.getElementById('diff-comment-badge');
     const formatSelect = document.getElementById('diff-format-select');
     const expandButton = document.getElementById('diff-comments-expand-btn');
@@ -75,6 +77,7 @@ export function initDiffViewer() {
     const conflictViewer = initConflictViewer(conflictContainer);
 
     let currentDiffText = '';
+    let currentConflictData = null;
     let currentOutputFormat = formatSelect.value || 'side-by-side';
     let currentComments = [];
     let currentAiComments = [];
@@ -100,9 +103,18 @@ export function initDiffViewer() {
         const diffCount = currentMode === 'conflict'
             ? (currentDiffText.match(/<<<<<<<|=======|>>>>>>>/g) || []).length
             : countDifferences(currentDiffText);
+        const conflictLabel = currentMode === 'conflict' && isMetadataOnlyConflict(currentConflictData)
+            ? 'Metadata only'
+            : 'Conflict view';
         const allComments = [...currentComments, ...currentAiComments];
         const commentCount = allComments.filter((comment) => comment?.path && Number.isInteger(comment?.line)).length;
-        badge.textContent = currentMode === 'conflict' ? `${diffCount} Conflict markers` : `${diffCount} Differences`;
+        if (modeBadge) {
+            modeBadge.textContent = currentMode === 'conflict' ? conflictLabel : '';
+            modeBadge.hidden = currentMode !== 'conflict';
+        }
+        badge.textContent = currentMode === 'conflict'
+            ? (isMetadataOnlyConflict(currentConflictData) ? 'No API hunks' : `${diffCount} Conflict markers`)
+            : `${diffCount} Differences`;
         commentBadge.textContent = `${commentCount} Comments`;
         const hasComments = commentsController.getThreadCount() > 0;
         expandButton.disabled = !hasComments || currentMode === 'conflict';
@@ -145,6 +157,7 @@ export function initDiffViewer() {
 
     document.addEventListener('auditor:diff-selected', function (event) {
         currentMode = 'standard';
+        currentConflictData = null;
         currentDiffText = event?.detail?.diffText || '';
         currentComments = Array.isArray(event?.detail?.comments) ? event.detail.comments : [];
         currentAiComments = [];
@@ -169,10 +182,11 @@ export function initDiffViewer() {
 
     document.addEventListener('auditor:conflicts-selected', function (event) {
         currentMode = 'conflict';
+        currentConflictData = event?.detail?.conflictData || null;
         currentDiffText = event?.detail?.diffText || '';
         currentComments = [];
         currentAiComments = [];
-        conflictViewer.render(event?.detail?.conflictData || {});
+        conflictViewer.render(currentConflictData || {});
         setDiffMode('conflict');
         updateCommentUi();
 

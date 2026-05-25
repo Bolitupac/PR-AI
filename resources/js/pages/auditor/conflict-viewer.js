@@ -7,16 +7,52 @@ function escapeHtml(value) {
         .replaceAll("'", '&#39;');
 }
 
+function renderMetadataOnlyPanel(conflictData) {
+    const commands = (conflictData?.suggested_git_commands || [])
+        .map((cmd) => `<li><code>${escapeHtml(cmd)}</code></li>`)
+        .join('');
+
+    return `
+        <div class="conflict-viewer conflict-viewer--metadata">
+            <div class="conflict-metadata-banner">
+                <strong>Metadata-only conflict</strong>
+                <p>${escapeHtml(conflictData?.message || 'This pull request is reported as conflicted, but the provider API did not return line-level conflict hunks.')}</p>
+            </div>
+            <dl class="conflict-metadata-facts">
+                <dt>Repository</dt><dd>${escapeHtml(conflictData?.repo || '—')}</dd>
+                <dt>PR / MR</dt><dd>#${escapeHtml(conflictData?.pr_number || '—')}</dd>
+                <dt>Title</dt><dd>${escapeHtml(conflictData?.title || '—')}</dd>
+                <dt>Base → Head</dt><dd><code>${escapeHtml(conflictData?.base_ref || '—')}</code> ← <code>${escapeHtml(conflictData?.head_ref || '—')}</code></dd>
+                <dt>mergeable_state</dt><dd><code>${escapeHtml(conflictData?.mergeable_state || '—')}</code></dd>
+                <dt>Source</dt><dd><code>${escapeHtml(conflictData?.conflict_source || 'metadata_only')}</code></dd>
+            </dl>
+            <div class="conflict-metadata-steps">
+                <h4>Resolve locally</h4>
+                <ol>
+                    <li>Fetch latest branches from the remote.</li>
+                    <li>Check out the head branch and merge (or rebase) onto the base branch.</li>
+                    <li>Your Git client will show real <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> markers—resolve those, then commit.</li>
+                    <li>Use <code>git merge --abort</code> if you need to undo the merge attempt.</li>
+                </ol>
+                ${commands ? `<ul class="conflict-metadata-commands">${commands}</ul>` : ''}
+            </div>
+            <p class="conflict-metadata-note">The AI audit below uses this metadata. It will not show a fake side-by-side conflict diff.</p>
+        </div>
+    `;
+}
+
 export function initConflictViewer(container) {
     if (!container) return { render: () => {}, clear: () => {} };
 
     let state = {
+        conflictData: null,
         files: [],
         activeFileIndex: 0,
         activeHunkIndex: 0,
     };
 
     const render = (conflictData = {}) => {
+        state.conflictData = conflictData;
         state.files = Array.isArray(conflictData.files) ? conflictData.files : [];
         state.activeFileIndex = 0;
         state.activeHunkIndex = 0;
@@ -24,23 +60,29 @@ export function initConflictViewer(container) {
     };
 
     const clear = () => {
+        state.conflictData = null;
         state.files = [];
         container.innerHTML = '<div class="diff-empty">No merge conflicts to display.</div>';
     };
 
     const draw = () => {
-        if (state.files.length === 0) {
-            container.innerHTML = '<div class="diff-empty">No conflict hunks parsed. The PR may still be unmergeable—check provider status.</div>';
+        const metadataOnly = state.conflictData?.has_hunks === false
+            || state.conflictData?.conflict_source === 'github_metadata_only'
+            || state.files.length === 0;
+
+        if (metadataOnly) {
+            container.innerHTML = renderMetadataOnlyPanel(state.conflictData || {});
             return;
         }
 
         const file = state.files[state.activeFileIndex];
-        const hunks = file.hunks || [];
+        const hunks = file?.hunks || [];
         const hunk = hunks[state.activeHunkIndex] || null;
 
         const fileTabs = state.files.map((entry, index) => {
             const active = index === state.activeFileIndex ? ' is-active' : '';
-            return `<button type="button" class="conflict-file-tab${active}" data-file-index="${index}">${escapeHtml(entry.path)} (${entry.conflict_count || hunks.length})</button>`;
+            const count = entry.conflict_count || (entry.hunks || []).length;
+            return `<button type="button" class="conflict-file-tab${active}" data-file-index="${index}">${escapeHtml(entry.path)} (${count})</button>`;
         }).join('');
 
         const hunkNav = hunks.length > 1
@@ -89,6 +131,7 @@ export function initConflictViewer(container) {
 
         const nav = event.target.closest('[data-hunk-nav]');
         if (!nav) return;
+
         const file = state.files[state.activeFileIndex];
         const max = (file?.hunks?.length || 1) - 1;
         if (nav.dataset.hunkNav === 'prev') {

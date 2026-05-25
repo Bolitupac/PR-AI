@@ -21,7 +21,7 @@ import { initAppsModal } from './document-generator/apps-modal';
 import { initDocGenMode } from './document-generator/doc-gen-mode';
 import { appendRepoParams, buildVcsUrl } from '../../shared/vcs-repo-query.js';
 import { createLoadingProgress } from './loading-progress';
-import { conflictPayloadToDiffText } from './conflict-diff-text';
+import { conflictPayloadToDiffText, isMetadataOnlyConflict } from './conflict-diff-text';
 import * as ImportsApi from '../imports/api';
 
 export function initAuditorPage() {
@@ -174,11 +174,14 @@ export function initAuditorPage() {
                             const diffText = conflictPayloadToDiffText(conflictData);
                             if (!diffText.trim()) {
                                 progress.stop();
-                                status.markError('No conflict markers found.');
-                                appendMessage('This merge request is conflicted but no parseable conflict hunks were returned. Try updating the branch or resolving locally.', 'ai');
+                                status.markError('No conflict data returned.');
+                                appendMessage('Could not build merge conflict context from the provider response.', 'ai');
                                 return;
                             }
-                            progress.stop('Conflicts loaded. Starting audit...');
+                            const label = isMetadataOnlyConflict(conflictData)
+                                ? 'Conflict metadata loaded. Starting audit...'
+                                : 'Conflicts loaded. Starting audit...';
+                            progress.stop(label);
                             dispatchDiff(diffText, [], conflictData);
                             status.remove(700);
                         })
