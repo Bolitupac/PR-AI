@@ -1,4 +1,5 @@
 import { createInlineDiffCommentsController } from './diff-comments';
+import { initConflictViewer } from './conflict-viewer';
 
 function countDifferences(diffText) {
     if (!diffText) return 0;
@@ -39,9 +40,31 @@ function drawDiff(container, diffText, outputFormat) {
     }
 }
 
+function setDiffMode(mode) {
+    const conflictContainer = document.getElementById('conflict-viewer-container');
+    const diffContainer = document.getElementById('diff2html-container');
+    const modeBadge = document.getElementById('diff-mode-badge');
+    const formatSelect = document.getElementById('diff-format-select');
+
+    const isConflict = mode === 'conflict';
+    if (conflictContainer) {
+        conflictContainer.classList.toggle('is-active', isConflict);
+    }
+    if (diffContainer) {
+        diffContainer.classList.toggle('is-hidden', isConflict);
+    }
+    if (modeBadge) {
+        modeBadge.hidden = !isConflict;
+    }
+    if (formatSelect) {
+        formatSelect.disabled = isConflict;
+    }
+}
+
 // Initializes the bottom diff viewer and listens for diff selection events.
 export function initDiffViewer() {
     const container = document.getElementById('diff2html-container');
+    const conflictContainer = document.getElementById('conflict-viewer-container');
     const badge = document.getElementById('diff-count-badge');
     const commentBadge = document.getElementById('diff-comment-badge');
     const formatSelect = document.getElementById('diff-format-select');
@@ -49,10 +72,13 @@ export function initDiffViewer() {
     const collapseButton = document.getElementById('diff-comments-collapse-btn');
     if (!container || !badge || !commentBadge || !formatSelect || !expandButton || !collapseButton) return;
 
+    const conflictViewer = initConflictViewer(conflictContainer);
+
     let currentDiffText = '';
     let currentOutputFormat = formatSelect.value || 'side-by-side';
     let currentComments = [];
     let currentAiComments = [];
+    let currentMode = 'standard';
     const commentsController = createInlineDiffCommentsController(container);
     let refreshFrame = null;
 
@@ -71,17 +97,26 @@ export function initDiffViewer() {
     };
 
     const updateCommentUi = () => {
-        const diffCount = countDifferences(currentDiffText);
+        const diffCount = currentMode === 'conflict'
+            ? (currentDiffText.match(/<<<<<<<|=======|>>>>>>>/g) || []).length
+            : countDifferences(currentDiffText);
         const allComments = [...currentComments, ...currentAiComments];
         const commentCount = allComments.filter((comment) => comment?.path && Number.isInteger(comment?.line)).length;
-        badge.textContent = `${diffCount} Differences`;
+        badge.textContent = currentMode === 'conflict' ? `${diffCount} Conflict markers` : `${diffCount} Differences`;
         commentBadge.textContent = `${commentCount} Comments`;
         const hasComments = commentsController.getThreadCount() > 0;
-        expandButton.disabled = !hasComments;
-        collapseButton.disabled = !hasComments;
+        expandButton.disabled = !hasComments || currentMode === 'conflict';
+        collapseButton.disabled = !hasComments || currentMode === 'conflict';
     };
 
     const renderCurrentDiff = () => {
+        if (currentMode === 'conflict') {
+            setDiffMode('conflict');
+            updateCommentUi();
+            return;
+        }
+
+        setDiffMode('standard');
         drawDiff(container, currentDiffText, currentOutputFormat);
         commentsController.render({
             diffText: currentDiffText,
@@ -109,16 +144,18 @@ export function initDiffViewer() {
     });
 
     document.addEventListener('auditor:diff-selected', function (event) {
+        currentMode = 'standard';
         currentDiffText = event?.detail?.diffText || '';
         currentComments = Array.isArray(event?.detail?.comments) ? event.detail.comments : [];
         currentAiComments = [];
+        conflictViewer.clear();
         renderCurrentDiff();
-        
+
         const scrollBtn = document.getElementById('diff-ready-scroll-btn');
         if (scrollBtn && currentDiffText) {
             scrollBtn.style.display = 'block';
             setTimeout(() => scrollBtn.style.opacity = '1', 10);
-            
+
             scrollBtn.onclick = () => {
                 const diffSection = document.getElementById('diff2html-container');
                 if (diffSection) {
@@ -130,9 +167,32 @@ export function initDiffViewer() {
         }
     });
 
+    document.addEventListener('auditor:conflicts-selected', function (event) {
+        currentMode = 'conflict';
+        currentDiffText = event?.detail?.diffText || '';
+        currentComments = [];
+        currentAiComments = [];
+        conflictViewer.render(event?.detail?.conflictData || {});
+        setDiffMode('conflict');
+        updateCommentUi();
+
+        const scrollBtn = document.getElementById('diff-ready-scroll-btn');
+        if (scrollBtn) {
+            scrollBtn.style.display = 'block';
+            setTimeout(() => scrollBtn.style.opacity = '1', 10);
+            scrollBtn.onclick = () => {
+                conflictContainer?.scrollIntoView({ behavior: 'smooth' });
+                scrollBtn.style.opacity = '0';
+                setTimeout(() => scrollBtn.style.display = 'none', 200);
+            };
+        }
+    });
+
     document.addEventListener('auditor:ai-comments-updated', function (event) {
         currentAiComments = Array.isArray(event?.detail?.comments) ? event.detail.comments : [];
-        renderCurrentDiff();
+        if (currentMode === 'standard') {
+            renderCurrentDiff();
+        }
     });
 
     document.addEventListener('auditor:theme-changed', () => {
@@ -140,7 +200,9 @@ export function initDiffViewer() {
     });
 
     const observer = new MutationObserver(() => {
-        scheduleCommentRefresh();
+        if (currentMode === 'standard') {
+            scheduleCommentRefresh();
+        }
     });
 
     observer.observe(container, {

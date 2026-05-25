@@ -299,6 +299,16 @@ class AzureDevOpsVcsProvider implements VcsProviderInterface
         return $this->buildDiffFromVersions($connection, $repo, $parentId, 'commit', $commit, 'commit');
     }
 
+    public function getRecentMergeConflicts(array $connection, int $limit = 10): array
+    {
+        return ['ok' => false, 'status' => 501, 'message' => 'Merge conflict import is not supported for Azure DevOps yet.', 'data' => []];
+    }
+
+    public function getMergeConflicts(array $connection, array $repo, string $pullNumber): array
+    {
+        return ['ok' => false, 'status' => 501, 'message' => 'Merge conflict import is not supported for Azure DevOps yet.', 'data' => []];
+    }
+
     private function buildDiffFromVersions(array $connection, array $repo, string $baseVersion, string $baseType, string $targetVersion, string $targetType): array
     {
         $diffResponse = $this->client($connection)->get($this->repositoryApiBase($connection, $repo).'/diffs/commits', [

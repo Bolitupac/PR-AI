@@ -269,6 +269,16 @@ class BitbucketVcsProvider implements VcsProviderInterface
         return ['ok' => false, 'status' => 501, 'message' => 'Commit diffs are not supported for Bitbucket yet.'];
     }
 
+    public function getRecentMergeConflicts(array $connection, int $limit = 10): array
+    {
+        return ['ok' => false, 'status' => 501, 'message' => 'Merge conflict import is not supported for Bitbucket yet.', 'data' => []];
+    }
+
+    public function getMergeConflicts(array $connection, array $repo, string $pullNumber): array
+    {
+        return ['ok' => false, 'status' => 501, 'message' => 'Merge conflict import is not supported for Bitbucket yet.', 'data' => []];
+    }
+
     private function getComments(array $connection, array $repo, string $pullNumber): array
     {
         [$workspace, $slug] = $this->repoParts($connection, $repo);

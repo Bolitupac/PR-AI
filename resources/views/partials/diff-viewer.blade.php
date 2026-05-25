@@ -9,10 +9,12 @@
                     <option value="side-by-side" selected>Side by side</option>
                     <option value="line-by-line">Top / Bottom</option>
                 </select>
+                <span class="badge-total" id="diff-mode-badge" hidden>Conflict view</span>
                 <span class="badge-total" id="diff-count-badge">0 Differences</span>
                 <span class="badge-total" id="diff-comment-badge">0 Comments</span>
             </div>
         </div>
+        <div id="conflict-viewer-container"></div>
         <div id="diff2html-container"></div>
         <div class="diff-comments-overlay" id="diff-comments-overlay" aria-hidden="true"></div>
     </div>

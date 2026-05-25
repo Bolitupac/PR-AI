@@ -21,6 +21,8 @@ import { initAppsModal } from './document-generator/apps-modal';
 import { initDocGenMode } from './document-generator/doc-gen-mode';
 import { appendRepoParams, buildVcsUrl } from '../../shared/vcs-repo-query.js';
 import { createLoadingProgress } from './loading-progress';
+import { conflictPayloadToDiffText } from './conflict-diff-text';
+import * as ImportsApi from '../imports/api';
 
 export function initAuditorPage() {
     if (!document.getElementById('ai-response-area')) return;
@@ -120,9 +122,27 @@ export function initAuditorPage() {
 
             // Small delay to ensure all listeners (auto-audit.js) are ready
             setTimeout(() => {
-                const dispatchDiff = (diffText, comments = []) => {
+                const dispatchDiff = (diffText, comments = [], conflictData = null) => {
                     const compareType = data?.compareType
                         || (data?.prNumber ? 'pull_request' : (data?.commitHash ? 'commit' : (data?.branch && data?.base ? 'branch_vs_main' : 'upload')));
+
+                    if (data?.auditKind === 'merge_conflict_audit' && conflictData) {
+                        document.dispatchEvent(new CustomEvent('auditor:conflicts-selected', {
+                            detail: {
+                                ...data,
+                                diffText: diffText || '',
+                                conflictData,
+                                compareType: 'merge_conflict',
+                                baseBranch: data?.base || conflictData?.base_ref || null,
+                                headBranch: data?.branch || conflictData?.head_ref || null,
+                                prTitle: data?.prTitle || conflictData?.title || null,
+                                auditTitle: data?.auditTitle || null,
+                                auditKind: data?.auditKind || 'merge_conflict_audit',
+                            },
+                        }));
+                        return;
+                    }
+
                     document.dispatchEvent(new CustomEvent('auditor:diff-selected', {
                         detail: {
                             ...data,
@@ -137,6 +157,38 @@ export function initAuditorPage() {
                         }
                     }));
                 };
+
+                if (data?.auditKind === 'merge_conflict_audit' && data?.repo && data?.prNumber) {
+                    const status = createChatStatus({ container: responseArea, anchorNode: null });
+                    const progress = createLoadingProgress({
+                        onUpdate: (text) => status.set(text),
+                        label: 'Fetching merge conflicts',
+                    });
+                    const provider = data?.provider || data?.source || 'github';
+                    const repoPayload = {
+                        full_name: data.repo,
+                        provider_repo_id: data.repoId || null,
+                    };
+                    ImportsApi.fetchMergeConflicts(vcsApiBase, provider, repoPayload, data.prNumber)
+                        .then((conflictData) => {
+                            const diffText = conflictPayloadToDiffText(conflictData);
+                            if (!diffText.trim()) {
+                                progress.stop();
+                                status.markError('No conflict markers found.');
+                                appendMessage('This merge request is conflicted but no parseable conflict hunks were returned. Try updating the branch or resolving locally.', 'ai');
+                                return;
+                            }
+                            progress.stop('Conflicts loaded. Starting audit...');
+                            dispatchDiff(diffText, [], conflictData);
+                            status.remove(700);
+                        })
+                        .catch((error) => {
+                            progress.stop();
+                            status.markError('Failed to load conflicts.');
+                            appendMessage(error?.message || 'Could not load merge conflicts from the provider.', 'ai');
+                        });
+                    return;
+                }
 
                 if (data?.diffText) {
                     dispatchDiff(data.diffText, data?.comments || []);

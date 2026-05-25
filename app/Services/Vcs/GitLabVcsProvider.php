@@ -6,8 +6,10 @@ use Illuminate\Support\Facades\Http;
 
 class GitLabVcsProvider implements VcsProviderInterface
 {
-    public function __construct(private readonly UnifiedDiffBuilder $diffBuilder)
-    {
+    public function __construct(
+        private readonly UnifiedDiffBuilder $diffBuilder,
+        private readonly MergeConflictParser $mergeConflictParser,
+    ) {
     }
 
     public function key(): string
@@ -335,6 +337,110 @@ class GitLabVcsProvider implements VcsProviderInterface
         $diff = $this->diffBuilder->fromEntries($response->json() ?? []);
 
         return ['ok' => true, 'status' => 200, 'data' => $diff];
+    }
+
+    public function getRecentMergeConflicts(array $connection, int $limit = 10): array
+    {
+        $limit = max(1, min(15, $limit));
+
+        $response = $this->client($connection)->get($this->apiBase($connection).'/merge_requests', [
+            'scope' => 'created_by_me',
+            'state' => 'opened',
+            'per_page' => 50,
+            'order_by' => 'updated_at',
+            'sort' => 'desc',
+        ]);
+
+        if ($response->failed()) {
+            return ['ok' => false, 'status' => $response->status(), 'data' => []];
+        }
+
+        $conflicts = collect($response->json() ?? [])
+            ->filter(function (array $mr) {
+                $status = (string) ($mr['merge_status'] ?? '');
+                $detailed = (string) ($mr['detailed_merge_status'] ?? '');
+
+                return $status === 'cannot_be_merged'
+                    || str_contains(strtolower($detailed), 'conflict');
+            })
+            ->take($limit)
+            ->map(function (array $mr) {
+                $fullReference = (string) ($mr['references']['full'] ?? '');
+                $repo = $fullReference !== '' && str_contains($fullReference, '!')
+                    ? explode('!', $fullReference, 2)[0]
+                    : '';
+
+                return [
+                    'repo' => $repo,
+                    'repo_id' => isset($mr['project_id']) ? (string) $mr['project_id'] : null,
+                    'number' => $mr['iid'] ?? null,
+                    'title' => $mr['title'] ?? '',
+                    'state' => $this->normalizeState((string) ($mr['state'] ?? 'opened')),
+                    'updated_at' => $mr['updated_at'] ?? null,
+                    'author' => $mr['author']['username'] ?? $mr['author']['name'] ?? '',
+                    'base_ref' => $mr['target_branch'] ?? '',
+                    'head_ref' => $mr['source_branch'] ?? '',
+                    'mergeable_state' => $mr['detailed_merge_status'] ?? $mr['merge_status'] ?? '',
+                ];
+            })
+            ->filter(fn (array $row) => $row['repo'] !== '' && !empty($row['number']))
+            ->values()
+            ->all();
+
+        return ['ok' => true, 'status' => 200, 'data' => $conflicts];
+    }
+
+    public function getMergeConflicts(array $connection, array $repo, string $pullNumber): array
+    {
+        $mrResponse = $this->client($connection)->get($this->projectPath($connection, $repo).'/merge_requests/'.$pullNumber);
+        if ($mrResponse->failed()) {
+            return ['ok' => false, 'status' => $mrResponse->status(), 'data' => []];
+        }
+
+        $mr = $mrResponse->json();
+        $baseRef = (string) ($mr['target_branch'] ?? '');
+        $headRef = (string) ($mr['source_branch'] ?? '');
+
+        $conflictsResponse = $this->client($connection)->get(
+            $this->projectPath($connection, $repo).'/merge_requests/'.$pullNumber.'/conflicts'
+        );
+
+        $rawFiles = [];
+        if ($conflictsResponse->ok()) {
+            foreach ($conflictsResponse->json() ?? [] as $entry) {
+                $path = (string) ($entry['file_path'] ?? $entry['new_path'] ?? '');
+                $content = (string) ($entry['content'] ?? '');
+                if ($path !== '' && $content !== '') {
+                    $rawFiles[] = ['path' => $path, 'content' => $content];
+                }
+            }
+        }
+
+        $files = $this->mergeConflictParser->parseFiles($rawFiles);
+
+        return [
+            'ok' => true,
+            'status' => 200,
+            'data' => [
+                'repo' => (string) ($repo['repo'] ?? ''),
+                'repo_id' => $repo['repo_id'] ?? null,
+                'pr_number' => $pullNumber,
+                'title' => $mr['title'] ?? '',
+                'base_ref' => $baseRef,
+                'head_ref' => $headRef,
+                'has_conflicts' => $files !== [] || ($mr['merge_status'] ?? '') === 'cannot_be_merged',
+                'mergeable_state' => $mr['detailed_merge_status'] ?? $mr['merge_status'] ?? null,
+                'files' => $files,
+                'suggested_git_commands' => [
+                    'git fetch origin',
+                    "git checkout {$headRef}",
+                    "git merge origin/{$baseRef}",
+                    '# Resolve conflict markers, then:',
+                    'git add .',
+                    'git commit',
+                ],
+            ],
+        ];
     }
 
     /**

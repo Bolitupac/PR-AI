@@ -93,4 +93,18 @@ class GitHubVcsProvider implements VcsProviderInterface
     {
         return $this->gitHubApiService->getCommitDiff((string) $connection['token'], (string) ($repo['repo'] ?? ''), $commit);
     }
+
+    public function getRecentMergeConflicts(array $connection, int $limit = 10): array
+    {
+        return $this->gitHubApiService->getRecentMergeConflicts((string) $connection['token'], $limit);
+    }
+
+    public function getMergeConflicts(array $connection, array $repo, string $pullNumber): array
+    {
+        return $this->gitHubApiService->getMergeConflicts(
+            (string) $connection['token'],
+            (string) ($repo['repo'] ?? ''),
+            $pullNumber
+        );
+    }
 }

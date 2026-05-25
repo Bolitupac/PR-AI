@@ -50,6 +50,19 @@ export async function fetchRecentCommits(apiBase, provider) {
     return data.commits || data.data || [];
 }
 
+export async function fetchRecentMergeConflicts(apiBase, provider) {
+    const data = await fetchJson(buildVcsUrl(apiBase, provider, 'recent-merge-conflicts'), 'Failed to fetch merge conflicts');
+    return data.conflicts || data.data || [];
+}
+
+export async function fetchMergeConflicts(apiBase, provider, repo, prNumber) {
+    const url = new URL(buildVcsUrl(apiBase, provider, 'merge-conflicts'), window.location.origin);
+    appendRepoParams(url, repo);
+    url.searchParams.set('pr_number', String(prNumber));
+    const data = await fetchJson(url.toString(), 'Failed to fetch merge conflict details');
+    return data.data || data;
+}
+
 export async function fetchPullDiff(apiBase, provider, repo, prNumber) {
     const url = new URL(buildVcsUrl(apiBase, provider, 'pull-diff'), window.location.origin);
     appendRepoParams(url, repo);

@@ -15,7 +15,9 @@ export function buildAuditMetadata(detail = {}) {
 
     let auditKind = normalizeText(detail.auditKind ?? detail.audit_kind);
     if (!auditKind) {
-        if (prNumber) {
+        if (normalizeText(detail.compareType) === 'merge_conflict') {
+            auditKind = 'merge_conflict_audit';
+        } else if (prNumber) {
             auditKind = 'pull_request_audit';
         } else if (compareType === 'branch_vs_main' || (headBranch && baseBranch)) {
             auditKind = 'branch_audit';
@@ -34,6 +36,8 @@ export function buildAuditMetadata(detail = {}) {
             auditTitle = `${repo} pull request audit ${prTitle || `#${prNumber}`}`.trim();
         } else if (auditKind === 'branch_audit') {
             auditTitle = `${repo} branch audit ${headBranch}`.trim();
+        } else if (auditKind === 'merge_conflict_audit') {
+            auditTitle = `${repo} merge conflict ${prTitle || `#${prNumber}`}`.trim();
         } else if (fileName) {
             auditTitle = `${fileName} ${auditKind.replaceAll('_', ' ')}`.trim();
         } else {

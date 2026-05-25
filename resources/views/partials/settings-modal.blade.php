@@ -567,7 +567,7 @@
                             <li>Choose a provider (GitHub, GitLab, Bitbucket, Azure)</li>
                             <li>You'll be redirected to the <strong>Imports page</strong></li>
                         </ol>
-                        <p><strong>On the Imports Page:</strong> The Recent Pull Requests panel (left) shows your latest PRs. The Recent Commits panel shows recent commits. The main panel displays all your repositories.</p>
+                        <p><strong>On the Imports Page:</strong> The left column lists <strong>Recent Pull Requests</strong>, <strong>Recent Commits</strong>, and <strong>Merge Conflicts</strong>. Click <strong>Import</strong> on a conflicted PR/MR to open the Auditor with a conflict viewer, AI explanation, Mermaid diagram, and a copyable agent fix prompt.</p>
                         <p>Click on a repository to expand it and see Branches, Pull Requests, and Commits.</p>
 
                         <h4>GitHub and GitLab sign-in</h4>

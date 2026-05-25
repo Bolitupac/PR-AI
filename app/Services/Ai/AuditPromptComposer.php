@@ -25,6 +25,11 @@ class AuditPromptComposer
         $issueComments = (array) ($input['issue_comments'] ?? []);
         $reviewComments = (array) ($input['review_comments'] ?? []);
         $diffText = (string) ($input['diff_text'] ?? '');
+        $conflictPayload = (array) ($input['conflict_payload'] ?? []);
+
+        if (($input['audit_kind'] ?? '') === 'merge_conflict_audit') {
+            return $this->composeMergeConflictAudit($input, $conflictPayload);
+        }
 
         $parts = [];
         $parts[] = 'AUDIT TITLE: '.$auditTitle;
@@ -112,6 +117,57 @@ class AuditPromptComposer
         $parts[] = 'Use side RIGHT for new/current code comments and LEFT for old/removed code comments.';
         $parts[] = 'If there are no strong inline suggestions, return an empty array in the INLINE_COMMENTS block.';
         $parts[] = 'Do not mention the INLINE_COMMENTS block anywhere in the visible review prose.';
+        $parts[] = '';
+        $parts[] = 'MERGE CONFLICT RISK: Always include a section titled "Merge Conflict Risk" with risk level (low, medium, high, or active_conflicts).';
+        $parts[] = 'Explain whether merging this change into the base branch could conflict (overlapping edits, same files/lines, incompatible refactors).';
+        $parts[] = 'If the raw diff contains <<<<<<< conflict markers, set risk to active_conflicts and explain each affected file and line range.';
+        $parts[] = '';
+        $parts[] = 'After the visible review, append [AGENT_FIX_PROMPT] JSON with keys: title, prompt, files (array of {path, lines, action}). Close with [/AGENT_FIX_PROMPT].';
+        $parts[] = 'The prompt field must be a long, copy-paste-ready instruction for Cursor/Codex including exact code snippets and git commands when fixes are needed.';
+        $parts[] = 'Do not mention the AGENT_FIX_PROMPT block in visible prose.';
+
+        return implode(PHP_EOL, $parts);
+    }
+
+    /**
+     * @param  array<string, mixed>  $input
+     * @param  array<string, mixed>  $conflictPayload
+     */
+    private function composeMergeConflictAudit(array $input, array $conflictPayload): string
+    {
+        $repo = (string) ($input['repo'] ?? 'N/A');
+        $prNumber = (string) ($input['pr_number'] ?? 'N/A');
+        $baseBranch = (string) ($input['base_branch'] ?? 'N/A');
+        $headBranch = (string) ($input['head_branch'] ?? 'N/A');
+        $auditTitle = (string) ($input['audit_title'] ?? 'Merge conflict audit');
+        $prTitle = (string) ($input['pr_title'] ?? 'N/A');
+        $diffText = (string) ($input['diff_text'] ?? '');
+
+        $parts = [];
+        $parts[] = 'AUDIT KIND: merge_conflict_audit';
+        $parts[] = 'AUDIT TITLE: '.$auditTitle;
+        $parts[] = 'REPO: '.$repo;
+        $parts[] = 'PR/MR NUMBER: '.$prNumber;
+        $parts[] = 'PR TITLE: '.$prTitle;
+        $parts[] = 'BASE BRANCH: '.$baseBranch;
+        $parts[] = 'HEAD BRANCH: '.$headBranch;
+        $parts[] = '';
+        $parts[] = 'MERGE CONFLICT PAYLOAD (structured):';
+        $parts[] = json_encode($conflictPayload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) ?: '{}';
+        $parts[] = '';
+        $parts[] = 'RAW CONFLICT DIFF TEXT:';
+        $parts[] = $diffText;
+        $parts[] = '';
+        $parts[] = 'INSTRUCTIONS:';
+        $parts[] = '1. Explain what caused these merge conflicts in plain language (branch divergence, parallel edits, etc.).';
+        $parts[] = '2. List every conflicted file with exact line ranges and quote the OURS vs THEIRS snippets from the payload.';
+        $parts[] = '3. Provide numbered remediation steps for the human (git merge --abort, fetch, rebase/merge, resolve, add, commit, push).';
+        $parts[] = '4. Include a Mermaid flowchart TD diagram showing the conflict resolution flow (base, head, conflict hunks, resolution).';
+        $parts[] = '5. Start the visible response with the audit title as the first heading.';
+        $parts[] = '';
+        $parts[] = 'After the visible review, append [AGENT_FIX_PROMPT] with JSON: {title, prompt, files:[{path, lines, action}]}.';
+        $parts[] = 'The prompt must be VERY detailed for an AI coding agent (Cursor/Codex): include repository, branches, per-file code blocks with conflict markers, desired outcome, acceptance criteria, and git commands.';
+        $parts[] = 'Close with [/AGENT_FIX_PROMPT]. Do not mention this block in visible prose.';
 
         return implode(PHP_EOL, $parts);
     }
@@ -233,12 +289,21 @@ class AuditPromptComposer
             ]);
         }
 
+        if ($auditKind === 'merge_conflict_audit') {
+            return [
+                'AUDIT CONTEXT: Active merge conflicts must be resolved before integration.',
+                'FOCUS: Conflict root cause, affected lines, safe resolution strategy, and agent-ready fix instructions.',
+                'Include remediation git commands and warn about force-push risks when relevant.',
+            ];
+        }
+
         if ($auditKind === 'pull_request_audit') {
             return array_merge($base, [
                 'AUDIT CONTEXT: This is a pull request audit before or during review.',
                 'FOCUS: Merge readiness, correctness, security risk, and required fixes before approval.',
                 'VAPT FOCUS: Conduct a full white-box penetration test against the changed code. Trace every new data input from source to sink. Check for injection, auth bypass, privilege escalation, and data exposure.',
                 'Pay special attention to A03 (injection), A01 (access control), and A07 (auth failures) for PR-level changes touching API or auth code.',
+                'Always assess merge conflict risk even if markers are not present.',
             ]);
         }
 

@@ -79,7 +79,8 @@ Both providers support the same Imports and Auditor flows when the user is signe
 | PR/MR diff → Auditor | Yes | Yes |
 | Branch compare diff | Yes | Yes |
 | Commit diff → Auditor | Yes | Yes (`/api/vcs/{provider}/commit-diff`) |
-| AI audit + chat | Yes | Yes |
+| Merge conflict import | Yes | Yes (Imports **Merge Conflicts** panel → conflict viewer + audit) |
+| AI audit + chat | Yes | Yes (includes **Merge Conflict Risk** on normal PR/branch audits) |
 
 Commit audits load diffs from the **remote provider API**, not from a local `git show` in the app container (legacy `/api/git/commit-diff` remains for local-only use).
 

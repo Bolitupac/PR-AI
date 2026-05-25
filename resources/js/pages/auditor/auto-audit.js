@@ -4,6 +4,7 @@ import { renderMermaidIn } from './mermaid';
 import { chatContextStore } from './chat-context-store';
 import { buildAuditMetadata, stripLeadingAuditTitle } from './audit-metadata';
 import { extractInlineComments, stripInlineCommentsBlock } from './ai-inline-comments';
+import { extractAgentFixPrompt, renderAgentPromptBox, stripAgentFixPromptBlock } from './agent-prompt-box';
 import { attachFollowUpSuggestions, clearFollowUpSuggestions, fetchFollowUpSuggestions } from './chat-followups';
 import { sendTextToChat } from './chat-input';
 
@@ -159,7 +160,7 @@ export function initAutoAudit() {
         return String(text).replace(/\[AUDIT_META\][\s\S]*?\[\/AUDIT_META\]/gi, '').trim();
     };
 
-    const stripHiddenBlocks = (text) => stripInlineCommentsBlock(stripAuditMeta(text));
+    const stripHiddenBlocks = (text) => stripAgentFixPromptBlock(stripInlineCommentsBlock(stripAuditMeta(text)));
 
     const parseSseBlock = (blockText) => {
         const lines = String(blockText || '').split('\n');
@@ -187,8 +188,7 @@ export function initAutoAudit() {
         return { eventName, payload, payloadRaw };
     };
 
-    document.addEventListener('auditor:diff-selected', async (event) => {
-        const detail = event?.detail || {};
+    const runAutoAudit = async (detail = {}) => {
         const diffText = detail.diffText || '';
         if (!diffText.trim()) return;
 
@@ -233,6 +233,7 @@ export function initAutoAudit() {
                     audit_status: auditMeta.auditStatus || null,
                     file_name: detail.name || null,
                     diff_text: diffText,
+                    conflict_payload: detail.conflictData || undefined,
                     model: model || undefined,
                 }),
             });
@@ -323,12 +324,16 @@ export function initAutoAudit() {
             }
 
             const aiInlineComments = extractInlineComments(fullReply);
+            const agentFix = extractAgentFixPrompt(fullReply);
             const cleanReply = stripLeadingAuditTitle(
-                stripHiddenBlocks(fullReply || 'No audit response from AI.'),
+                stripHiddenBlocks(agentFix.visibleText || fullReply || 'No audit response from AI.'),
                 auditMeta.auditTitle
             );
             replyNode.innerHTML = renderChatMarkdown(cleanReply);
             renderMermaidIn(replyNode);
+            if (agentFix.prompt) {
+                renderAgentPromptBox(responseArea, agentFix.prompt, agentFix.title);
+            }
             chatContextStore.push('assistant', `Audit summary:\n${cleanReply}`);
             const scoreCardNode = appendScoreCard(doneMeta, auditMeta);
             const requestId = ++followUpRequestId;
@@ -357,5 +362,16 @@ export function initAutoAudit() {
             status.markError('Audit failed.');
             appendMessage('Could not reach audit service.', 'ai');
         }
+    };
+
+    document.addEventListener('auditor:diff-selected', (event) => {
+        if (event?.detail?.auditKind === 'merge_conflict_audit') {
+            return;
+        }
+        runAutoAudit(event?.detail || {});
+    });
+
+    document.addEventListener('auditor:conflicts-selected', (event) => {
+        runAutoAudit(event?.detail || {});
     });
 }

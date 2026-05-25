@@ -31,4 +31,14 @@ interface VcsProviderInterface
     public function getBranchDiff(array $connection, array $repo, string $base, string $head): array;
 
     public function getCommitDiff(array $connection, array $repo, string $commit): array;
+
+    /**
+     * @return array{ok:bool,status:int,data:array<int,array<string,mixed>>,message?:string}
+     */
+    public function getRecentMergeConflicts(array $connection, int $limit = 10): array;
+
+    /**
+     * @return array{ok:bool,status:int,data:array<string,mixed>,message?:string}
+     */
+    public function getMergeConflicts(array $connection, array $repo, string $pullNumber): array;
 }

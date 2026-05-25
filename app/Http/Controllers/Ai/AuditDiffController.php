@@ -46,6 +46,7 @@ class AuditDiffController extends Controller
             'context' => ['nullable', 'string', 'max:4000'],
             'file_name' => ['nullable', 'string', 'max:255'],
             'diff_text' => ['required', 'string', 'max:10000000'],
+            'conflict_payload' => ['nullable', 'array'],
             'model' => ['nullable', 'string', 'max:120'],
         ]);
 
@@ -58,6 +59,7 @@ class AuditDiffController extends Controller
         $auditTitle = (string) ($payload['audit_title'] ?? '');
         $auditKind = (string) ($payload['audit_kind'] ?? '');
         $auditStatus = (string) ($payload['audit_status'] ?? '');
+        $conflictPayload = (array) ($payload['conflict_payload'] ?? []);
         $diffText = $this->truncateDiffIfNeeded((string) $payload['diff_text'], $auditTitle);
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
         $prTitle = (string) ($payload['pr_title'] ?? '');
@@ -121,6 +123,7 @@ class AuditDiffController extends Controller
             'issue_comments' => $issueComments,
             'review_comments' => $reviewComments,
             'diff_text' => $diffText,
+            'conflict_payload' => $conflictPayload,
         ]);
 
         $systemPrompt = (string) config('audit_ai.system_prompt');
@@ -262,11 +265,12 @@ class AuditDiffController extends Controller
             'issue_comments' => $issueComments,
             'review_comments' => $reviewComments,
             'diff_text' => $diffText,
+            'conflict_payload' => $conflictPayload,
         ]);
 
         $systemPrompt = (string) config('audit_ai.system_prompt');
 
-        return response()->stream(function () use ($source, $repo, $prNumber, $compareType, $baseBranch, $headBranch, $auditTitle, $auditKind, $auditStatus, $prTitle, $prDescription, $linkedIssues, $contextNote, $payload, $diffText, $issueComments, $reviewComments, $systemPrompt, $userPrompt, $selectedModel): void {
+        return response()->stream(function () use ($source, $repo, $prNumber, $compareType, $baseBranch, $headBranch, $auditTitle, $auditKind, $auditStatus, $prTitle, $prDescription, $linkedIssues, $contextNote, $payload, $diffText, $conflictPayload, $issueComments, $reviewComments, $systemPrompt, $userPrompt, $selectedModel): void {
             @ini_set('output_buffering', 'off');
             @ini_set('zlib.output_compression', '0');
             @set_time_limit(0);

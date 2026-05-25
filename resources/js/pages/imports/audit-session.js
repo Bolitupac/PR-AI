@@ -49,6 +49,42 @@ export function buildBranchAuditPayload({ provider = 'upload', repo, branchName,
     };
 }
 
+export function buildMergeConflictAuditPayload({
+    provider = 'github',
+    repo,
+    prNumber,
+    title,
+    repoId = null,
+    baseBranch = 'main',
+    headBranch = '',
+    project = null,
+    organization = null,
+    workspace = null,
+    repoSlug = null,
+}) {
+    const safeTitle = String(title || '').trim();
+    return {
+        source: provider,
+        provider,
+        repo,
+        repoId,
+        project,
+        organization,
+        workspace,
+        repoSlug,
+        prNumber: String(prNumber || ''),
+        prTitle: safeTitle,
+        auditStatus: 'conflicted',
+        name: `${repo} MR/PR#${prNumber}: ${safeTitle}`,
+        auditTitle: `${repo} merge conflict ${safeTitle || `#${prNumber}`}`.trim(),
+        auditKind: 'merge_conflict_audit',
+        compareType: 'merge_conflict',
+        branch: headBranch || null,
+        base: baseBranch || null,
+        commitHash: null,
+    };
+}
+
 export function buildCommitAuditPayload({ provider = 'import', repo, commitHash, title, repoId = null, project = null, organization = null, workspace = null, repoSlug = null }) {
     const safeTitle = String(title || '').trim();
     return {

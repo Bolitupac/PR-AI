@@ -189,6 +189,59 @@ class VcsRepositoryController extends Controller
         return response($result['data'], 200, ['Content-Type' => 'text/plain; charset=utf-8']);
     }
 
+    public function recentMergeConflicts(Request $request, string $provider): JsonResponse
+    {
+        $resolved = $this->resolveProvider($provider, $request, 'Connect the provider to load merge conflicts.', 'conflicts');
+        if ($resolved instanceof JsonResponse) {
+            return $resolved;
+        }
+
+        [$service, $connection] = $resolved;
+        $result = $service->getRecentMergeConflicts($connection, 10);
+        if (!$result['ok']) {
+            $status = (int) ($result['status'] ?? 500);
+
+            return response()->json([
+                'conflicts' => [],
+                'message' => $result['message']
+                    ?? $this->vcsProviderManager->failureMessage($provider, $status, 'Could not load merge conflicts.'),
+                'connect_url' => $this->vcsProviderManager->connectTarget($provider),
+                'auth_required' => $status === 401,
+            ], $status);
+        }
+
+        return response()->json(['conflicts' => $result['data']]);
+    }
+
+    public function mergeConflicts(Request $request, string $provider): JsonResponse
+    {
+        $resolved = $this->resolveProvider($provider, $request, 'Connect the provider to load merge conflict details.');
+        if ($resolved instanceof JsonResponse) {
+            return $resolved;
+        }
+
+        [$service, $connection, $repo] = $resolved;
+        $pullNumber = trim((string) $request->query('pr_number', ''));
+        if ($repo['repo'] === '') {
+            return response()->json(['ok' => false, 'message' => 'Select a valid repository first.'], 422);
+        }
+        if ($pullNumber === '' || !is_numeric($pullNumber)) {
+            return response()->json(['ok' => false, 'message' => 'Choose a valid pull/merge request first.'], 422);
+        }
+
+        $result = $service->getMergeConflicts($connection, $repo, $pullNumber);
+        if (!$result['ok']) {
+            return response()->json([
+                'ok' => false,
+                'message' => $this->vcsProviderManager->failureMessage($provider, $result['status'], 'Failed to load merge conflicts.'),
+                'connect_url' => $this->vcsProviderManager->connectTarget($provider),
+                'auth_required' => true,
+            ], $result['status']);
+        }
+
+        return response()->json(['ok' => true, 'data' => $result['data']]);
+    }
+
     public function pullComments(Request $request, string $provider): JsonResponse
     {
         $resolved = $this->resolveProvider($provider, $request, 'Connect the provider to load pull request comments.', 'comments');

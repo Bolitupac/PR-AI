@@ -390,4 +390,142 @@ class GitHubApiService
 
         return ['ok' => true, 'status' => 200, 'data' => $diff];
     }
+
+    /**
+     * @return array{ok:bool,status:int,data:array<int,array<string,mixed>>}
+     */
+    public function getRecentMergeConflicts(string $encryptedToken, int $limit = 10): array
+    {
+        $limit = max(1, min(15, $limit));
+        $reposResult = $this->getRepos($encryptedToken);
+        if (!$reposResult['ok']) {
+            return $reposResult;
+        }
+
+        $conflicts = [];
+        foreach (array_slice($reposResult['data'], 0, 12) as $repo) {
+            $fullName = (string) ($repo['full_name'] ?? '');
+            if ($fullName === '') {
+                continue;
+            }
+
+            $response = $this->client($encryptedToken)->get("https://api.github.com/repos/{$fullName}/pulls", [
+                'state' => 'open',
+                'per_page' => 20,
+            ]);
+
+            if ($response->failed()) {
+                continue;
+            }
+
+            foreach ($response->json() ?? [] as $pr) {
+                if ($pr['mergeable'] !== false) {
+                    continue;
+                }
+
+                $state = (string) ($pr['mergeable_state'] ?? '');
+                if (!in_array($state, ['dirty', 'blocked', 'unknown'], true)) {
+                    continue;
+                }
+
+                $conflicts[] = [
+                    'repo' => $fullName,
+                    'number' => $pr['number'] ?? null,
+                    'title' => $pr['title'] ?? '',
+                    'state' => $pr['state'] ?? 'open',
+                    'updated_at' => $pr['updated_at'] ?? null,
+                    'author' => $pr['user']['login'] ?? '',
+                    'base_ref' => $pr['base']['ref'] ?? '',
+                    'head_ref' => $pr['head']['ref'] ?? '',
+                    'mergeable_state' => $state,
+                ];
+
+                if (count($conflicts) >= $limit) {
+                    break 2;
+                }
+            }
+        }
+
+        return ['ok' => true, 'status' => 200, 'data' => $conflicts];
+    }
+
+    /**
+     * @return array{ok:bool,status:int,data:array<string,mixed>,message?:string}
+     */
+    public function getMergeConflicts(string $encryptedToken, string $repo, string $pullNumber): array
+    {
+        $prResponse = $this->client($encryptedToken)->get("https://api.github.com/repos/{$repo}/pulls/{$pullNumber}");
+        if ($prResponse->failed()) {
+            return ['ok' => false, 'status' => $prResponse->status(), 'data' => []];
+        }
+
+        $pr = $prResponse->json();
+        $headSha = (string) ($pr['head']['sha'] ?? '');
+        $baseRef = (string) ($pr['base']['ref'] ?? '');
+        $headRef = (string) ($pr['head']['ref'] ?? '');
+
+        $filesResponse = $this->client($encryptedToken)->get("https://api.github.com/repos/{$repo}/pulls/{$pullNumber}/files", [
+            'per_page' => 100,
+        ]);
+
+        if ($filesResponse->failed()) {
+            return ['ok' => false, 'status' => $filesResponse->status(), 'data' => []];
+        }
+
+        $rawFiles = [];
+        foreach ($filesResponse->json() ?? [] as $file) {
+            $path = (string) ($file['filename'] ?? '');
+            if ($path === '' || $headSha === '') {
+                continue;
+            }
+
+            $contentResponse = $this->client($encryptedToken)->get(
+                "https://api.github.com/repos/{$repo}/contents/".rawurlencode($path),
+                ['ref' => $headSha]
+            );
+
+            if ($contentResponse->failed()) {
+                continue;
+            }
+
+            $payload = $contentResponse->json();
+            $encoded = (string) ($payload['content'] ?? '');
+            if ($encoded === '') {
+                continue;
+            }
+
+            $content = base64_decode(str_replace("\n", '', $encoded), true);
+            if ($content === false) {
+                continue;
+            }
+
+            $rawFiles[] = ['path' => $path, 'content' => $content];
+        }
+
+        $parser = app(\App\Services\Vcs\MergeConflictParser::class);
+        $files = $parser->parseFiles($rawFiles);
+
+        return [
+            'ok' => true,
+            'status' => 200,
+            'data' => [
+                'repo' => $repo,
+                'pr_number' => $pullNumber,
+                'title' => $pr['title'] ?? '',
+                'base_ref' => $baseRef,
+                'head_ref' => $headRef,
+                'has_conflicts' => $files !== [] || $pr['mergeable'] === false,
+                'mergeable_state' => $pr['mergeable_state'] ?? null,
+                'files' => $files,
+                'suggested_git_commands' => [
+                    'git fetch origin',
+                    "git checkout {$headRef}",
+                    "git merge origin/{$baseRef}",
+                    '# Resolve conflict markers, then:',
+                    'git add .',
+                    'git commit',
+                ],
+            ],
+        ];
+    }
 }

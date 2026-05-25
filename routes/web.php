@@ -63,6 +63,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/vcs/{provider}/pull-diff', [VcsRepositoryController::class, 'pullDiff'])->name('vcs.pull-diff');
     Route::get('/api/vcs/{provider}/branch-diff', [VcsRepositoryController::class, 'branchDiff'])->name('vcs.branch-diff');
     Route::get('/api/vcs/{provider}/commit-diff', [VcsRepositoryController::class, 'commitDiff'])->name('vcs.commit-diff');
+    Route::get('/api/vcs/{provider}/recent-merge-conflicts', [VcsRepositoryController::class, 'recentMergeConflicts'])->name('vcs.recent-merge-conflicts');
+    Route::get('/api/vcs/{provider}/merge-conflicts', [VcsRepositoryController::class, 'mergeConflicts'])->name('vcs.merge-conflicts');
     Route::get('/api/git/commit-diff', [GitCommitController::class, 'diff'])
         ->name('git.commit-diff');
     Route::post('/api/ai/chat', [SimpleChatController::class, 'chat'])->name('ai.chat');
