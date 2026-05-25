@@ -1,5 +1,6 @@
 import * as API from './api';
 import { buildPullRequestAuditPayload, startAuditSession } from './audit-session';
+import { setButtonLoading } from '../auditor/button-loading';
 
 function escapeHtml(value) {
     return String(value ?? '')
@@ -131,7 +132,7 @@ export async function initRecentPullRequestsPanel(apiBase, provider, setImportSt
 
         if (!repo || !prNumber) return;
 
-        button.classList.add('is-loading');
+        setButtonLoading(button, true, 'Opening');
         setImportStatus?.('Preparing audit in Auditor...', true);
 
         startAuditSession(buildPullRequestAuditPayload({

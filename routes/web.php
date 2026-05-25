@@ -23,6 +23,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/profile', function () {
+    if (!Auth::check()) {
+        return redirect()->route('login');
+    }
+
+    return redirect()->route('auditor.index', ['settings' => 'profile']);
+})->name('profile.show');
+
 Route::middleware('guest')->group(function () {
     Route::get('/login', function () {
         if (Auth::check()) {

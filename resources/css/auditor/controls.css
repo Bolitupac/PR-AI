@@ -113,28 +113,6 @@ html.logo-spin-on-switch-reverse .brand-logo--light-on-dark {
     cursor: not-allowed;
 }
 
-.is-btn-loading {
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.btn-spinner {
-    width: 13px;
-    height: 13px;
-    border-radius: 50%;
-    border: 2px solid rgba(0, 0, 0, 0.2);
-    border-top-color: currentColor;
-    animation: btn-spin 0.8s linear infinite;
-}
-
-@keyframes btn-spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
 .repo-connect {
     border: 1px solid #cdd5e7;
     background: #f6f8fd;

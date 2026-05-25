@@ -3,6 +3,8 @@ import { initSidebar } from '../auditor/sidebar';
 import { initSettingsModal } from '../auditor/settings-modal';
 import { initSettingsAiKey } from '../auditor/settings-ai-key';
 import { initSettingsAiPreferences } from '../auditor/settings-ai-preferences';
+import { initLoadingInteractions } from '../auditor/loading-interactions';
+import { setButtonLoading } from '../auditor/button-loading';
 import * as API from './api';
 import * as Renderers from './renderers';
 import { buildBranchAuditPayload, buildCommitAuditPayload, buildPullRequestAuditPayload, startAuditSession } from './audit-session';
@@ -28,6 +30,7 @@ export async function initImportsPage() {
     initSettingsModal();
     initSettingsAiKey();
     initSettingsAiPreferences();
+    initLoadingInteractions();
 
     const repoContainer = document.getElementById('repo-list-container');
     const loadMoreWrap = document.getElementById('load-more-wrap');
@@ -85,7 +88,7 @@ export async function initImportsPage() {
                     <p style="margin: 0; color: var(--text-soft); font-size: 14px; max-width: 320px;">${message}</p>
                 </div>
                 <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-                    <a href="${providerConnectTarget()}" class="imports-login-btn">${actionLabel}</a>
+                    <a href="${providerConnectTarget()}" class="imports-login-btn" data-loading-link data-loading-text="Opening">${actionLabel}</a>
                     <button type="button" class="change-vcs-btn" style="background: none; border: none; color: var(--text-soft); text-decoration: underline; cursor: pointer; font-size: 13px; padding: 4px;">Change VCS</button>
                 </div>
             </li>
@@ -315,7 +318,7 @@ export async function initImportsPage() {
         const defaultBranch = details?.dataset.defaultBranch;
         if (!repo) return;
 
-        btn.classList.add('is-loading');
+        setButtonLoading(btn, true, 'Opening');
         setImportStatus('Preparing audit in Auditor...', true);
 
         try {
@@ -324,7 +327,7 @@ export async function initImportsPage() {
                 const head = btn.dataset.branch;
                 if (head === defaultBranch) {
                     alert(`Cannot import the default branch (${defaultBranch}). Choose a different branch to compare against ${defaultBranch}.`);
-                    btn.classList.remove('is-loading');
+                    setButtonLoading(btn, false);
                     setImportStatus('', false);
                     return;
                 }
@@ -349,7 +352,7 @@ export async function initImportsPage() {
         } catch (err) {
             console.error('Import failed:', err);
             alert(`Import failed: ${err.message || 'Check console for details'}`);
-            btn.classList.remove('is-loading');
+            setButtonLoading(btn, false);
             setImportStatus('', false);
         }
     });

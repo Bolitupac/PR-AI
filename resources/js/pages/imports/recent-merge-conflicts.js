@@ -1,5 +1,6 @@
 import * as API from './api';
 import { buildMergeConflictAuditPayload, startAuditSession } from './audit-session';
+import { setButtonLoading } from '../auditor/button-loading';
 
 function escapeHtml(value) {
     return String(value ?? '')
@@ -87,7 +88,7 @@ export async function initRecentMergeConflictsPanel(apiBase, provider, setImport
         const prNumber = button.dataset.pr || '';
         if (!repo || !prNumber) return;
 
-        button.classList.add('is-loading');
+        setButtonLoading(button, true, 'Opening');
         setImportStatus?.('Opening merge conflict in Auditor...', true);
 
         try {
@@ -103,7 +104,7 @@ export async function initRecentMergeConflictsPanel(apiBase, provider, setImport
         } catch (err) {
             console.error('Conflict import failed:', err);
             alert(`Conflict import failed: ${err.message || 'Check console for details'}`);
-            button.classList.remove('is-loading');
+            setButtonLoading(button, false);
             setImportStatus?.('', false);
         }
     });

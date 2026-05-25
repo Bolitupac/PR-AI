@@ -1,3 +1,10 @@
+@php
+    $sidebarProfileHref = route('profile.show');
+    $sidebarLoginHref = route('login');
+    $sidebarVcsHref = auth()->check() ? $sidebarProfileHref : $sidebarLoginHref;
+    $sidebarVcsLoadingText = auth()->check() ? 'Opening profile' : 'Opening login';
+@endphp
+
 <aside class="sidebar-bg" id="app-sidebar">
     <div class="sidebar-top">
         <button class="sidebar-item sidebar-toggle-btn" id="sidebar-toggle-btn" type="button"
@@ -17,7 +24,7 @@
         <hr class="sidebar-separator">
 
         <a class="sidebar-item {{ request()->is('auditor*') || request()->is('/') ? 'is-active' : '' }}"
-            href="{{ url('/auditor') }}" aria-label="Auditor">
+            href="{{ url('/auditor') }}" aria-label="Auditor" data-loading-link data-loading-text="Opening">
             <span class="sidebar-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24">
                     <path
@@ -32,7 +39,7 @@
         </a>
 
         <a class="sidebar-item {{ request()->routeIs('imports.*') ? 'is-active' : '' }}"
-            href="{{ route('imports.index') }}" aria-label="Import">
+            href="{{ route('imports.index') }}" aria-label="Import" data-loading-link data-loading-text="Opening">
             <span class="sidebar-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24">
                     <path d="M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4M12 4v11m0 0-3-3m3 3 3-3" fill="none"
@@ -66,7 +73,8 @@
                 style="margin-top: 12px; border-top: 1px solid var(--panel-stroke); padding-top: 12px; display:flex; flex-direction:column; gap:4px;">
                 <span class="sidebar-label" style="opacity:1; max-width:none; font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-soft); padding: 0 6px 4px;">VCS Providers</span>
                 @foreach ($vcsProviders as $provider)
-                    <button class="sidebar-item" type="button" aria-label="{{ $provider['name'] }}">
+                    <button class="sidebar-item" type="button" aria-label="{{ $provider['name'] }}"
+                        data-page-loading-href="{{ $sidebarVcsHref }}" data-loading-text="{{ $sidebarVcsLoadingText }}">
                         <span class="sidebar-icon" aria-hidden="true">
                             @if($provider['name'] === 'GitHub')
                                 <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -116,7 +124,8 @@
             <div class="sidebar-vcs-group"
                 style="margin-top: 12px; border-top: 1px solid var(--panel-stroke); padding-top: 12px; display:flex; flex-direction:column; gap:4px;">
                 @foreach ($vcsProviders as $provider)
-                    <button class="sidebar-item" type="button" aria-label="{{ $provider['name'] }}">
+                    <button class="sidebar-item" type="button" aria-label="{{ $provider['name'] }}"
+                        data-page-loading-href="{{ $sidebarVcsHref }}" data-loading-text="{{ $sidebarVcsLoadingText }}">
                         <span class="sidebar-icon" aria-hidden="true">
                             @if($provider['name'] === 'GitHub')
                                 <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -210,7 +219,8 @@
                     ? (($guestConnectedProvider['name'] ?? 'VCS').' connected')
                     : 'Connect VCS';
             @endphp
-            <a class="sidebar-item sidebar-profile-item" href="{{ $guestConnectHref }}" aria-label="{{ $guestLabel }}">
+            <a class="sidebar-item sidebar-profile-item" href="{{ $guestConnectHref }}" aria-label="{{ $guestLabel }}"
+                data-loading-link data-loading-text="Opening">
                 <span class="sidebar-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24">
                         <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7" />

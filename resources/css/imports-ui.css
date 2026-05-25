@@ -3,6 +3,7 @@
 @import './auditor/sidebar/layout.css';
 @import './auditor/sidebar/items.css';
 @import './auditor/sidebar/state.css';
+@import './shared/loading.css';
 @import './auditor/settings-modal.css';
 @import './imports/layout.css';
 @import './imports/history.css';

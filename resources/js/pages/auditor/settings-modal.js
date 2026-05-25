@@ -115,4 +115,12 @@ export function initSettingsModal() {
         event.preventDefault();
         openModal('vcs');
     });
+
+    const requestedTab = new URLSearchParams(window.location.search).get('settings');
+    if (requestedTab && [...panes].some((pane) => pane.dataset.settingsPane === requestedTab)) {
+        openModal(requestedTab);
+        const url = new URL(window.location.href);
+        url.searchParams.delete('settings');
+        window.history.replaceState({}, '', url.toString());
+    }
 }

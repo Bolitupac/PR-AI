@@ -1,5 +1,6 @@
 import * as API from './api';
 import { buildCommitAuditPayload, startAuditSession } from './audit-session';
+import { setButtonLoading } from '../auditor/button-loading';
 
 function escapeHtml(value) {
     return String(value ?? '')
@@ -91,7 +92,7 @@ export async function initRecentCommitsPanel(apiBase, provider, setImportStatus)
 
         if (!commitHash) return;
 
-        button.classList.add('is-loading');
+        setButtonLoading(button, true, 'Opening');
         setImportStatus?.('Preparing audit in Auditor...', true);
 
         try {
@@ -105,7 +106,7 @@ export async function initRecentCommitsPanel(apiBase, provider, setImportStatus)
         } catch (err) {
             console.error('Commit import failed:', err);
             alert(`Commit import failed: ${err.message || 'Check console for details'}`);
-            button.classList.remove('is-loading');
+            setButtonLoading(button, false);
             setImportStatus?.('', false);
         }
     });
