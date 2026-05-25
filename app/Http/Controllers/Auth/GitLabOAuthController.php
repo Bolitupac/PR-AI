@@ -27,9 +27,46 @@ class GitLabOAuthController extends Controller
             $gitlabUser = Socialite::driver('gitlab')->stateless()->user();
             $baseUrl = rtrim((string) config('services.gitlab.instance_uri', 'https://gitlab.com'), '/');
 
-            $user = User::updateOrCreate(
-                ['gitlab_id' => (string) $gitlabUser->id],
-                [
+            if (Auth::check()) {
+                $user = Auth::user();
+                $user->update([
+                    'gitlab_id' => (string) $gitlabUser->id,
+                    'gitlab_username' => $gitlabUser->nickname,
+                    'gitlab_avatar_url' => $gitlabUser->avatar,
+                    'gitlab_base_url' => $baseUrl,
+                    'gitlab_access_token' => Crypt::encryptString($gitlabUser->token),
+                    'gitlab_refresh_token' => $gitlabUser->refreshToken
+                        ? Crypt::encryptString($gitlabUser->refreshToken)
+                        : null,
+                    'gitlab_token_expires_at' => $gitlabUser->expiresIn
+                        ? now()->addSeconds($gitlabUser->expiresIn)
+                        : null,
+                ]);
+
+                return redirect()->route('auditor.index')->with('vcs_connection_message', 'GitLab connected successfully!');
+            }
+
+            $user = User::where('gitlab_id', (string) $gitlabUser->id)
+                ->orWhere('email', $gitlabUser->email)
+                ->first();
+
+            if ($user) {
+                $user->update([
+                    'gitlab_id' => (string) $gitlabUser->id,
+                    'gitlab_username' => $gitlabUser->nickname,
+                    'gitlab_avatar_url' => $gitlabUser->avatar,
+                    'gitlab_base_url' => $baseUrl,
+                    'gitlab_access_token' => Crypt::encryptString($gitlabUser->token),
+                    'gitlab_refresh_token' => $gitlabUser->refreshToken
+                        ? Crypt::encryptString($gitlabUser->refreshToken)
+                        : null,
+                    'gitlab_token_expires_at' => $gitlabUser->expiresIn
+                        ? now()->addSeconds($gitlabUser->expiresIn)
+                        : null,
+                ]);
+            } else {
+                $user = User::create([
+                    'gitlab_id' => (string) $gitlabUser->id,
                     'name' => $gitlabUser->name ?: $gitlabUser->nickname ?: 'GitLab User',
                     'email' => $gitlabUser->email,
                     'password' => Hash::make(Str::random(32)),
@@ -43,8 +80,8 @@ class GitLabOAuthController extends Controller
                     'gitlab_token_expires_at' => $gitlabUser->expiresIn
                         ? now()->addSeconds($gitlabUser->expiresIn)
                         : null,
-                ]
-            );
+                ]);
+            }
 
             Auth::login($user, true);
 
