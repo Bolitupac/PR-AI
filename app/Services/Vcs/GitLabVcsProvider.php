@@ -382,8 +382,7 @@ class GitLabVcsProvider implements VcsProviderInterface
 
     private function client(array $connection)
     {
-        return Http::withHeaders([
-            'PRIVATE-TOKEN' => (string) ($connection['token'] ?? ''),
+        return Http::withToken((string) ($connection['token'] ?? ''))->withHeaders([
             'Accept' => 'application/json',
         ]);
     }
