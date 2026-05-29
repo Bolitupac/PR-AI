@@ -190,6 +190,7 @@ class AuditDiffController extends Controller
             'context' => ['nullable', 'string', 'max:4000'],
             'file_name' => ['nullable', 'string', 'max:255'],
             'diff_text' => ['required', 'string', 'max:10000000'],
+            'conflict_payload' => ['nullable', 'array'],
             'model' => ['nullable', 'string', 'max:120'],
         ]);
 
@@ -202,6 +203,7 @@ class AuditDiffController extends Controller
         $auditTitle = (string) ($payload['audit_title'] ?? '');
         $auditKind = (string) ($payload['audit_kind'] ?? '');
         $auditStatus = (string) ($payload['audit_status'] ?? '');
+        $conflictPayload = (array) ($payload['conflict_payload'] ?? []);
         $diffText = $this->truncateDiffIfNeeded((string) $payload['diff_text'], (string) ($payload['audit_title'] ?? ''));
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
         $prTitle = (string) ($payload['pr_title'] ?? '');
