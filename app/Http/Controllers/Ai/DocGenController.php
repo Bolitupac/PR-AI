@@ -24,15 +24,17 @@ class DocGenController extends Controller
 
     public function chat(Request $request)
     {
-        $allowedModels = (array) config('openai.chat_models', [config('openai.model', 'gpt-4o-mini')]);
         $payload = $request->validate([
             'message' => ['required', 'string', 'max:5000'],
-            'model' => ['nullable', 'string', Rule::in($allowedModels)],
+            'model' => ['nullable', 'string', 'max:120'],
+            'provider' => ['nullable', 'string', 'in:openai,deepseek'],
             'history' => ['nullable', 'array', 'max:20'],
             'history.*.role' => ['required_with:history', 'string', Rule::in(['user', 'assistant'])],
             'history.*.content' => ['required_with:history', 'string', 'max:8000'],
             'docgen_mode_active' => ['nullable', 'boolean'],
         ]);
+
+        $selectedProvider = isset($payload['provider']) ? (string) $payload['provider'] : 'openai';
 
         $messages = $this->promptComposer->buildMessages(
             (string) $payload['message'],
@@ -41,22 +43,22 @@ class DocGenController extends Controller
             (bool) ($payload['docgen_mode_active'] ?? true)
         );
 
-        $reply = $this->chatService->replyWithMessages($messages, $payload['model'] ?? null, Auth::user());
+        $reply = $this->chatService->replyWithMessages($messages, $payload['model'] ?? null, Auth::user(), $selectedProvider);
         $reply = $this->responseFormatter->normalize($reply);
 
         return response()->json([
-            'provider' => 'openai',
-            'model' => $payload['model'] ?? (string) config('openai.model', 'gpt-4o-mini'),
+            'provider' => $selectedProvider,
+            'model' => $payload['model'] ?? (string) config("{$selectedProvider}.model", 'gpt-4o-mini'),
             'reply' => $reply,
         ]);
     }
 
     public function chatStream(Request $request): StreamedResponse
     {
-        $allowedModels = (array) config('openai.chat_models', [config('openai.model', 'gpt-4o-mini')]);
         $payload = $request->validate([
             'message' => ['required', 'string', 'max:5000'],
-            'model' => ['nullable', 'string', Rule::in($allowedModels)],
+            'model' => ['nullable', 'string', 'max:120'],
+            'provider' => ['nullable', 'string', 'in:openai,deepseek'],
             'history' => ['nullable', 'array', 'max:20'],
             'history.*.role' => ['required_with:history', 'string', Rule::in(['user', 'assistant'])],
             'history.*.content' => ['required_with:history', 'string', 'max:8000'],
@@ -71,8 +73,9 @@ class DocGenController extends Controller
         );
 
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
+        $selectedProvider = isset($payload['provider']) ? (string) $payload['provider'] : 'openai';
 
-        return response()->stream(function () use ($messages, $selectedModel) {
+        return response()->stream(function () use ($messages, $selectedModel, $selectedProvider) {
             @ini_set('output_buffering', 'off');
             @ini_set('zlib.output_compression', '0');
             @set_time_limit(0);
@@ -110,7 +113,8 @@ class DocGenController extends Controller
                     echo 'data: '.($json ?: '{"message":"Request failed."}')."\n\n";
                     @ob_flush();
                     flush();
-                }
+                },
+                $selectedProvider
             );
 
             $normalizedReply = $this->responseFormatter->normalize($fullReply);

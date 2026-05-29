@@ -13,6 +13,7 @@ export function initAutoAudit() {
     const responseArea = document.getElementById('ai-response-area');
     const emptyState = document.getElementById('chat-empty-state');
     const modelSelect = document.getElementById('chat-model-select');
+    const providerSelect = document.getElementById('chat-provider-select');
     if (!responseArea) return;
 
     const hideEmptyState = () => emptyState?.classList.add('is-hidden');
@@ -199,6 +200,7 @@ export function initAutoAudit() {
         const source = detail.source || 'upload';
         const auditMeta = buildAuditMetadata(detail);
         const model = modelSelect?.value || '';
+        const provider = providerSelect?.value || 'openai';
         const anchor = appendMessage(`Auto-auditing ${source} diff...`, 'user');
         const status = createChatStatus({ container: responseArea, anchorNode: anchor });
 
@@ -235,6 +237,7 @@ export function initAutoAudit() {
                     diff_text: diffText,
                     conflict_payload: detail.conflictData || undefined,
                     model: model || undefined,
+                    provider: provider || undefined,
                 }),
             });
 
@@ -341,6 +344,7 @@ export function initAutoAudit() {
                 assistantText: cleanReply,
                 userText: `Audit this ${source} diff`,
                 model,
+                provider,
             }).catch(() => []);
 
             if (requestId === followUpRequestId) {

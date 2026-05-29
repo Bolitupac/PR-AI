@@ -1,7 +1,7 @@
 import { initThemeToggle } from '../auditor/theme-toggle';
 import { initSidebar } from '../auditor/sidebar';
 import { initSettingsModal } from '../auditor/settings-modal';
-import { initSettingsAiKey } from '../auditor/settings-ai-key';
+import { initSettingsAiKey, initSettingsDeepSeekKey } from '../auditor/settings-ai-key';
 import { initSettingsAiPreferences } from '../auditor/settings-ai-preferences';
 import { initLoadingInteractions } from '../auditor/loading-interactions';
 import { setButtonLoading } from '../auditor/button-loading';
@@ -29,6 +29,7 @@ export async function initImportsPage() {
     initThemeToggle();
     initSettingsModal();
     initSettingsAiKey();
+    initSettingsDeepSeekKey();
     initSettingsAiPreferences();
     initLoadingInteractions();
 

@@ -291,6 +291,52 @@
                         <article class="settings-provider-item">
                             <div class="settings-provider-top">
                                 <div class="settings-provider-brand">
+                                    <span class="settings-provider-logo settings-provider-logo--deepseek" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24">
+                                            <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Z" fill="none" stroke="currentColor" stroke-width="1.4" />
+                                            <path d="M8 12h8M12 8v8" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+                                        </svg>
+                                    </span>
+                                    <div>
+                                        <div class="settings-provider-name">DeepSeek</div>
+                                        <div class="settings-provider-sub">Configure API key</div>
+                                    </div>
+                                </div>
+                                <span class="settings-provider-pill">Active</span>
+                            </div>
+
+                            @auth
+                                <div class="settings-api-box" id="settings-deepseek-key-box"
+                                    data-status-url="{{ route('profile.deepseek-key.status') }}"
+                                    data-save-url="{{ route('profile.deepseek-key.save') }}"
+                                    data-remove-url="{{ route('profile.deepseek-key.remove') }}"
+                                    data-mode-url="{{ route('profile.ai-key.mode') }}">
+                                    <label class="settings-mode-label" for="settings-deepseek-key-mode">Key source</label>
+                                    <select class="settings-mode-select" id="settings-deepseek-key-mode" aria-label="DeepSeek API key source">
+                                        <option value="developer">Use developer key (recommended)</option>
+                                        <option value="personal">Use my key</option>
+                                    </select>
+
+                                    <input class="settings-api-input" id="settings-deepseek-api-input" type="password" placeholder="Paste your DeepSeek key (sk-...)">
+
+                                    <div class="settings-api-actions">
+                                        <button class="settings-api-save-btn" id="settings-deepseek-api-save-btn" type="button" data-loading-btn data-loading-text="Saving">Save key</button>
+                                        <button class="settings-api-remove-btn" id="settings-deepseek-api-remove-btn" type="button" data-loading-btn data-loading-text="Removing">Remove key</button>
+                                    </div>
+
+                                    <p class="settings-api-hint" id="settings-deepseek-key-hint">Choose whether to use developer key or your saved key.</p>
+                                    <p class="settings-api-state" id="settings-deepseek-key-state"></p>
+                                </div>
+                            @endauth
+
+                            @guest
+                                <div class="settings-guest-state">Login with GitHub to manage and save your DeepSeek API key.</div>
+                            @endguest
+                        </article>
+
+                        <article class="settings-provider-item">
+                            <div class="settings-provider-top">
+                                <div class="settings-provider-brand">
                                     <span class="settings-provider-logo settings-provider-logo--anthropic" aria-hidden="true">
                                         <img src="https://logo.clearbit.com/anthropic.com" alt="Anthropic logo" loading="lazy">
                                     </span>

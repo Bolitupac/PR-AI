@@ -121,6 +121,12 @@
                         @php
                             $chatModels = config('openai.chat_models', [config('openai.model', 'gpt-4o-mini')]);
                             $defaultChatModel = config('openai.model', 'gpt-4o-mini');
+                            $deepseekModels = config('deepseek.chat_models', [config('deepseek.model', 'deepseek-chat')]);
+                            $defaultDeepSeekModel = config('deepseek.model', 'deepseek-chat');
+                            $providerModels = [
+                                'openai' => ['models' => $chatModels, 'default' => $defaultChatModel],
+                                'deepseek' => ['models' => $deepseekModels, 'default' => $defaultDeepSeekModel],
+                            ];
                         @endphp
                         <header class="panel-head ai-head">
                             <h3>
@@ -136,6 +142,13 @@
                                     @include('partials.import-hover-menu')
                                 </div>
                                 <div class="hint-wrap hint-wrap--model">
+                                    <select class="chat-model-select" id="chat-provider-select" aria-label="Select AI provider">
+                                        <option value="openai">OpenAI</option>
+                                        <option value="deepseek">DeepSeek</option>
+                                    </select>
+                                    <span class="tiny-action-hint" role="tooltip">Select AI provider</span>
+                                </div>
+                                <div class="hint-wrap hint-wrap--model">
                                     <select class="chat-model-select" id="chat-model-select" aria-label="Select model">
                                         @foreach ($chatModels as $chatModel)
                                             <option value="{{ $chatModel }}" @selected($chatModel === $defaultChatModel)>
@@ -147,6 +160,9 @@
                                 </div>
                             </div>
                         </header>
+                        <script>
+                            window.__providerModels = @json($providerModels);
+                        </script>
 
                         <div id="ai-response-area" class="chat-demo-list">
                             <div class="chat-empty-state" id="chat-empty-state">

@@ -46,6 +46,7 @@ export function initChatInput() {
     const sendButton = document.getElementById('send-btn');
     const chatContainer = document.querySelector('.chat-container');
     const modelSelect = document.getElementById('chat-model-select');
+    const providerSelect = document.getElementById('chat-provider-select');
     const emptyState = document.getElementById('chat-empty-state');
 
     if (!responseArea || !promptInput || !sendButton || !chatContainer) return;
@@ -53,6 +54,7 @@ export function initChatInput() {
     const sendButtonDefaultHtml = sendButton.innerHTML;
     let activeRequest = null;
     let selectedModel = modelSelect?.value || '';
+    let selectedProvider = providerSelect?.value || 'openai';
     let lastBusyState = false;
     const loginUrl = '/login';
 
@@ -165,6 +167,7 @@ export function initChatInput() {
             body: JSON.stringify({
                 message: text,
                 model: selectedModel || undefined,
+                provider: selectedProvider || undefined,
                 history: historyBefore,
                 docgen_mode_active: isDocGenModeEnabled(),
             }),
@@ -198,6 +201,7 @@ export function initChatInput() {
             body: JSON.stringify({
                 message: text,
                 model: selectedModel || undefined,
+                provider: selectedProvider || undefined,
                 history: historyBefore,
                 docgen_mode_active: isDocGenModeEnabled(),
             }),
@@ -234,6 +238,7 @@ export function initChatInput() {
             assistantText,
             userText,
             model: selectedModel,
+            provider: selectedProvider,
             docGenModeActive: isDocGenModeEnabled(),
         }).catch(() => []);
 
@@ -318,6 +323,7 @@ export function initChatInput() {
                 body: JSON.stringify({
                     message: text,
                     model: selectedModel || undefined,
+                provider: selectedProvider || undefined,
                     history: historyBefore,
                     docgen_mode_active: isDocGenModeEnabled(),
                 }),
@@ -577,6 +583,22 @@ export function initChatInput() {
         const status = createChatStatus({ container: responseArea, anchorNode: null });
         status.markSuccess(`Switched to ${selectedModel}.`);
         status.remove(700);
+    });
+
+    providerSelect?.addEventListener('change', function () {
+        selectedProvider = providerSelect.value;
+        const providerData = window.__providerModels?.[selectedProvider];
+        if (providerData && modelSelect) {
+            modelSelect.innerHTML = '';
+            providerData.models.forEach(function (m) {
+                const opt = document.createElement('option');
+                opt.value = m;
+                opt.textContent = m;
+                if (m === providerData.default) opt.selected = true;
+                modelSelect.appendChild(opt);
+            });
+            selectedModel = modelSelect.value;
+        }
     });
     promptInput.addEventListener('keydown', function (event) {
         if (event.key !== 'Enter') return;

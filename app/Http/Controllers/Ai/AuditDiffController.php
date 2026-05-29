@@ -48,6 +48,7 @@ class AuditDiffController extends Controller
             'diff_text' => ['required', 'string', 'max:10000000'],
             'conflict_payload' => ['nullable', 'array'],
             'model' => ['nullable', 'string', 'max:120'],
+            'provider' => ['nullable', 'string', 'in:openai,deepseek'],
         ]);
 
         $source = (string) $payload['source'];
@@ -62,6 +63,7 @@ class AuditDiffController extends Controller
         $conflictPayload = (array) ($payload['conflict_payload'] ?? []);
         $diffText = $this->truncateDiffIfNeeded((string) $payload['diff_text'], $auditTitle);
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
+        $selectedProvider = isset($payload['provider']) ? (string) $payload['provider'] : 'openai';
         $prTitle = (string) ($payload['pr_title'] ?? '');
         $prDescription = (string) ($payload['pr_description'] ?? '');
         $linkedIssues = (string) ($payload['linked_issues'] ?? '');
@@ -127,7 +129,7 @@ class AuditDiffController extends Controller
         ]);
 
         $systemPrompt = (string) config('audit_ai.system_prompt');
-        $reply = $this->openAiSimpleChatService->replyWithPrompt($systemPrompt, $userPrompt, $selectedModel, Auth::user());
+        $reply = $this->openAiSimpleChatService->replyWithPrompt($systemPrompt, $userPrompt, $selectedModel, Auth::user(), $selectedProvider);
         $meta = array_merge($this->extractMeta($reply), [
             'audit_kind' => $auditKind,
             'audit_status' => $auditStatus,
@@ -159,7 +161,7 @@ class AuditDiffController extends Controller
         $debugPath = $this->auditSnapshotWriter->write($debugText);
 
         return response()->json([
-            'provider' => 'openai',
+            'provider' => $selectedProvider,
             'reply' => $reply,
             'meta' => $meta,
             'debug_path' => $debugPath,
@@ -192,6 +194,7 @@ class AuditDiffController extends Controller
             'diff_text' => ['required', 'string', 'max:10000000'],
             'conflict_payload' => ['nullable', 'array'],
             'model' => ['nullable', 'string', 'max:120'],
+            'provider' => ['nullable', 'string', 'in:openai,deepseek'],
         ]);
 
         $source = (string) $payload['source'];
@@ -206,6 +209,7 @@ class AuditDiffController extends Controller
         $conflictPayload = (array) ($payload['conflict_payload'] ?? []);
         $diffText = $this->truncateDiffIfNeeded((string) $payload['diff_text'], (string) ($payload['audit_title'] ?? ''));
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
+        $selectedProvider = isset($payload['provider']) ? (string) $payload['provider'] : 'openai';
         $prTitle = (string) ($payload['pr_title'] ?? '');
         $prDescription = (string) ($payload['pr_description'] ?? '');
         $linkedIssues = (string) ($payload['linked_issues'] ?? '');
@@ -272,7 +276,7 @@ class AuditDiffController extends Controller
 
         $systemPrompt = (string) config('audit_ai.system_prompt');
 
-        return response()->stream(function () use ($source, $repo, $prNumber, $compareType, $baseBranch, $headBranch, $auditTitle, $auditKind, $auditStatus, $prTitle, $prDescription, $linkedIssues, $contextNote, $payload, $diffText, $conflictPayload, $issueComments, $reviewComments, $systemPrompt, $userPrompt, $selectedModel): void {
+        return response()->stream(function () use ($source, $repo, $prNumber, $compareType, $baseBranch, $headBranch, $auditTitle, $auditKind, $auditStatus, $prTitle, $prDescription, $linkedIssues, $contextNote, $payload, $diffText, $conflictPayload, $issueComments, $reviewComments, $systemPrompt, $userPrompt, $selectedModel, $selectedProvider): void {
             @ini_set('output_buffering', 'off');
             @ini_set('zlib.output_compression', '0');
             @set_time_limit(0);
@@ -313,7 +317,8 @@ class AuditDiffController extends Controller
                     echo 'data: ' . ($json ?: '{"message":"Audit failed."}') . "\n\n";
                     @ob_flush();
                     flush();
-                }
+                },
+                $selectedProvider
             );
 
             $meta = array_merge($this->extractMeta($fullReply), [

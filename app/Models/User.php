@@ -34,7 +34,9 @@ class User extends Authenticatable
         'gitlab_refresh_token',
         'gitlab_token_expires_at',
         'custom_openai_api_key',
+        'custom_deepseek_api_key',
         'ai_key_mode',
+        'ai_provider',
         'ai_preferences',
     ];
 
@@ -51,6 +53,7 @@ class User extends Authenticatable
         'gitlab_access_token',
         'gitlab_refresh_token',
         'custom_openai_api_key',
+        'custom_deepseek_api_key',
     ];
 
     /**
@@ -66,6 +69,7 @@ class User extends Authenticatable
             'github_token_expires_at' => 'datetime',
             'gitlab_token_expires_at' => 'datetime',
             'custom_openai_api_key' => 'encrypted',
+            'custom_deepseek_api_key' => 'encrypted',
             'ai_preferences' => 'array',
         ];
     }
@@ -75,9 +79,28 @@ class User extends Authenticatable
         return trim((string) $this->custom_openai_api_key) !== '';
     }
 
+    public function hasCustomDeepSeekKey(): bool
+    {
+        return trim((string) $this->custom_deepseek_api_key) !== '';
+    }
+
     public function getMaskedOpenAiKeyAttribute(): string
     {
         $key = trim((string) $this->custom_openai_api_key);
+        if ($key === '') {
+            return '';
+        }
+
+        if (strlen($key) <= 8) {
+            return str_repeat('*', strlen($key));
+        }
+
+        return substr($key, 0, 4).str_repeat('*', max(4, strlen($key) - 8)).substr($key, -4);
+    }
+
+    public function getMaskedDeepSeekKeyAttribute(): string
+    {
+        $key = trim((string) $this->custom_deepseek_api_key);
         if ($key === '') {
             return '';
         }

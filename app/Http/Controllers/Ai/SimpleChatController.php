@@ -22,11 +22,10 @@ class SimpleChatController extends Controller
     // Accepts one message and returns one AI reply.
     public function chat(Request $request): JsonResponse
     {
-        $allowedModels = (array) config('openai.chat_models', [config('openai.model', 'gpt-4o-mini')]);
-
         $payload = $request->validate([
             'message' => ['required', 'string', 'max:5000'],
-            'model' => ['nullable', 'string', Rule::in($allowedModels)],
+            'model' => ['nullable', 'string', 'max:120'],
+            'provider' => ['nullable', 'string', 'in:openai,deepseek'],
             'history' => ['nullable', 'array', 'max:20'],
             'history.*.role' => ['required_with:history', 'string', Rule::in(['user', 'assistant'])],
             'history.*.content' => ['required_with:history', 'string', 'max:8000'],
@@ -35,14 +34,15 @@ class SimpleChatController extends Controller
 
         $message = (string) $payload['message'];
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
+        $selectedProvider = isset($payload['provider']) ? (string) $payload['provider'] : 'openai';
         $history = isset($payload['history']) && is_array($payload['history']) ? $payload['history'] : [];
         $activeAuditContext = trim((string) $request->session()->get('active_audit_context', ''));
         $docGenModeActive = (bool) ($payload['docgen_mode_active'] ?? false);
 
         if ($this->docGenIntentDetector->matches($message)) {
             return response()->json([
-                'provider' => 'openai',
-                'model' => $selectedModel ?? (string) config('openai.model', 'gpt-4o-mini'),
+                'provider' => $selectedProvider,
+                'model' => $selectedModel ?? (string) config("{$selectedProvider}.model", 'gpt-4o-mini'),
                 'reply' => 'This looks like a document-generation request. Turn on DocGen mode in Apps, then send the prompt again so I can return it in document format.',
             ]);
         }
@@ -60,7 +60,7 @@ class SimpleChatController extends Controller
 
         $messageForModel = $this->augmentForInlineComments($messageForModel, $message, $activeAuditContext);
 
-        $reply = $this->openAiSimpleChatService->replyWithHistory($messageForModel, $history, $selectedModel, Auth::user());
+        $reply = $this->openAiSimpleChatService->replyWithHistory($messageForModel, $history, $selectedModel, Auth::user(), $selectedProvider);
         if ($this->requiresEvidence($message) && !$this->hasEvidenceReference($reply)) {
             $strictMessage =
                 $this->buildDocGenModeInstruction($docGenModeActive)
@@ -73,23 +73,22 @@ class SimpleChatController extends Controller
                 $strictMessage .= "\n\nActive context:\n{$activeAuditContext}";
             }
 
-            $reply = $this->openAiSimpleChatService->replyWithHistory($strictMessage, $history, $selectedModel, Auth::user());
+            $reply = $this->openAiSimpleChatService->replyWithHistory($strictMessage, $history, $selectedModel, Auth::user(), $selectedProvider);
         }
 
         return response()->json([
-            'provider' => 'openai',
-            'model' => $selectedModel ?? (string) config('openai.model', 'gpt-4o-mini'),
+            'provider' => $selectedProvider,
+            'model' => $selectedModel ?? (string) config("{$selectedProvider}.model", 'gpt-4o-mini'),
             'reply' => $reply,
         ]);
     }
 
     public function inlineComments(Request $request): JsonResponse
     {
-        $allowedModels = (array) config('openai.chat_models', [config('openai.model', 'gpt-4o-mini')]);
-
         $payload = $request->validate([
             'message' => ['required', 'string', 'max:5000'],
-            'model' => ['nullable', 'string', Rule::in($allowedModels)],
+            'model' => ['nullable', 'string', 'max:120'],
+            'provider' => ['nullable', 'string', 'in:openai,deepseek'],
             'history' => ['nullable', 'array', 'max:20'],
             'history.*.role' => ['required_with:history', 'string', Rule::in(['user', 'assistant'])],
             'history.*.content' => ['required_with:history', 'string', 'max:8000'],
@@ -98,6 +97,7 @@ class SimpleChatController extends Controller
 
         $message = (string) $payload['message'];
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
+        $selectedProvider = isset($payload['provider']) ? (string) $payload['provider'] : 'openai';
         $history = isset($payload['history']) && is_array($payload['history']) ? $payload['history'] : [];
         $activeAuditContext = trim((string) $request->session()->get('active_audit_context', ''));
         $docGenModeActive = (bool) ($payload['docgen_mode_active'] ?? false);
@@ -108,29 +108,29 @@ class SimpleChatController extends Controller
 
         $messageForModel = $this->buildDocGenModeInstruction($docGenModeActive)
             .$this->buildInlineCommentOnlyPrompt($message, $activeAuditContext);
-        $reply = $this->openAiSimpleChatService->replyWithHistory($messageForModel, $history, $selectedModel, Auth::user());
+        $reply = $this->openAiSimpleChatService->replyWithHistory($messageForModel, $history, $selectedModel, Auth::user(), $selectedProvider);
 
         return response()->json([
-            'provider' => 'openai',
-            'model' => $selectedModel ?? (string) config('openai.model', 'gpt-4o-mini'),
+            'provider' => $selectedProvider,
+            'model' => $selectedModel ?? (string) config("{$selectedProvider}.model", 'gpt-4o-mini'),
             'reply' => $reply,
         ]);
     }
 
     public function followUps(Request $request): JsonResponse
     {
-        $allowedModels = (array) config('openai.chat_models', [config('openai.model', 'gpt-4o-mini')]);
-
         $payload = $request->validate([
             'user_message' => ['required', 'string', 'max:5000'],
             'assistant_reply' => ['required', 'string', 'max:20000'],
-            'model' => ['nullable', 'string', Rule::in($allowedModels)],
+            'model' => ['nullable', 'string', 'max:120'],
+            'provider' => ['nullable', 'string', 'in:openai,deepseek'],
             'docgen_mode_active' => ['nullable', 'boolean'],
         ]);
 
         $userMessage = trim((string) $payload['user_message']);
         $assistantReply = trim((string) $payload['assistant_reply']);
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
+        $selectedProvider = isset($payload['provider']) ? (string) $payload['provider'] : 'openai';
         $activeAuditContext = trim((string) $request->session()->get('active_audit_context', ''));
         $docGenModeActive = (bool) ($payload['docgen_mode_active'] ?? false);
 
@@ -142,24 +142,24 @@ class SimpleChatController extends Controller
             $this->buildDocGenModeInstruction($docGenModeActive).$this->followUpsSystemPrompt(),
             $this->buildFollowUpsPrompt($userMessage, $assistantReply, $activeAuditContext),
             $selectedModel,
-            Auth::user()
+            Auth::user(),
+            $selectedProvider
         );
 
         return response()->json([
             'suggestions' => $this->extractFollowUps($reply),
-            'provider' => 'openai',
-            'model' => $selectedModel ?? (string) config('openai.model', 'gpt-4o-mini'),
+            'provider' => $selectedProvider,
+            'model' => $selectedModel ?? (string) config("{$selectedProvider}.model", 'gpt-4o-mini'),
         ]);
     }
 
     // Streams chat response in SSE chunks so frontend can render incrementally.
     public function chatStream(Request $request): StreamedResponse
     {
-        $allowedModels = (array) config('openai.chat_models', [config('openai.model', 'gpt-4o-mini')]);
-
         $payload = $request->validate([
             'message' => ['required', 'string', 'max:5000'],
-            'model' => ['nullable', 'string', Rule::in($allowedModels)],
+            'model' => ['nullable', 'string', 'max:120'],
+            'provider' => ['nullable', 'string', 'in:openai,deepseek'],
             'history' => ['nullable', 'array', 'max:20'],
             'history.*.role' => ['required_with:history', 'string', Rule::in(['user', 'assistant'])],
             'history.*.content' => ['required_with:history', 'string', 'max:8000'],
@@ -168,6 +168,7 @@ class SimpleChatController extends Controller
 
         $message = (string) $payload['message'];
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
+        $selectedProvider = isset($payload['provider']) ? (string) $payload['provider'] : 'openai';
         $history = isset($payload['history']) && is_array($payload['history']) ? $payload['history'] : [];
         $activeAuditContext = trim((string) $request->session()->get('active_audit_context', ''));
         $docGenModeActive = (bool) ($payload['docgen_mode_active'] ?? false);
@@ -204,7 +205,7 @@ class SimpleChatController extends Controller
 
         $messageForModel = $this->augmentForInlineComments($messageForModel, $message, $activeAuditContext);
 
-        return response()->stream(function () use ($messageForModel, $history, $selectedModel) {
+        return response()->stream(function () use ($messageForModel, $history, $selectedModel, $selectedProvider) {
             @ini_set('output_buffering', 'off');
             @ini_set('zlib.output_compression', '0');
             @set_time_limit(0);
@@ -243,7 +244,8 @@ class SimpleChatController extends Controller
                     echo 'data: '.($json ?: '{"message":"Request failed."}')."\n\n";
                     @ob_flush();
                     flush();
-                }
+                },
+                $selectedProvider
             );
 
             $donePayload = json_encode([

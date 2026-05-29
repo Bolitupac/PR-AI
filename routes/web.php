@@ -94,6 +94,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile/ai-key', [ProfileAiKeyController::class, 'remove'])->name('profile.ai-key.remove');
     Route::post('/profile/ai-key/mode', [ProfileAiKeyController::class, 'setMode'])->name('profile.ai-key.mode');
 
+    Route::get('/profile/deepseek-key/status', [ProfileAiKeyController::class, 'deepseekStatus'])->name('profile.deepseek-key.status');
+    Route::post('/profile/deepseek-key', [ProfileAiKeyController::class, 'deepseekSave'])->name('profile.deepseek-key.save');
+    Route::delete('/profile/deepseek-key', [ProfileAiKeyController::class, 'deepseekRemove'])->name('profile.deepseek-key.remove');
+
     Route::get('/profile/ai-preferences', [AiPreferencesController::class, 'show'])->name('profile.ai-preferences.show');
     Route::post('/profile/ai-preferences', [AiPreferencesController::class, 'save'])->name('profile.ai-preferences.save');
 });

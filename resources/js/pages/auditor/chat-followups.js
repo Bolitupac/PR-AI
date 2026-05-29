@@ -41,6 +41,7 @@ export async function fetchFollowUpSuggestions({
     assistantText,
     userText = '',
     model = '',
+    provider = 'openai',
     docGenModeActive = false,
 }) {
     if (shouldSuppressSuggestions(assistantText)) {
@@ -59,6 +60,7 @@ export async function fetchFollowUpSuggestions({
             user_message: userText,
             assistant_reply: assistantText,
             model: model || undefined,
+            provider: provider || undefined,
             docgen_mode_active: Boolean(docGenModeActive),
         }),
         credentials: 'same-origin',
