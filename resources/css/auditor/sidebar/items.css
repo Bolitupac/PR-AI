@@ -257,3 +257,7 @@ html[data-theme="dark"] .sidebar-theme-toggle .theme-toggle-icon--moon {
 .app-shell:not(.sidebar-expanded) .sidebar-chat-item-wrapper .delete-chat-btn {
     display: none !important;
 }
+
+.app-shell:not(.sidebar-expanded) #sidebar-chat-history-container {
+    display: none !important;
+}

@@ -129,9 +129,15 @@ html[data-theme="dark"] .brand-logo--light-on-dark {
 }
 
 html[data-theme="dark"] .repo-upload-btn,
-html[data-theme="dark"] .chat-model-select,
 html[data-theme="dark"] .repo-import-select {
     background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(197, 185, 218, 0.26);
+    color: #f9fafc;
+}
+
+html[data-theme="dark"] .chat-model-select {
+    background: rgba(15, 17, 34, 0.92) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f9fafc' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 10px center;
+    background-size: 12px;
     border-color: rgba(197, 185, 218, 0.26);
     color: #f9fafc;
 }
