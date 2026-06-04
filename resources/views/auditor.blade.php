@@ -142,14 +142,35 @@
                                     @include('partials.import-hover-menu')
                                 </div>
                                 <div class="hint-wrap hint-wrap--model">
-                                    <select class="chat-model-select" id="chat-provider-select" aria-label="Select AI provider">
+                                    <div class="import-hover" id="provider-select-wrap">
+                                        <button class="chat-provider-trigger" id="provider-trigger" type="button">OpenAI</button>
+                                        <div class="import-hover-menu">
+                                            <button class="import-hover-item provider-choice-item" type="button" data-value="openai">
+                                                <span class="import-hover-label">OpenAI</span>
+                                            </button>
+                                            <button class="import-hover-item provider-choice-item" type="button" data-value="deepseek">
+                                                <span class="import-hover-label">DeepSeek</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <select class="chat-model-select" id="chat-provider-select" aria-label="Select AI provider" style="display: none;">
                                         <option value="openai">OpenAI</option>
                                         <option value="deepseek">DeepSeek</option>
                                     </select>
                                     <span class="tiny-action-hint" role="tooltip">Select AI provider</span>
                                 </div>
                                 <div class="hint-wrap hint-wrap--model">
-                                    <select class="chat-model-select" id="chat-model-select" aria-label="Select model">
+                                    <div class="import-hover" id="model-select-wrap">
+                                        <button class="chat-model-trigger" id="model-trigger" type="button">{{ $defaultChatModel }}</button>
+                                        <div class="import-hover-menu" id="model-choices-container">
+                                            @foreach ($chatModels as $chatModel)
+                                                <button class="import-hover-item model-choice-item" type="button" data-value="{{ $chatModel }}">
+                                                    <span class="import-hover-label">{{ $chatModel }}</span>
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    <select class="chat-model-select" id="chat-model-select" aria-label="Select model" style="display: none;">
                                         @foreach ($chatModels as $chatModel)
                                             <option value="{{ $chatModel }}" @selected($chatModel === $defaultChatModel)>
                                                 {{ $chatModel }}

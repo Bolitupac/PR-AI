@@ -7,6 +7,7 @@ use App\Services\Ai\AuditPromptComposer;
 use App\Services\Ai\OpenAiSimpleChatService;
 use App\Services\Audit\AuditSnapshotWriter;
 use App\Services\Vcs\VcsProviderManager;
+use App\Models\ChatConversation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -49,6 +50,7 @@ class AuditDiffController extends Controller
             'conflict_payload' => ['nullable', 'array'],
             'model' => ['nullable', 'string', 'max:120'],
             'provider' => ['nullable', 'string', 'in:openai,deepseek'],
+            'conversation_id' => ['nullable', 'integer', 'exists:chat_conversations,id'],
         ]);
 
         $source = (string) $payload['source'];
@@ -64,6 +66,7 @@ class AuditDiffController extends Controller
         $diffText = $this->truncateDiffIfNeeded((string) $payload['diff_text'], $auditTitle);
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
         $selectedProvider = isset($payload['provider']) ? (string) $payload['provider'] : 'openai';
+        $conversationId = isset($payload['conversation_id']) ? (int) $payload['conversation_id'] : null;
         $prTitle = (string) ($payload['pr_title'] ?? '');
         $prDescription = (string) ($payload['pr_description'] ?? '');
         $linkedIssues = (string) ($payload['linked_issues'] ?? '');
@@ -129,7 +132,31 @@ class AuditDiffController extends Controller
         ]);
 
         $systemPrompt = (string) config('audit_ai.system_prompt');
+
+        $conversation = null;
+        if ($conversationId) {
+            $conversation = Auth::user()->conversations()->find($conversationId);
+        }
+        if (!$conversation) {
+            $conversation = Auth::user()->conversations()->create([
+                'title' => $auditTitle ?: 'Auto Audit',
+                'provider' => $selectedProvider,
+                'model' => $selectedModel ?? (string) config("{$selectedProvider}.model", 'gpt-4o-mini'),
+                'active_audit_context' => $chatContext,
+            ]);
+        }
+        $conversation->messages()->create([
+            'role' => 'user',
+            'content' => "Auto-audit of " . ($auditTitle ?: "diff"),
+        ]);
+
         $reply = $this->openAiSimpleChatService->replyWithPrompt($systemPrompt, $userPrompt, $selectedModel, Auth::user(), $selectedProvider);
+
+        $conversation->messages()->create([
+            'role' => 'assistant',
+            'content' => $reply,
+        ]);
+
         $meta = array_merge($this->extractMeta($reply), [
             'audit_kind' => $auditKind,
             'audit_status' => $auditStatus,
@@ -165,6 +192,7 @@ class AuditDiffController extends Controller
             'reply' => $reply,
             'meta' => $meta,
             'debug_path' => $debugPath,
+            'conversation_id' => $conversation->id,
         ]);
     }
 
@@ -195,6 +223,7 @@ class AuditDiffController extends Controller
             'conflict_payload' => ['nullable', 'array'],
             'model' => ['nullable', 'string', 'max:120'],
             'provider' => ['nullable', 'string', 'in:openai,deepseek'],
+            'conversation_id' => ['nullable', 'integer', 'exists:chat_conversations,id'],
         ]);
 
         $source = (string) $payload['source'];
@@ -210,6 +239,7 @@ class AuditDiffController extends Controller
         $diffText = $this->truncateDiffIfNeeded((string) $payload['diff_text'], (string) ($payload['audit_title'] ?? ''));
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
         $selectedProvider = isset($payload['provider']) ? (string) $payload['provider'] : 'openai';
+        $conversationId = isset($payload['conversation_id']) ? (int) $payload['conversation_id'] : null;
         $prTitle = (string) ($payload['pr_title'] ?? '');
         $prDescription = (string) ($payload['pr_description'] ?? '');
         $linkedIssues = (string) ($payload['linked_issues'] ?? '');
@@ -276,11 +306,28 @@ class AuditDiffController extends Controller
 
         $systemPrompt = (string) config('audit_ai.system_prompt');
 
+        $conversation = null;
+        if ($conversationId) {
+            $conversation = Auth::user()->conversations()->find($conversationId);
+        }
+        if (!$conversation) {
+            $conversation = Auth::user()->conversations()->create([
+                'title' => $auditTitle ?: 'Auto Audit',
+                'provider' => $selectedProvider,
+                'model' => $selectedModel ?? (string) config("{$selectedProvider}.model", 'gpt-4o-mini'),
+                'active_audit_context' => $chatContext,
+            ]);
+        }
+        $conversation->messages()->create([
+            'role' => 'user',
+            'content' => "Auto-audit of " . ($auditTitle ?: "diff"),
+        ]);
+
         // Capture user before the stream closure — Auth::user() becomes unavailable
         // after session_write_close() when using the database session driver.
         $streamUser = Auth::user();
 
-        return response()->stream(function () use ($source, $repo, $prNumber, $compareType, $baseBranch, $headBranch, $auditTitle, $auditKind, $auditStatus, $prTitle, $prDescription, $linkedIssues, $contextNote, $payload, $diffText, $conflictPayload, $issueComments, $reviewComments, $systemPrompt, $userPrompt, $selectedModel, $selectedProvider, $streamUser): void {
+        return response()->stream(function () use ($source, $repo, $prNumber, $compareType, $baseBranch, $headBranch, $auditTitle, $auditKind, $auditStatus, $prTitle, $prDescription, $linkedIssues, $contextNote, $payload, $diffText, $conflictPayload, $issueComments, $reviewComments, $systemPrompt, $userPrompt, $selectedModel, $selectedProvider, $streamUser, $conversation): void {
             @ini_set('output_buffering', 'off');
             @ini_set('zlib.output_compression', '0');
             @set_time_limit(0);
@@ -295,6 +342,8 @@ class AuditDiffController extends Controller
             }
 
             echo ':' . str_repeat(' ', 1024) . "\n\n";
+            echo "event: conversation_id\n";
+            echo 'data: '.json_encode(['id' => $conversation->id])."\n\n";
             @ob_flush();
             flush();
 
@@ -354,9 +403,15 @@ class AuditDiffController extends Controller
             ]);
             $debugPath = $this->auditSnapshotWriter->write($debugText);
 
+            $conversation->messages()->create([
+                'role' => 'assistant',
+                'content' => $fullReply,
+            ]);
+
             $donePayload = json_encode([
                 'meta' => $meta,
                 'debug_path' => $debugPath,
+                'conversation_id' => $conversation->id,
             ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             echo "event: done\n";
             echo 'data: ' . ($donePayload ?: '{"meta":null}') . "\n\n";

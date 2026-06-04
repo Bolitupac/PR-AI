@@ -135,7 +135,9 @@ html[data-theme="dark"] .repo-import-select {
     color: #f9fafc;
 }
 
-html[data-theme="dark"] .chat-model-select {
+html[data-theme="dark"] .chat-model-select,
+html[data-theme="dark"] .chat-provider-trigger,
+html[data-theme="dark"] .chat-model-trigger {
     background: rgba(15, 17, 34, 0.92) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f9fafc' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 10px center;
     background-size: 12px;
     border-color: rgba(197, 185, 218, 0.26);
@@ -159,6 +161,13 @@ html[data-theme="dark"] .import-hover-item:hover {
     background:
         linear-gradient(rgba(24, 30, 57, 0.96), rgba(24, 30, 57, 0.96)) padding-box,
         linear-gradient(130deg, #0085ff 0%, #4d8dfb 45%, #c5b9da 100%) border-box;
+}
+
+html[data-theme="dark"] .import-hover-item.is-active {
+    background:
+        linear-gradient(rgba(38, 48, 92, 0.96), rgba(38, 48, 92, 0.96)) padding-box,
+        linear-gradient(130deg, #0085ff 0%, #4d8dfb 45%, #c5b9da 100%) border-box;
+    font-weight: 700;
 }
 
 html[data-theme="dark"] .repo-modal-card,

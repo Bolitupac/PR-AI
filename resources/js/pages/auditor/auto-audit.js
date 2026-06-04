@@ -238,6 +238,7 @@ export function initAutoAudit() {
                     conflict_payload: detail.conflictData || undefined,
                     model: model || undefined,
                     provider: provider || undefined,
+                    conversation_id: chatContextStore.getConversationId() || undefined,
                 }),
             });
 
@@ -297,7 +298,19 @@ export function initAutoAudit() {
                         break;
                     }
 
-                    if (eventName === 'token' || eventName === 'message') {
+                    if (eventName === 'conversation_id') {
+                        if (payload?.id) {
+                            const isNew = !chatContextStore.getConversationId();
+                            chatContextStore.setConversationId(payload.id);
+                            if (isNew) {
+                                const newUrl = `${window.location.pathname}?conversation_id=${payload.id}`;
+                                window.history.replaceState({ path: newUrl }, '', newUrl);
+                            }
+                            if (typeof window.refreshGlobalChatHistory === 'function') {
+                                window.refreshGlobalChatHistory(payload.id);
+                            }
+                        }
+                    } else if (eventName === 'token' || eventName === 'message') {
                             const token = String(payload?.text ?? payload?.choices?.[0]?.delta?.content ?? '');
                         if (token) {
                             fullReply += token;

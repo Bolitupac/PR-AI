@@ -189,6 +189,13 @@
         linear-gradient(130deg, #009eff 0%, #2f86ff 34%, #5d74ff 60%, #9360ff 100%) border-box;
 }
 
+.import-hover-item.is-active {
+    background:
+        linear-gradient(#e1efff, #e1efff) padding-box,
+        linear-gradient(130deg, #009eff 0%, #2f86ff 34%, #5d74ff 60%, #9360ff 100%) border-box;
+    font-weight: 700;
+}
+
 .import-hover-label {
     display: inline-block;
 }
