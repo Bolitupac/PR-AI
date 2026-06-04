@@ -306,6 +306,9 @@ export function initAutoAudit() {
                                 const newUrl = `${window.location.pathname}?conversation_id=${payload.id}`;
                                 window.history.replaceState({ path: newUrl }, '', newUrl);
                             }
+                            if (payload.title) {
+                                document.title = `${payload.title} - PR-AI Auditor`;
+                            }
                             if (typeof window.refreshGlobalChatHistory === 'function') {
                                 window.refreshGlobalChatHistory(payload.id);
                             }

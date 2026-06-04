@@ -439,4 +439,22 @@ class OpenAiSimpleChatService
 
         return $messages;
     }
+
+    public function generateConversationTitle(string $firstMessage, ?User $user = null, string $provider = 'openai'): string
+    {
+        $systemPrompt = "You are a helpful assistant. Generate a highly concise title (1 to 4 words) summarizing the following user request or code audit topic. Do not use quotes, punctuation, or file extensions in the title. Return ONLY the title itself.";
+        $title = $this->replyWithPrompt($systemPrompt, $firstMessage, null, $user, $provider);
+        $title = trim(str_replace(['"', "'", '.', ',', '?', '!'], '', $title));
+
+        // Fallback checks
+        if (empty($title) || str_contains(strtolower($title), 'ai request failed') || strlen($title) > 60) {
+            $words = preg_split('/\s+/', trim($firstMessage));
+            $titleWords = array_slice($words, 0, 5);
+            $title = implode(' ', $titleWords);
+            if (mb_strlen($title) > 50) {
+                $title = mb_substr($title, 0, 47) . '...';
+            }
+        }
+        return $title ?: 'New Audit';
+    }
 }

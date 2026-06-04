@@ -246,7 +246,7 @@ class SimpleChatController extends Controller
 
             echo ':' . str_repeat(' ', 1024) . "\n\n";
             echo "event: conversation_id\n";
-            echo 'data: '.json_encode(['id' => $conversation->id])."\n\n";
+            echo 'data: '.json_encode(['id' => $conversation->id, 'title' => $conversation->title])."\n\n";
             @ob_flush();
             flush();
 
@@ -455,16 +455,8 @@ class SimpleChatController extends Controller
             }
         }
 
-        // Generate a friendly title from the user's first message (first 5 words)
-        $words = preg_split('/\s+/', trim($firstUserMessage));
-        $titleWords = array_slice($words, 0, 5);
-        $title = implode(' ', $titleWords);
-        if (mb_strlen($title) > 50) {
-            $title = mb_substr($title, 0, 47) . '...';
-        }
-        if (empty($title)) {
-            $title = 'New Chat';
-        }
+        // Generate a friendly title using AI based on the request
+        $title = $this->openAiSimpleChatService->generateConversationTitle($firstUserMessage, $user, $provider);
 
         return $user->conversations()->create([
             'title' => $title,

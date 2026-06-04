@@ -138,8 +138,9 @@ class AuditDiffController extends Controller
             $conversation = Auth::user()->conversations()->find($conversationId);
         }
         if (!$conversation) {
+            $generatedTitle = $this->openAiSimpleChatService->generateConversationTitle("Auto-audit of " . ($auditTitle ?: "diff"), Auth::user(), $selectedProvider);
             $conversation = Auth::user()->conversations()->create([
-                'title' => $auditTitle ?: 'Auto Audit',
+                'title' => $generatedTitle,
                 'provider' => $selectedProvider,
                 'model' => $selectedModel ?? (string) config("{$selectedProvider}.model", 'gpt-4o-mini'),
                 'active_audit_context' => $chatContext,
@@ -311,8 +312,9 @@ class AuditDiffController extends Controller
             $conversation = Auth::user()->conversations()->find($conversationId);
         }
         if (!$conversation) {
+            $generatedTitle = $this->openAiSimpleChatService->generateConversationTitle("Auto-audit of " . ($auditTitle ?: "diff"), Auth::user(), $selectedProvider);
             $conversation = Auth::user()->conversations()->create([
-                'title' => $auditTitle ?: 'Auto Audit',
+                'title' => $generatedTitle,
                 'provider' => $selectedProvider,
                 'model' => $selectedModel ?? (string) config("{$selectedProvider}.model", 'gpt-4o-mini'),
                 'active_audit_context' => $chatContext,
@@ -343,7 +345,7 @@ class AuditDiffController extends Controller
 
             echo ':' . str_repeat(' ', 1024) . "\n\n";
             echo "event: conversation_id\n";
-            echo 'data: '.json_encode(['id' => $conversation->id])."\n\n";
+            echo 'data: '.json_encode(['id' => $conversation->id, 'title' => $conversation->title])."\n\n";
             @ob_flush();
             flush();
 

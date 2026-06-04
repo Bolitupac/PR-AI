@@ -408,6 +408,9 @@ export function initChatInput() {
                                 const newUrl = `${window.location.pathname}?conversation_id=${payload.id}`;
                                 window.history.replaceState({ path: newUrl }, '', newUrl);
                             }
+                            if (payload.title) {
+                                document.title = `${payload.title} - PR-AI Auditor`;
+                            }
                             if (typeof window.refreshGlobalChatHistory === 'function') {
                                 window.refreshGlobalChatHistory(payload.id);
                             }
@@ -664,6 +667,10 @@ export function initChatInput() {
             chatContextStore.clear();
             chatContextStore.setConversationId(conversationId);
             hideEmptyState();
+
+            if (data.conversation?.title) {
+                document.title = `${data.conversation.title} - PR-AI Auditor`;
+            }
 
             if (data.conversation?.provider && providerSelect) {
                 providerSelect.value = data.conversation.provider;
