@@ -167,6 +167,16 @@
         @auth
         <div id="sidebar-chat-history-container" class="sidebar-vcs-group"
             style="margin-top: 12px; border-top: 1px solid var(--panel-stroke); padding-top: 12px; display:flex; flex-direction:column; gap:4px;">
+            {{-- New Chat button — hidden when sidebar is collapsed --}}
+            <button id="new-chat-btn" type="button" class="sidebar-item sidebar-new-chat-btn" aria-label="New Chat"
+                style="width:100%; justify-content:flex-start; gap:8px; font-weight:600; color:var(--brand);">
+                <span class="sidebar-icon" aria-hidden="true" style="flex-shrink:0;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                </span>
+                <span class="sidebar-label" style="opacity:1; max-width:none; font-size:12px; font-weight:600;">New Chat</span>
+            </button>
             <span class="sidebar-label" style="opacity:1; max-width:none; font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-soft); padding: 0 6px 4px;">Chat History</span>
             <ul id="sidebar-chat-history-list" style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:4px;">
                 <li class="sidebar-label" style="font-size:11px; padding: 0 6px;">Loading history...</li>

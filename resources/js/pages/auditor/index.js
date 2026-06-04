@@ -61,6 +61,43 @@ export function initAuditorPage() {
     };
     window.refreshGlobalChatHistory();
 
+    // ── New Chat button ──────────────────────────────────────────────────────
+    const newChatBtn = document.getElementById('new-chat-btn');
+    if (newChatBtn) {
+        newChatBtn.addEventListener('click', () => {
+            // Clear response area
+            const responseArea = document.getElementById('ai-response-area');
+            if (responseArea) responseArea.innerHTML = '';
+
+            // Reset conversation context and URL
+            if (window.chatContextStore) {
+                window.chatContextStore.clear();
+            }
+            const cleanUrl = window.location.pathname;
+            window.history.replaceState({}, '', cleanUrl);
+
+            // Reset browser tab title
+            document.title = 'PR-AI Auditor';
+
+            // Clear the prompt input
+            const promptInput = document.getElementById('chat-prompt');
+            if (promptInput) {
+                promptInput.value = '';
+                promptInput.style.height = 'auto';
+                promptInput.focus();
+            }
+
+            // Show empty state if present
+            const emptyState = document.getElementById('chat-empty-state');
+            if (emptyState) emptyState.classList.remove('is-hidden');
+
+            // Deselect active history item
+            if (typeof window.refreshGlobalChatHistory === 'function') {
+                window.refreshGlobalChatHistory(null);
+            }
+        });
+    }
+
     const responseArea = document.getElementById('ai-response-area');
     const vcsApiBase = '/api/vcs';
 
