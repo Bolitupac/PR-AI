@@ -238,3 +238,22 @@ html[data-theme="dark"] .sidebar-theme-toggle .theme-toggle-icon--moon {
     transform: translate(-50%, -50%) rotate(-90deg);
     color: #8cafff;
 }
+
+/* Chat History Delete Button styling */
+.sidebar-chat-item-wrapper .delete-chat-btn {
+    opacity: 0;
+    transition: opacity 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-chat-item-wrapper:hover .delete-chat-btn {
+    opacity: 1;
+}
+
+.delete-chat-btn:hover {
+    background: rgba(220, 38, 38, 0.15) !important;
+    color: #ef4444 !important;
+}
+
+.app-shell:not(.sidebar-expanded) .sidebar-chat-item-wrapper .delete-chat-btn {
+    display: none !important;
+}

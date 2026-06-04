@@ -14,6 +14,7 @@ use App\Http\Controllers\Ai\SimpleChatController;
 use App\Http\Controllers\Ai\DocGenController;
 use App\Http\Controllers\Ai\AuditDiffController;
 use App\Http\Controllers\Ai\Voice\TranscriptionController;
+use App\Http\Controllers\Ai\ChatConversationController;
 use App\Http\Controllers\AuditSnapshotController;
 use App\Http\Controllers\ProfileAiKeyController;
 use App\Http\Controllers\AiPreferencesController;
@@ -42,10 +43,11 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/auth/github', [GitHubOAuthController::class, 'redirect'])->name('github.redirect');
     Route::get('/auth/github/callback', [GitHubOAuthController::class, 'callback'])->name('github.callback');
-    Route::get('/auth/gitlab', [GitLabOAuthController::class, 'redirect'])->name('gitlab.redirect');
-    Route::get('/auth/gitlab/callback', [GitLabOAuthController::class, 'callback'])->name('gitlab.callback');
     Route::post('/auth/temp-login', [App\Http\Controllers\Auth\TempLoginController::class, 'login'])->name('temp.login');
 });
+
+Route::get('/auth/gitlab', [GitLabOAuthController::class, 'redirect'])->name('gitlab.redirect');
+Route::get('/auth/gitlab/callback', [GitLabOAuthController::class, 'callback'])->name('gitlab.callback');
 
 Route::post('/logout', LogoutController::class)->middleware('auth')->name('logout');
 
@@ -86,6 +88,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/ai/audit-diff', [AuditDiffController::class, 'audit'])->name('ai.audit-diff');
     Route::post('/api/ai/audit-diff-stream', [AuditDiffController::class, 'auditStream'])->name('ai.audit-diff.stream');
     Route::post('/api/audit/snapshot', [AuditSnapshotController::class, 'store'])->name('audit.snapshot');
+
+    // Chat Conversation Routes
+    Route::get('/api/chat/conversations', [ChatConversationController::class, 'index'])->name('chat.conversations.index');
+    Route::post('/api/chat/conversations', [ChatConversationController::class, 'store'])->name('chat.conversations.store');
+    Route::get('/api/chat/conversations/{conversation}', [ChatConversationController::class, 'show'])->name('chat.conversations.show');
+    Route::put('/api/chat/conversations/{conversation}', [ChatConversationController::class, 'update'])->name('chat.conversations.update');
+    Route::delete('/api/chat/conversations/{conversation}', [ChatConversationController::class, 'destroy'])->name('chat.conversations.destroy');
     Route::post('/vcs/{provider}/connect', [VcsConnectionController::class, 'store'])->name('vcs.connections.store');
     Route::delete('/vcs/{provider}/connect', [VcsConnectionController::class, 'destroy'])->name('vcs.connections.destroy');
 

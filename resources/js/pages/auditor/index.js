@@ -18,6 +18,7 @@ import { initChatScrollBottomButton } from './chat-scroll-bottom';
 import { createChatStatus } from './chat-status';
 import { fetchGitPullComments } from './diff-comments/api';
 import { initAppsModal } from './document-generator/apps-modal';
+import { initGlobalChatHistory } from './chat-history';
 import { initDocGenMode } from './document-generator/doc-gen-mode';
 import { appendRepoParams, buildVcsUrl } from '../../shared/vcs-repo-query.js';
 import { createLoadingProgress } from './loading-progress';
@@ -46,6 +47,17 @@ export function initAuditorPage() {
     initLoadingInteractions();
     initAppsModal();
     initDocGenMode();
+
+    window.refreshGlobalChatHistory = (activeId) => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const conversationId = activeId || urlParams.get('conversation_id');
+        initGlobalChatHistory(conversationId, (id) => {
+            if (typeof window.loadChatConversation === 'function') {
+                window.loadChatConversation(id);
+            }
+        });
+    };
+    window.refreshGlobalChatHistory();
 
     const responseArea = document.getElementById('ai-response-area');
     const vcsApiBase = '/api/vcs';

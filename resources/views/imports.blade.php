@@ -61,13 +61,13 @@
                     </ul>
                 </article>
 
-                <article class="imports-panel imports-side-panel imports-panel--conflicts">
+                <article class="imports-panel imports-side-panel imports-panel--history">
                     <header class="imports-panel__head">
-                        <h2 class="imports-panel__title" style="margin: 0;">Merge Conflicts</h2>
+                        <h2 class="imports-panel__title" style="margin: 0;">Chat History</h2>
                     </header>
-                    <ul class="imports-history-list imports-activity-list" id="recent-merge-conflicts-list">
+                    <ul class="imports-history-list imports-activity-list" id="imports-chat-history-list">
                         <li class="imports-history-item" style="color: var(--text-soft); font-size: 12px;">
-                            Loading merge conflicts...
+                            Loading history...
                         </li>
                     </ul>
                 </article>

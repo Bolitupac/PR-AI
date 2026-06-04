@@ -10,7 +10,7 @@ import * as Renderers from './renderers';
 import { buildBranchAuditPayload, buildCommitAuditPayload, buildPullRequestAuditPayload, startAuditSession } from './audit-session';
 import { initRecentPullRequestsPanel } from './recent-pulls';
 import { initRecentCommitsPanel } from './recent-commits';
-import { initRecentMergeConflictsPanel } from './recent-merge-conflicts';
+import { initGlobalChatHistory } from '../auditor/chat-history';
 
 const PAGE_SIZE = 20;
 const METADATA_START_DELAY_MS = 1200;
@@ -32,6 +32,7 @@ export async function initImportsPage() {
     initSettingsDeepSeekKey();
     initSettingsAiPreferences();
     initLoadingInteractions();
+    initGlobalChatHistory();
 
     const repoContainer = document.getElementById('repo-list-container');
     const loadMoreWrap = document.getElementById('load-more-wrap');
@@ -262,14 +263,12 @@ export async function initImportsPage() {
         if (!isConnectedProvider()) {
             renderDisconnectedText(document.getElementById('recent-pull-requests-list'), `${providerLabel()} not connected.`);
             renderDisconnectedText(document.getElementById('recent-commits-list'), `${providerLabel()} not connected.`);
-            renderDisconnectedText(document.getElementById('recent-merge-conflicts-list'), `${providerLabel()} not connected.`);
             renderProviderPrompt(repoContainer, `${providerLabel()} not connected`, `Connect ${providerLabel()} to import repositories and pull requests.`);
             return;
         }
 
         initRecentPullRequestsPanel(apiBase, currentProvider, setImportStatus);
         initRecentCommitsPanel(apiBase, currentProvider, setImportStatus);
-        initRecentMergeConflictsPanel(apiBase, currentProvider, setImportStatus);
 
         try {
             const repos = await API.fetchRepos(apiBase, currentProvider);

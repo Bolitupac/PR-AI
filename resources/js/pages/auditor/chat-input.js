@@ -326,6 +326,7 @@ export function initChatInput() {
                     provider: selectedProvider || undefined,
                     history: historyBefore,
                     docgen_mode_active: isDocGenModeEnabled(),
+                    conversation_id: chatContextStore.getConversationId() || undefined,
                 }),
                 credentials: 'same-origin',
                 signal: abortController.signal,
@@ -399,7 +400,19 @@ export function initChatInput() {
                         break;
                     }
 
-                    if (eventName === 'message' || eventName === 'token') {
+                    if (eventName === 'conversation_id') {
+                        if (payload?.id) {
+                            const isNew = !chatContextStore.getConversationId();
+                            chatContextStore.setConversationId(payload.id);
+                            if (isNew) {
+                                const newUrl = `${window.location.pathname}?conversation_id=${payload.id}`;
+                                window.history.replaceState({ path: newUrl }, '', newUrl);
+                            }
+                            if (typeof window.refreshGlobalChatHistory === 'function') {
+                                window.refreshGlobalChatHistory(payload.id);
+                            }
+                        }
+                    } else if (eventName === 'message' || eventName === 'token') {
                         const token = extractOpenAiToken(payload) || String(payload?.text ?? '');
                         if (token !== '') {
                             fullReply += token;
@@ -631,4 +644,67 @@ export function initChatInput() {
             recordUserMessage: true,
         });
     });
+
+    const loadConversation = async (conversationId) => {
+        const status = createChatStatus({ container: responseArea, anchorNode: null });
+        status.startDots('Loading chat conversation');
+        try {
+            const res = await fetch(`/api/chat/conversations/${conversationId}`, {
+                headers: {
+                    'Accept': 'application/json',
+                },
+            });
+            if (!res.ok) {
+                status.markError('Failed to load conversation.');
+                return;
+            }
+            const data = await res.json();
+            
+            responseArea.innerHTML = '';
+            chatContextStore.clear();
+            chatContextStore.setConversationId(conversationId);
+            hideEmptyState();
+
+            if (data.conversation?.provider && providerSelect) {
+                providerSelect.value = data.conversation.provider;
+                providerSelect.dispatchEvent(new Event('change'));
+            }
+            if (data.conversation?.model && modelSelect) {
+                modelSelect.value = data.conversation.model;
+                modelSelect.dispatchEvent(new Event('change'));
+            }
+
+            if (Array.isArray(data.messages)) {
+                data.messages.forEach((msg) => {
+                    appendMessage(msg.content, msg.role === 'assistant' ? 'ai' : 'user');
+                    chatContextStore.push(msg.role, msg.content);
+                });
+            }
+            
+            status.stopDots();
+            status.remove(200);
+
+            const newUrl = `${window.location.pathname}?conversation_id=${conversationId}`;
+            window.history.replaceState({ path: newUrl }, '', newUrl);
+
+            if (typeof window.refreshGlobalChatHistory === 'function') {
+                window.refreshGlobalChatHistory(conversationId);
+            }
+        } catch (err) {
+            console.error(err);
+            status.markError('Error loading conversation.');
+        }
+    };
+
+    window.loadChatConversation = loadConversation;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialConversationId = urlParams.get('conversation_id');
+    if (initialConversationId) {
+        loadConversation(initialConversationId);
+    } else {
+        if (typeof window.refreshGlobalChatHistory === 'function') {
+            window.refreshGlobalChatHistory(null);
+        }
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Ai;
 
 use App\Http\Controllers\Controller;
+use App\Models\ChatConversation;
 use App\Services\Ai\OpenAiSimpleChatService;
 use App\Services\DocGen\DocGenIntentDetector;
 use Illuminate\Http\JsonResponse;
@@ -30,6 +31,7 @@ class SimpleChatController extends Controller
             'history.*.role' => ['required_with:history', 'string', Rule::in(['user', 'assistant'])],
             'history.*.content' => ['required_with:history', 'string', 'max:8000'],
             'docgen_mode_active' => ['nullable', 'boolean'],
+            'conversation_id' => ['nullable', 'integer', 'exists:chat_conversations,id'],
         ]);
 
         $message = (string) $payload['message'];
@@ -39,11 +41,18 @@ class SimpleChatController extends Controller
         $activeAuditContext = trim((string) $request->session()->get('active_audit_context', ''));
         $docGenModeActive = (bool) ($payload['docgen_mode_active'] ?? false);
 
+        $conversation = $this->getOrCreateConversation($request, $payload['conversation_id'] ?? null, $selectedProvider, $selectedModel, $message);
+        $conversation->messages()->create(['role' => 'user', 'content' => $message]);
+
         if ($this->docGenIntentDetector->matches($message)) {
+            $reply = 'This looks like a document-generation request. Turn on DocGen mode in Apps, then send the prompt again so I can return it in document format.';
+            $conversation->messages()->create(['role' => 'assistant', 'content' => $reply]);
+
             return response()->json([
                 'provider' => $selectedProvider,
                 'model' => $selectedModel ?? (string) config("{$selectedProvider}.model", 'gpt-4o-mini'),
-                'reply' => 'This looks like a document-generation request. Turn on DocGen mode in Apps, then send the prompt again so I can return it in document format.',
+                'reply' => $reply,
+                'conversation_id' => $conversation->id,
             ]);
         }
 
@@ -76,10 +85,13 @@ class SimpleChatController extends Controller
             $reply = $this->openAiSimpleChatService->replyWithHistory($strictMessage, $history, $selectedModel, Auth::user(), $selectedProvider);
         }
 
+        $conversation->messages()->create(['role' => 'assistant', 'content' => $reply]);
+
         return response()->json([
             'provider' => $selectedProvider,
             'model' => $selectedModel ?? (string) config("{$selectedProvider}.model", 'gpt-4o-mini'),
             'reply' => $reply,
+            'conversation_id' => $conversation->id,
         ]);
     }
 
@@ -164,6 +176,7 @@ class SimpleChatController extends Controller
             'history.*.role' => ['required_with:history', 'string', Rule::in(['user', 'assistant'])],
             'history.*.content' => ['required_with:history', 'string', 'max:8000'],
             'docgen_mode_active' => ['nullable', 'boolean'],
+            'conversation_id' => ['nullable', 'integer', 'exists:chat_conversations,id'],
         ]);
 
         $message = (string) $payload['message'];
@@ -173,15 +186,23 @@ class SimpleChatController extends Controller
         $activeAuditContext = trim((string) $request->session()->get('active_audit_context', ''));
         $docGenModeActive = (bool) ($payload['docgen_mode_active'] ?? false);
 
+        $conversation = $this->getOrCreateConversation($request, $payload['conversation_id'] ?? null, $selectedProvider, $selectedModel, $message);
+        $conversation->messages()->create(['role' => 'user', 'content' => $message]);
+
         if ($this->docGenIntentDetector->matches($message)) {
             $reply = 'This looks like a document-generation request. Turn on DocGen mode in Apps, then send the prompt again so I can return it in document format.';
+            $conversation->messages()->create(['role' => 'assistant', 'content' => $reply]);
 
-            return response()->stream(function () use ($reply) {
+            return response()->stream(function () use ($reply, $conversation) {
                 echo ':' . str_repeat(' ', 1024) . "\n\n";
+                echo "event: conversation_id\n";
+                echo 'data: '.json_encode(['id' => $conversation->id])."\n\n";
+                @ob_flush();
+                flush();
                 echo "event: token\n";
                 echo 'data: '.json_encode(['text' => $reply], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n\n";
                 echo "event: done\n";
-                echo 'data: '.json_encode(['reply' => $reply], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n\n";
+                echo 'data: '.json_encode(['reply' => $reply, 'conversation_id' => $conversation->id], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n\n";
                 @ob_flush();
                 flush();
             }, 200, [
@@ -209,7 +230,7 @@ class SimpleChatController extends Controller
         // after session_write_close() when using the database session driver.
         $streamUser = Auth::user();
 
-        return response()->stream(function () use ($messageForModel, $history, $selectedModel, $selectedProvider, $streamUser) {
+        return response()->stream(function () use ($messageForModel, $history, $selectedModel, $selectedProvider, $streamUser, $conversation) {
             @ini_set('output_buffering', 'off');
             @ini_set('zlib.output_compression', '0');
             @set_time_limit(0);
@@ -224,6 +245,8 @@ class SimpleChatController extends Controller
             }
 
             echo ':' . str_repeat(' ', 1024) . "\n\n";
+            echo "event: conversation_id\n";
+            echo 'data: '.json_encode(['id' => $conversation->id])."\n\n";
             @ob_flush();
             flush();
 
@@ -252,8 +275,13 @@ class SimpleChatController extends Controller
                 $selectedProvider
             );
 
+            if (trim($fullReply) !== '') {
+                $conversation->messages()->create(['role' => 'assistant', 'content' => $fullReply]);
+            }
+
             $donePayload = json_encode([
                 'reply' => $fullReply,
+                'conversation_id' => $conversation->id,
             ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             echo "event: done\n";
             echo 'data: '.($donePayload ?: '{"reply":""}')."\n\n";
@@ -415,5 +443,34 @@ class SimpleChatController extends Controller
         }
 
         return $suggestions;
+    }
+
+    private function getOrCreateConversation(Request $request, ?int $conversationId, string $provider, ?string $model, string $firstUserMessage): ChatConversation
+    {
+        $user = Auth::user();
+        if ($conversationId) {
+            $conversation = $user->conversations()->find($conversationId);
+            if ($conversation) {
+                return $conversation;
+            }
+        }
+
+        // Generate a friendly title from the user's first message (first 5 words)
+        $words = preg_split('/\s+/', trim($firstUserMessage));
+        $titleWords = array_slice($words, 0, 5);
+        $title = implode(' ', $titleWords);
+        if (mb_strlen($title) > 50) {
+            $title = mb_substr($title, 0, 47) . '...';
+        }
+        if (empty($title)) {
+            $title = 'New Chat';
+        }
+
+        return $user->conversations()->create([
+            'title' => $title,
+            'provider' => $provider,
+            'model' => $model ?? (string) config("{$provider}.model", 'gpt-4o-mini'),
+            'active_audit_context' => $request->session()->get('active_audit_context'),
+        ]);
     }
 }

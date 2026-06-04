@@ -163,6 +163,16 @@
             </div>
             @endisset
         @endif
+
+        @auth
+        <div id="sidebar-chat-history-container" class="sidebar-vcs-group"
+            style="margin-top: 12px; border-top: 1px solid var(--panel-stroke); padding-top: 12px; display:flex; flex-direction:column; gap:4px;">
+            <span class="sidebar-label" style="opacity:1; max-width:none; font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-soft); padding: 0 6px 4px;">Chat History</span>
+            <ul id="sidebar-chat-history-list" style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:4px;">
+                <li class="sidebar-label" style="font-size:11px; padding: 0 6px;">Loading history...</li>
+            </ul>
+        </div>
+        @endauth
     </div>
 
     <div class="sidebar-bottom">

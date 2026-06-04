@@ -1,5 +1,6 @@
 const MAX_HISTORY = 16;
 const state = {
+    conversationId: null,
     history: [],
 };
 
@@ -24,8 +25,17 @@ function list() {
 }
 
 function clear() {
+    state.conversationId = null;
     state.history = [];
 }
 
-export const chatContextStore = { push, list, clear };
+function setConversationId(id) {
+    state.conversationId = id;
+}
+
+function getConversationId() {
+    return state.conversationId;
+}
+
+export const chatContextStore = { push, list, clear, setConversationId, getConversationId };
 

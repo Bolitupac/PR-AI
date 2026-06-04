@@ -111,4 +111,9 @@ class User extends Authenticatable
 
         return substr($key, 0, 4).str_repeat('*', max(4, strlen($key) - 8)).substr($key, -4);
     }
+
+    public function conversations(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ChatConversation::class)->latest();
+    }
 }
