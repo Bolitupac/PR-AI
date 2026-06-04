@@ -276,7 +276,11 @@ class AuditDiffController extends Controller
 
         $systemPrompt = (string) config('audit_ai.system_prompt');
 
-        return response()->stream(function () use ($source, $repo, $prNumber, $compareType, $baseBranch, $headBranch, $auditTitle, $auditKind, $auditStatus, $prTitle, $prDescription, $linkedIssues, $contextNote, $payload, $diffText, $conflictPayload, $issueComments, $reviewComments, $systemPrompt, $userPrompt, $selectedModel, $selectedProvider): void {
+        // Capture user before the stream closure — Auth::user() becomes unavailable
+        // after session_write_close() when using the database session driver.
+        $streamUser = Auth::user();
+
+        return response()->stream(function () use ($source, $repo, $prNumber, $compareType, $baseBranch, $headBranch, $auditTitle, $auditKind, $auditStatus, $prTitle, $prDescription, $linkedIssues, $contextNote, $payload, $diffText, $conflictPayload, $issueComments, $reviewComments, $systemPrompt, $userPrompt, $selectedModel, $selectedProvider, $streamUser): void {
             @ini_set('output_buffering', 'off');
             @ini_set('zlib.output_compression', '0');
             @set_time_limit(0);
@@ -302,7 +306,7 @@ class AuditDiffController extends Controller
                     ['role' => 'user', 'content' => $userPrompt],
                 ],
                 $selectedModel,
-                Auth::user(),
+                $streamUser,
                 function (string $token) use (&$fullReply): void {
                     $fullReply .= $token;
                     $json = json_encode(['text' => $token], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

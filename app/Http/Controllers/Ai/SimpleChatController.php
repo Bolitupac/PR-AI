@@ -205,7 +205,11 @@ class SimpleChatController extends Controller
 
         $messageForModel = $this->augmentForInlineComments($messageForModel, $message, $activeAuditContext);
 
-        return response()->stream(function () use ($messageForModel, $history, $selectedModel, $selectedProvider) {
+        // Capture user before the stream closure — Auth::user() becomes unavailable
+        // after session_write_close() when using the database session driver.
+        $streamUser = Auth::user();
+
+        return response()->stream(function () use ($messageForModel, $history, $selectedModel, $selectedProvider, $streamUser) {
             @ini_set('output_buffering', 'off');
             @ini_set('zlib.output_compression', '0');
             @set_time_limit(0);
@@ -229,7 +233,7 @@ class SimpleChatController extends Controller
                 $messageForModel,
                 $history,
                 $selectedModel,
-                Auth::user(),
+                $streamUser,
                 function (string $token) use (&$fullReply): void {
                     $fullReply .= $token;
                     $json = json_encode(['text' => $token], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

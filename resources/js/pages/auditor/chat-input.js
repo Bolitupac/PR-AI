@@ -323,7 +323,7 @@ export function initChatInput() {
                 body: JSON.stringify({
                     message: text,
                     model: selectedModel || undefined,
-                provider: selectedProvider || undefined,
+                    provider: selectedProvider || undefined,
                     history: historyBefore,
                     docgen_mode_active: isDocGenModeEnabled(),
                 }),
