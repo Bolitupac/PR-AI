@@ -104,7 +104,7 @@ class OpenAiSimpleChatService
             $buffer = '';
 
             while (!$body->eof()) {
-                $buffer .= $body->read(64);
+                $buffer .= $body->read(4096);
 
                 while (($newlinePos = strpos($buffer, "\n")) !== false) {
                     $line = trim(substr($buffer, 0, $newlinePos));
@@ -195,7 +195,7 @@ class OpenAiSimpleChatService
 
             $body = $response->toPsrResponse()->getBody();
             while (!$body->eof()) {
-                $chunk = $body->read(256);
+                $chunk = $body->read(4096);
                 if ($chunk === '') {
                     continue;
                 }
@@ -266,7 +266,7 @@ class OpenAiSimpleChatService
             $buffer = '';
 
             while (!$body->eof()) {
-                $buffer .= $body->read(64);
+                $buffer .= $body->read(4096);
 
                 while (($newlinePos = strpos($buffer, "\n")) !== false) {
                     $line = trim(substr($buffer, 0, $newlinePos));
