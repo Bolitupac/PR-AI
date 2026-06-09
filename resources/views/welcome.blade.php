@@ -250,17 +250,7 @@
                     <article class="provider-card" data-reveal>
                         <div class="provider-card__inner">
                             <div class="provider-card__logo-wrap provider-card__logo-wrap--openai">
-                                {{-- Official OpenAI logomark — stylised hexagonal bloom --}}
-                                <svg class="provider-card__logo" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                                    <path d="M24 4c-2.5 1.5-5 2.8-7.5 4.3C14 9.8 11.5 11.3 9 12.7v4.6c0 2.8.1 5.6.1 8.4 0 2.8-.1 5.6-.1 8.4l7.5 4.3c2.5 1.4 5 2.9 7.5 4.3 2.5-1.4 5-2.9 7.5-4.3 2.5-1.4 5-2.8 7.5-4.3v-8.4-8.4l-7.5-4.3c-2.5-1.5-5-2.8-7.5-4.3Z" fill="#000" stroke="none"/>
-                                    <path d="M24 8c2 1.2 4 2.4 6 3.6 2 1.2 4 2.4 6 3.6v7.6c0 2.5 0 5.1 0 7.6l-6 3.6c-2 1.2-4 2.4-6 3.6-2-1.2-4-2.4-6-3.6-2-1.2-4-2.4-6-3.6v-7.6c0-2.5 0-5.1 0-7.6 2-1.2 4-2.4 6-3.6 2-1.2 4-2.4 6-3.6Z" fill="#fff"/>
-                                    <path d="M24 12c1.3.8 2.7 1.6 4 2.4 1.3.8 2.7 1.6 4 2.4v4.8l-4 2.4-4-2.4v-4.8Z" fill="#000"/>
-                                    <path d="M16 16.8c1.3-.8 2.7-1.6 4-2.4v4.8l-4 2.4v-4.8Z" fill="#000"/>
-                                    <path d="M32 16.8v4.8l-4 2.4v-4.8l4-2.4Z" fill="#000"/>
-                                    <path d="M24 26.4l4 2.4v4.8l-4-2.4v-4.8Z" fill="#000"/>
-                                    <path d="M20 24l4 2.4v4.8l-4-2.4V24Z" fill="#000"/>
-                                    <path d="M28 24l4 2.4-4 2.4-4-2.4 4-2.4Z" fill="#000"/>
-                                </svg>
+                                <img src="{{ asset('images/openailogo.png') }}" alt="OpenAI logo" class="provider-card__logo" style="object-fit:contain;">
                             </div>
                             <h3>OpenAI</h3>
                             <p class="provider-card__models">GPT-4o &amp; GPT-4o-mini</p>
@@ -272,14 +262,7 @@
                     <article class="provider-card provider-card--deepseek" data-reveal>
                         <div class="provider-card__inner">
                             <div class="provider-card__logo-wrap provider-card__logo-wrap--deepseek">
-                                {{-- Official DeepSeek logomark — stylised whale --}}
-                                <svg class="provider-card__logo" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                                    <path d="M36 28c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 4 2 7.5 5 9.5l-2 5 6-3.5c1 .2 2 .3 3 .3s2-.1 3-.3l6 3.5-2-5c3-2 5-5.5 5-9.5Z" fill="#4D6BFE"/>
-                                    <ellipse cx="20" cy="27" rx="2.5" ry="3" fill="#fff"/>
-                                    <ellipse cx="28" cy="27" rx="2.5" ry="3" fill="#fff"/>
-                                    <path d="M12 22c-3-2-6-2-8 0 0 0 2 4 8 4" fill="#4D6BFE" stroke="#4D6BFE" stroke-width="1.5"/>
-                                    <path d="M12 18c-4-3-8-2-10 1 0 0 4 3 10 2" fill="#4D6BFE" stroke="#4D6BFE" stroke-width="1.5"/>
-                                </svg>
+                                <img src="{{ asset('images/deepseeklogo.png') }}" alt="DeepSeek logo" class="provider-card__logo" style="object-fit:contain;">
                             </div>
                             <h3>DeepSeek</h3>
                             <p class="provider-card__models">DeepSeek-Chat &amp; DeepSeek-Reasoner</p>

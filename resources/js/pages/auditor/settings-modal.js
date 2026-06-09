@@ -46,19 +46,46 @@ export function initSettingsModal() {
     };
 
     const setActiveTab = (tabName) => {
+        const currentPane = document.querySelector('.settings-pane.is-active');
+        const targetPane = document.querySelector(`[data-settings-pane="${tabName}"]`);
+
         navButtons.forEach((button) => {
             button.classList.toggle('is-active', button.dataset.settingsTab === tabName);
         });
 
-        panes.forEach((pane) => {
-            pane.classList.toggle('is-active', pane.dataset.settingsPane === tabName);
-        });
+        // Smooth crossfade between panes
+        if (currentPane && targetPane && currentPane !== targetPane) {
+            currentPane.style.opacity = '1';
+            currentPane.style.transition = 'opacity 120ms ease-out';
+            currentPane.style.opacity = '0';
+
+            setTimeout(() => {
+                currentPane.classList.remove('is-active');
+                currentPane.style.opacity = '';
+                currentPane.style.transition = '';
+
+                targetPane.classList.add('is-active');
+                targetPane.style.opacity = '0';
+                targetPane.style.transition = 'none';
+                requestAnimationFrame(() => {
+                    targetPane.style.transition = 'opacity 150ms ease-out';
+                    targetPane.style.opacity = '1';
+                    setTimeout(() => {
+                        targetPane.style.opacity = '';
+                        targetPane.style.transition = '';
+                    }, 160);
+                });
+            }, 130);
+        } else if (targetPane && !currentPane) {
+            panes.forEach((pane) => {
+                pane.classList.toggle('is-active', pane.dataset.settingsPane === tabName);
+            });
+        }
 
         const helpSubNav = document.getElementById('help-nav-sub');
         if (helpSubNav) {
             if (tabName.startsWith('help')) {
                 helpSubNav.style.display = 'flex';
-                // Let the 'help' landing page show instead of redirecting.
             } else {
                 helpSubNav.style.display = 'none';
             }

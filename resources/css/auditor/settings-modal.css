@@ -977,6 +977,83 @@
 }
 
 /* ─── Responsive ─── */
+/* ─── Dark mode fixes — profile, API keys, settings panes ─── */
+html[data-theme="dark"] .settings-profile-user {
+    background: rgba(30,34,50,0.8);
+    border-color: rgba(255,255,255,0.08);
+}
+html[data-theme="dark"] .settings-profile-user .profile-modal-name { color: #e2e6f0; }
+html[data-theme="dark"] .settings-profile-user .profile-modal-handle { color: #949ab0; }
+html[data-theme="dark"] .settings-profile-user .profile-modal-email { color: #7a8098; }
+
+html[data-theme="dark"] .settings-profile-grid .profile-modal-box {
+    background: rgba(30,34,50,0.7);
+    border-color: rgba(255,255,255,0.08);
+}
+html[data-theme="dark"] .settings-profile-grid .profile-modal-label { color: #949ab0; }
+html[data-theme="dark"] .settings-profile-grid .profile-modal-value { color: #e2e6f0; }
+
+html[data-theme="dark"] .settings-pane-head h3 { color: #e2e6f0; }
+html[data-theme="dark"] .settings-pane-head p { color: #949ab0; }
+
+html[data-theme="dark"] .settings-provider-item {
+    background: rgba(30,34,50,0.7);
+    border-color: rgba(255,255,255,0.08);
+}
+html[data-theme="dark"] .settings-provider-name { color: #e2e6f0; }
+html[data-theme="dark"] .settings-provider-sub { color: #949ab0; }
+
+html[data-theme="dark"] .settings-mode-select,
+html[data-theme="dark"] .settings-api-input {
+    background: rgba(20,22,36,0.7);
+    border-color: rgba(255,255,255,0.1);
+    color: #e2e6f0;
+}
+html[data-theme="dark"] .settings-api-hint { color: #7a8098; }
+html[data-theme="dark"] .settings-guest-state {
+    background: rgba(30,34,50,0.5);
+    border-color: rgba(255,255,255,0.06);
+    color: #949ab0;
+}
+
+html[data-theme="dark"] .settings-gh-section {
+    background: rgba(30,34,50,0.7);
+    border-color: rgba(255,255,255,0.08);
+}
+html[data-theme="dark"] .settings-gh-row-title { color: #e2e6f0; }
+html[data-theme="dark"] .settings-gh-row-sub { color: #949ab0; }
+html[data-theme="dark"] .settings-demo-toggle { color: #c5c9d6; }
+
+html[data-theme="dark"] .settings-field span { color: #949ab0; }
+html[data-theme="dark"] .settings-field select,
+html[data-theme="dark"] .settings-field textarea {
+    background: rgba(20,22,36,0.7);
+    border-color: rgba(255,255,255,0.1);
+    color: #e2e6f0;
+}
+
+/* Dark mode for settings sidebar */
+html[data-theme="dark"] .settings-nav-btn { color: #949ab0; }
+html[data-theme="dark"] .settings-nav-btn:hover { color: #e2e6f0; background: rgba(255,255,255,0.04); }
+html[data-theme="dark"] .settings-nav-btn.is-active { color: #8cafff; background: rgba(73,101,255,0.12); }
+
+html[data-theme="dark"] .settings-modal-card {
+    background: #1a1e2c;
+    border-color: rgba(255,255,255,0.08);
+}
+html[data-theme="dark"] .settings-modal-sidebar {
+    background: rgba(22,26,38,0.9);
+    border-color: rgba(255,255,255,0.06);
+}
+html[data-theme="dark"] .settings-modal-content {
+    background: #1a1e2c;
+}
+html[data-theme="dark"] .settings-modal-close {
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.08);
+    color: #949ab0;
+}
+
 @media (max-width: 860px) {
     .settings-modal-card {
         width: 96vw;

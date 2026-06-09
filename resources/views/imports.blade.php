@@ -104,6 +104,7 @@
     </div>
 
     @include('partials.settings-modal')
+    @include('partials.mobile-redirect')
 </body>
 
 </html>

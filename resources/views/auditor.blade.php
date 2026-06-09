@@ -130,11 +130,13 @@
                         @endphp
                         <header class="panel-head ai-head">
                             <h3>
-                                <img src="{{ asset('images/git-pull-ai-Logo tp bg 512.png') }}" alt="PR ai logo"
-                                    class="brand-logo brand-logo--dark-on-light">
-                                <img src="{{ asset('images/git-pull-ai-Logo tp bg 512.png') }}" alt="PR ai logo"
-                                    class="brand-logo brand-logo--light-on-dark">
-                                <span>PR ai</span>
+                                <a href="/" title="Go back to landing page" style="display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:inherit;">
+                                    <img src="{{ asset('images/git-pull-ai-Logo tp bg 512.png') }}" alt="PR ai logo"
+                                        class="brand-logo brand-logo--dark-on-light">
+                                    <img src="{{ asset('images/git-pull-ai-Logo tp bg 512.png') }}" alt="PR ai logo"
+                                        class="brand-logo brand-logo--light-on-dark">
+                                    <span>PR ai</span>
+                                </a>
                             </h3>
                             <div class="panel-actions">
                                 <div class="import-hover" id="import-trigger-wrap">
@@ -269,6 +271,7 @@
     @include('partials.profile-modal')
     @include('partials.settings-modal')
     @include('partials.apps-modal')
+    @include('partials.mobile-redirect')
 
     <div class="voice-fab" id="voice-fab">
         <div class="voice-record-chip voice-record-chip--fab" id="voice-record-chip-fab">

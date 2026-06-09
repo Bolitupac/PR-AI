@@ -148,21 +148,22 @@
                 <section class="settings-pane" data-settings-pane="profile">
                     <header class="settings-pane-head">
                         <h3>Profile</h3>
-                        <p>Manage the signed-in account, GitHub identity, and logout options.</p>
+                        <p>Your account, plan, and AI key status.</p>
                     </header>
 
                     @auth
-                        <div class="profile-modal-user settings-profile-user">
+                        <div class="settings-profile-user">
                             <img class="profile-modal-avatar" src="https://github.com/{{ auth()->user()->github_username }}.png"
-                                alt="GitHub avatar">
-                            <div class="profile-modal-meta">
-                                <div class="profile-modal-name">{{ auth()->user()->name ?? 'User' }}</div>
-                                <div class="profile-modal-handle">&#64;{{ auth()->user()->github_username ?? 'github-user' }}</div>
-                                <div class="profile-modal-email">{{ auth()->user()->email ?? 'no-email' }}</div>
+                                alt="GitHub avatar" style="width:58px;height:58px;border-radius:50%;border:2px solid #e0e6f2;flex-shrink:0;">
+                            <div style="display:flex;flex-direction:column;gap:2px;">
+                                <span style="font-size:16px;font-weight:700;color:var(--text-main);letter-spacing:-0.03em;">{{ auth()->user()->name ?? 'User' }}</span>
+                                <span style="font-size:13px;color:#5e6475;">&#64;{{ auth()->user()->github_username ?? 'github-user' }}</span>
+                                <span style="font-size:12px;color:#7c8398;">{{ auth()->user()->email ?? 'no-email' }}</span>
                             </div>
                         </div>
 
-                        <div class="profile-modal-grid settings-profile-grid">
+                        <div class="settings-profile-grid">
+                            {{-- Plan --}}
                             <div class="profile-modal-box">
                                 <div class="profile-modal-label">Current Plan</div>
                                 <div class="profile-modal-value">
@@ -170,52 +171,38 @@
                                 </div>
                             </div>
 
+                            {{-- OpenAI Key Status --}}
+                            <div class="profile-modal-box" id="settings-profile-openai-status-box">
+                                <div class="profile-modal-label">OpenAI Key</div>
+                                <div style="display:flex;align-items:center;gap:10px;">
+                                    <img src="{{ asset('images/openailogo.png') }}" alt="OpenAI" style="width:20px;height:20px;object-fit:contain;">
+                                    <span id="settings-profile-openai-badge" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(45,164,78,0.1);color:#1a7f37;border:1px solid rgba(45,164,78,0.3);">Developer key active</span>
+                                </div>
+                            </div>
+
+                            {{-- DeepSeek Key Status --}}
+                            <div class="profile-modal-box" id="settings-profile-deepseek-status-box">
+                                <div class="profile-modal-label">DeepSeek Key</div>
+                                <div style="display:flex;align-items:center;gap:10px;">
+                                    <img src="{{ asset('images/deepseeklogo.png') }}" alt="DeepSeek" style="width:20px;height:20px;object-fit:contain;">
+                                    <span id="settings-profile-deepseek-badge" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(45,164,78,0.1);color:#1a7f37;border:1px solid rgba(45,164,78,0.3);">Developer key active</span>
+                                </div>
+                            </div>
+
+                            {{-- GitHub Account --}}
                             <div class="profile-modal-box">
                                 <div class="profile-modal-label">GitHub Account</div>
                                 <div class="profile-modal-value">{{ auth()->user()->github_username ?? 'Connected' }}</div>
-                                <div class="profile-api-sub">This GitHub account is used to access PR ai right now.</div>
-                            </div>
-
-                            <div class="profile-modal-box" id="settings-profile-ai-key-box"
-                                data-status-url="{{ route('profile.ai-key.status') }}"
-                                data-save-url="{{ route('profile.ai-key.save') }}"
-                                data-remove-url="{{ route('profile.ai-key.remove') }}"
-                                data-mode-url="{{ route('profile.ai-key.mode') }}">
-                                <div class="profile-modal-label">OpenAI API Key</div>
-
-                                <label class="profile-mode-label" for="settings-profile-ai-key-mode">Key source</label>
-                                <select class="profile-mode-select" id="settings-profile-ai-key-mode" aria-label="Profile API key source">
-                                    <option value="developer">Use developer key (recommended)</option>
-                                    <option value="personal">Use my key</option>
-                                </select>
-
-                                <input class="profile-api-input" id="settings-profile-api-input" type="password"
-                                    placeholder="sk-...">
-
-                                <div class="profile-api-actions">
-                                    <button class="profile-modal-action profile-api-save" id="settings-profile-api-save-btn"
-                                        type="button" data-loading-btn data-loading-text="Saving">
-                                        Save key
-                                    </button>
-                                    <button class="profile-api-remove-btn" id="settings-profile-api-remove-btn" type="button"
-                                        data-loading-btn data-loading-text="Removing">
-                                        Remove key
-                                    </button>
-                                </div>
-
-                                <div class="profile-api-sub" id="settings-profile-ai-key-hint">
-                                    Choose which key source this account uses for AI chat.
-                                </div>
-                                <div class="profile-api-state" id="settings-profile-ai-key-state"></div>
+                                <div class="profile-api-sub">Used to sign in and access PR ai.</div>
                             </div>
                         </div>
 
-                        <div class="profile-modal-actions settings-profile-actions">
+                        <div class="settings-profile-actions">
                             <a class="profile-modal-action" href="https://github.com/{{ auth()->user()->github_username }}"
                                 target="_blank" rel="noopener noreferrer">
                                 View on GitHub
                             </a>
-                            <form action="{{ route('logout') }}" method="POST" data-loading-form>
+                            <form action="{{ route('logout') }}" method="POST" data-loading-form style="display:inline;">
                                 @csrf
                                 <button class="profile-logout-btn" type="submit" data-loading-text="Logging out">Log out</button>
                             </form>
@@ -223,13 +210,12 @@
                     @endauth
 
                     @guest
-                        <div class="profile-modal-box">
+                        <div class="profile-modal-box" style="text-align:center;padding:32px;">
                             <div class="profile-modal-label">Status</div>
                             <div class="profile-modal-value">Guest</div>
-                            <div class="profile-api-sub">Log in with GitHub to access profile settings and the auditor workspace.</div>
+                            <div class="profile-api-sub" style="margin-top:8px;">Log in with GitHub to access profile settings.</div>
                         </div>
-
-                        <div class="profile-modal-actions settings-profile-actions">
+                        <div class="settings-profile-actions" style="justify-content:center;">
                             <a class="profile-modal-action" href="{{ route('login') }}">Go to login</a>
                         </div>
                     @endguest
@@ -238,25 +224,23 @@
                 <section class="settings-pane" data-settings-pane="api-keys">
                     <header class="settings-pane-head">
                         <h3>API Keys</h3>
-                        <p>Manage providers and choose the key source.</p>
+                        <p>Real AI providers — your keys, your control.</p>
                     </header>
 
                     <div class="settings-provider-list">
+                        {{-- OpenAI --}}
                         <article class="settings-provider-item settings-provider-item--active">
                             <div class="settings-provider-top">
                                 <div class="settings-provider-brand">
-                                    <span class="settings-provider-logo settings-provider-logo--openai" aria-hidden="true">
-                                        <svg viewBox="0 0 24 24">
-                                            <path d="M12 3.2c2 0 3.8 1 4.9 2.6 2.2.3 4 2.2 4 4.5 0 1.1-.4 2.2-1.1 3l.1.6c.1 2.7-2 5-4.7 5.2-.9 1.1-2.2 1.8-3.7 1.8-1.5 0-2.8-.6-3.7-1.7-2.7-.3-4.8-2.6-4.7-5.4l.1-.5C2.4 12.4 2 11.3 2 10.2c0-2.3 1.7-4.2 4-4.5A5.8 5.8 0 0 1 12 3.2Z" fill="none" stroke="currentColor" stroke-width="1.4" />
-                                            <path d="m7 8.8 5 2.8m0 0 5-2.8m-5 2.8v5.2m-3.8-1.8 3.8-2.2 3.8 2.2" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />
-                                        </svg>
+                                    <span class="settings-provider-logo" aria-hidden="true">
+                                        <img src="{{ asset('images/openailogo.png') }}" alt="OpenAI" style="width:24px;height:24px;object-fit:contain;">
                                     </span>
                                     <div>
                                         <div class="settings-provider-name">OpenAI</div>
-                                        <div class="settings-provider-sub">Fully configurable</div>
+                                        <div class="settings-provider-sub" id="settings-openai-status-text">Developer key active</div>
                                     </div>
                                 </div>
-                                <span class="settings-provider-pill is-active">Active</span>
+                                <span class="settings-provider-pill is-active" id="settings-openai-pill">Active</span>
                             </div>
 
                             @auth
@@ -265,44 +249,42 @@
                                     data-save-url="{{ route('profile.ai-key.save') }}"
                                     data-remove-url="{{ route('profile.ai-key.remove') }}"
                                     data-mode-url="{{ route('profile.ai-key.mode') }}">
-                                    <label class="settings-mode-label" for="settings-ai-key-mode">Key source</label>
-                                    <select class="settings-mode-select" id="settings-ai-key-mode" aria-label="API key source">
-                                        <option value="developer">Use developer key (recommended)</option>
-                                        <option value="personal">Use my key</option>
-                                    </select>
-
-                                    <input class="settings-api-input" id="settings-api-input" type="password" placeholder="Paste your key to save in DB (sk-...)">
-
-                                    <div class="settings-api-actions">
-                                        <button class="settings-api-save-btn" id="settings-api-save-btn" type="button" data-loading-btn data-loading-text="Saving">Save key</button>
-                                        <button class="settings-api-remove-btn" id="settings-api-remove-btn" type="button" data-loading-btn data-loading-text="Removing">Remove key</button>
+                                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                                        <span style="font-size:13px;font-weight:600;color:var(--text-main);">Key source:</span>
+                                        <select class="settings-mode-select" id="settings-ai-key-mode" aria-label="OpenAI key source" style="width:auto;margin-bottom:0;">
+                                            <option value="developer">Developer key</option>
+                                            <option value="personal">Personal key</option>
+                                        </select>
+                                        <span id="settings-openai-status-badge" style="font-size:11px;padding:3px 8px;border-radius:999px;font-weight:600;background:rgba(45,164,78,0.1);color:#1a7f37;border:1px solid rgba(45,164,78,0.3);">Developer</span>
                                     </div>
-
-                                    <p class="settings-api-hint" id="settings-ai-key-hint">Choose whether to use developer key or your saved key.</p>
+                                    <div id="settings-openai-key-row" style="display:none;margin-top:10px;">
+                                        <input class="settings-api-input" id="settings-api-input" type="password" placeholder="sk-...">
+                                        <div class="settings-api-actions" style="margin-top:8px;">
+                                            <button class="settings-api-save-btn" id="settings-api-save-btn" type="button" data-loading-btn data-loading-text="Saving">Save key</button>
+                                            <button class="settings-api-remove-btn" id="settings-api-remove-btn" type="button" data-loading-btn data-loading-text="Removing">Remove key</button>
+                                        </div>
+                                    </div>
                                     <p class="settings-api-state" id="settings-ai-key-state"></p>
                                 </div>
                             @endauth
-
                             @guest
-                                <div class="settings-guest-state">Login with GitHub to manage and save your API key.</div>
+                                <div class="settings-guest-state">Login with GitHub to manage your API key.</div>
                             @endguest
                         </article>
 
+                        {{-- DeepSeek --}}
                         <article class="settings-provider-item">
                             <div class="settings-provider-top">
                                 <div class="settings-provider-brand">
-                                    <span class="settings-provider-logo settings-provider-logo--deepseek" aria-hidden="true">
-                                        <svg viewBox="0 0 24 24">
-                                            <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Z" fill="none" stroke="currentColor" stroke-width="1.4" />
-                                            <path d="M8 12h8M12 8v8" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
-                                        </svg>
+                                    <span class="settings-provider-logo" aria-hidden="true">
+                                        <img src="{{ asset('images/deepseeklogo.png') }}" alt="DeepSeek" style="width:24px;height:24px;object-fit:contain;">
                                     </span>
                                     <div>
                                         <div class="settings-provider-name">DeepSeek</div>
-                                        <div class="settings-provider-sub">Configure API key</div>
+                                        <div class="settings-provider-sub" id="settings-deepseek-status-text">Developer key active</div>
                                     </div>
                                 </div>
-                                <span class="settings-provider-pill">Active</span>
+                                <span class="settings-provider-pill is-active" id="settings-deepseek-pill">Active</span>
                             </div>
 
                             @auth
@@ -311,34 +293,35 @@
                                     data-save-url="{{ route('profile.deepseek-key.save') }}"
                                     data-remove-url="{{ route('profile.deepseek-key.remove') }}"
                                     data-mode-url="{{ route('profile.ai-key.mode') }}">
-                                    <label class="settings-mode-label" for="settings-deepseek-key-mode">Key source</label>
-                                    <select class="settings-mode-select" id="settings-deepseek-key-mode" aria-label="DeepSeek API key source">
-                                        <option value="developer">Use developer key (recommended)</option>
-                                        <option value="personal">Use my key</option>
-                                    </select>
-
-                                    <input class="settings-api-input" id="settings-deepseek-api-input" type="password" placeholder="Paste your DeepSeek key (sk-...)">
-
-                                    <div class="settings-api-actions">
-                                        <button class="settings-api-save-btn" id="settings-deepseek-api-save-btn" type="button" data-loading-btn data-loading-text="Saving">Save key</button>
-                                        <button class="settings-api-remove-btn" id="settings-deepseek-api-remove-btn" type="button" data-loading-btn data-loading-text="Removing">Remove key</button>
+                                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                                        <span style="font-size:13px;font-weight:600;color:var(--text-main);">Key source:</span>
+                                        <select class="settings-mode-select" id="settings-deepseek-key-mode" aria-label="DeepSeek key source" style="width:auto;margin-bottom:0;">
+                                            <option value="developer">Developer key</option>
+                                            <option value="personal">Personal key</option>
+                                        </select>
+                                        <span id="settings-deepseek-status-badge" style="font-size:11px;padding:3px 8px;border-radius:999px;font-weight:600;background:rgba(45,164,78,0.1);color:#1a7f37;border:1px solid rgba(45,164,78,0.3);">Developer</span>
                                     </div>
-
-                                    <p class="settings-api-hint" id="settings-deepseek-key-hint">Choose whether to use developer key or your saved key.</p>
+                                    <div id="settings-deepseek-key-row" style="display:none;margin-top:10px;">
+                                        <input class="settings-api-input" id="settings-deepseek-api-input" type="password" placeholder="sk-...">
+                                        <div class="settings-api-actions" style="margin-top:8px;">
+                                            <button class="settings-api-save-btn" id="settings-deepseek-api-save-btn" type="button" data-loading-btn data-loading-text="Saving">Save key</button>
+                                            <button class="settings-api-remove-btn" id="settings-deepseek-api-remove-btn" type="button" data-loading-btn data-loading-text="Removing">Remove key</button>
+                                        </div>
+                                    </div>
                                     <p class="settings-api-state" id="settings-deepseek-key-state"></p>
                                 </div>
                             @endauth
-
                             @guest
-                                <div class="settings-guest-state">Login with GitHub to manage and save your DeepSeek API key.</div>
+                                <div class="settings-guest-state">Login with GitHub to manage your API key.</div>
                             @endguest
                         </article>
 
-                        <article class="settings-provider-item">
+                        {{-- Coming Soon --}}
+                        <article class="settings-provider-item" style="opacity:0.55;">
                             <div class="settings-provider-top">
                                 <div class="settings-provider-brand">
-                                    <span class="settings-provider-logo settings-provider-logo--anthropic" aria-hidden="true">
-                                        <img src="https://logo.clearbit.com/anthropic.com" alt="Anthropic logo" loading="lazy">
+                                    <span class="settings-provider-logo" aria-hidden="true">
+                                        <svg viewBox="0 0 32 32" width="24" height="24" fill="none"><rect x="4" y="8" width="24" height="16" rx="4" stroke="#141414" stroke-width="2.5"/><path d="M12 12v8m8-8v8" stroke="#141414" stroke-width="2.5" stroke-linecap="round"/></svg>
                                     </span>
                                     <div>
                                         <div class="settings-provider-name">Anthropic</div>
@@ -349,27 +332,14 @@
                             </div>
                         </article>
 
-                        <article class="settings-provider-item">
+                        <article class="settings-provider-item" style="opacity:0.55;">
                             <div class="settings-provider-top">
                                 <div class="settings-provider-brand">
-                                    <span class="settings-provider-logo settings-provider-logo--google" aria-hidden="true">
-                                        <img src="https://logo.clearbit.com/google.com" alt="Google logo" loading="lazy">
+                                    <span class="settings-provider-logo" aria-hidden="true">
+                                        <svg viewBox="0 0 32 32" width="24" height="24" fill="none"><path d="M16 3c7.18 0 13 5.82 13 13s-5.82 13-13 13S3 23.18 3 16 8.82 3 16 3z" fill="url(#gsg)"/><path d="M10 14l6-4 6 4-6 4-6-4zM10 18l6-4 6 4-6 4-6-4z" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><defs><linearGradient id="gsg" x1="3" y1="3" x2="29" y2="29"><stop stop-color="#4285F4"/><stop offset="1" stop-color="#9B72CB"/></linearGradient></defs></svg>
                                     </span>
                                     <div>
                                         <div class="settings-provider-name">Google AI</div>
-                                        <div class="settings-provider-sub">Coming soon</div>
-                                    </div>
-                                </div>
-                                <span class="settings-provider-pill">Soon</span>
-                            </div>
-                        </article>
-
-                        <article class="settings-provider-item">
-                            <div class="settings-provider-top">
-                                <div class="settings-provider-brand">
-                                    <span class="settings-provider-logo settings-provider-logo--xai" aria-hidden="true">x</span>
-                                    <div>
-                                        <div class="settings-provider-name">xAI</div>
                                         <div class="settings-provider-sub">Coming soon</div>
                                     </div>
                                 </div>
