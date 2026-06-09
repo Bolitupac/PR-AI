@@ -261,3 +261,33 @@ html[data-theme="dark"] .sidebar-theme-toggle .theme-toggle-icon--moon {
 .app-shell:not(.sidebar-expanded) #sidebar-chat-history-container {
     display: none !important;
 }
+
+/* Disabled / Coming Soon sidebar items */
+.sidebar-item.is-disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.sidebar-item.is-disabled .sidebar-profile-plan {
+    color: #9ca3af;
+    font-style: italic;
+}
+
+/* Coming Soon badge in settings VCS */
+.settings-vcs-item-state.is-coming-soon {
+    color: #9ca3af;
+}
+
+.settings-vcs-item-state.is-coming-soon .settings-vcs-dot {
+    background: #d1d5db;
+}
+
+/* Settings VCS disabled item */
+.settings-vcs-item.is-disabled {
+    opacity: 0.55;
+}
+
+.settings-vcs-item.is-disabled .settings-vcs-item-name {
+    color: #9ca3af;
+}

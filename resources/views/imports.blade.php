@@ -50,17 +50,6 @@
                     </ul>
                 </article>
 
-                <article class="imports-panel imports-side-panel imports-panel--commits">
-                    <header class="imports-panel__head">
-                        <h2 class="imports-panel__title" style="margin: 0;">Recent Commits</h2>
-                    </header>
-                    <ul class="imports-history-list imports-activity-list" id="recent-commits-list">
-                        <li class="imports-history-item" style="color: var(--text-soft); font-size: 12px;">
-                            Loading recent commits...
-                        </li>
-                    </ul>
-                </article>
-
                 <article class="imports-panel imports-side-panel imports-panel--history">
                     <header class="imports-panel__head">
                         <h2 class="imports-panel__title" style="margin: 0;">Chat History</h2>
@@ -84,8 +73,9 @@
                             <span>Provider</span>
                             <select id="imports-provider-select" class="chat-model-select" aria-label="Select provider">
                                 @foreach (($vcsProviders ?? []) as $provider)
-                                    <option value="{{ $provider['key'] }}" @selected(($defaultVcsProviderKey ?? 'github') === $provider['key'])>
-                                        {{ $provider['name'] }}
+                                    @php $isComingSoon = in_array($provider['key'] ?? '', ['bitbucket', 'azure']); @endphp
+                                    <option value="{{ $provider['key'] }}" @selected(($defaultVcsProviderKey ?? 'github') === $provider['key']) @disabled($isComingSoon)>
+                                        {{ $provider['name'] }}{{ $isComingSoon ? ' — Coming Soon' : '' }}
                                     </option>
                                 @endforeach
                             </select>

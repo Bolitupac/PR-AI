@@ -582,15 +582,22 @@ img {
     width: 56px;
     height: 56px;
     border-radius: 16px;
-    background: linear-gradient(135deg, #74aa9c, #5a8f7e);
+    background: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 20px;
+    border: 1px solid var(--line);
+}
+
+.provider-card__logo-wrap--openai {
+    background: #000;
+    border: none;
 }
 
 .provider-card__logo-wrap--deepseek {
     background: linear-gradient(135deg, #4D6BFE, #3a54d4);
+    border: none;
 }
 
 .provider-card__logo {

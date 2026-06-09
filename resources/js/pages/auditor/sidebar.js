@@ -25,4 +25,28 @@ export function initSidebar() {
         apply(expanded);
         localStorage.setItem(SIDEBAR_KEY, expanded ? '1' : '0');
     });
+
+    // Profile button — open settings modal to profile section
+    const profileBtn = document.getElementById('open-profile-btn');
+    if (profileBtn) {
+        profileBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.dispatchEvent(new CustomEvent('auditor:open-settings', {
+                detail: { tab: 'profile' }
+            }));
+        });
+    }
+
+    // VCS sidebar buttons — open settings modal to VCS section instantly
+    document.querySelectorAll('[data-vcs-sidebar-btn]').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const provider = btn.dataset.vcsProvider;
+            // Bitbucket and Azure are disabled / coming soon — do nothing
+            if (provider === 'bitbucket' || provider === 'azure') return;
+            document.dispatchEvent(new CustomEvent('auditor:open-settings', {
+                detail: { tab: 'vcs' }
+            }));
+        });
+    });
 }

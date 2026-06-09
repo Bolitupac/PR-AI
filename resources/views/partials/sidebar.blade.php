@@ -1,9 +1,3 @@
-@php
-    $sidebarProfileHref = route('profile.show');
-    $sidebarLoginHref = route('login');
-    $sidebarVcsHref = auth()->check() ? $sidebarProfileHref : $sidebarLoginHref;
-    $sidebarVcsLoadingText = auth()->check() ? 'Opening profile' : 'Opening login';
-@endphp
 
 <aside class="sidebar-bg" id="app-sidebar">
     <div class="sidebar-top">
@@ -73,8 +67,12 @@
                 style="margin-top: 12px; border-top: 1px solid var(--panel-stroke); padding-top: 12px; display:flex; flex-direction:column; gap:4px;">
                 <span class="sidebar-label" style="opacity:1; max-width:none; font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-soft); padding: 0 6px 4px;">VCS Providers</span>
                 @foreach ($vcsProviders as $provider)
-                    <button class="sidebar-item" type="button" aria-label="{{ $provider['name'] }}"
-                        data-page-loading-href="{{ $sidebarVcsHref }}" data-loading-text="{{ $sidebarVcsLoadingText }}">
+                    @php
+                        $isDisabled = in_array($provider['key'] ?? '', ['bitbucket', 'azure']);
+                        $state = $isDisabled ? 'Coming Soon' : ($provider['state'] ?? 'Available');
+                    @endphp
+                    <button class="sidebar-item {{ $isDisabled ? 'is-disabled' : '' }}" type="button" aria-label="{{ $provider['name'] }}"
+                        data-vcs-sidebar-btn data-vcs-provider="{{ $provider['key'] }}">
                         <span class="sidebar-icon" aria-hidden="true">
                             @if($provider['name'] === 'GitHub')
                                 <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -113,7 +111,7 @@
                         </span>
                         <span class="sidebar-profile-meta">
                             <span class="sidebar-profile-name">{{ $provider['name'] }}</span>
-                            <span class="sidebar-profile-plan">{{ $provider['state'] }}</span>
+                            <span class="sidebar-profile-plan">{{ $state }}</span>
                         </span>
                     </button>
                 @endforeach
@@ -124,8 +122,12 @@
             <div class="sidebar-vcs-group"
                 style="margin-top: 12px; border-top: 1px solid var(--panel-stroke); padding-top: 12px; display:flex; flex-direction:column; gap:4px;">
                 @foreach ($vcsProviders as $provider)
-                    <button class="sidebar-item" type="button" aria-label="{{ $provider['name'] }}"
-                        data-page-loading-href="{{ $sidebarVcsHref }}" data-loading-text="{{ $sidebarVcsLoadingText }}">
+                    @php
+                        $isDisabled = in_array($provider['key'] ?? '', ['bitbucket', 'azure']);
+                        $state = $isDisabled ? 'Coming Soon' : ($provider['state'] ?? 'Available');
+                    @endphp
+                    <button class="sidebar-item {{ $isDisabled ? 'is-disabled' : '' }}" type="button" aria-label="{{ $provider['name'] }}"
+                        data-vcs-sidebar-btn data-vcs-provider="{{ $provider['key'] }}">
                         <span class="sidebar-icon" aria-hidden="true">
                             @if($provider['name'] === 'GitHub')
                                 <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -156,7 +158,7 @@
                         </span>
                         <span class="sidebar-profile-meta">
                             <span class="sidebar-profile-name">{{ $provider['name'] }}</span>
-                            <span class="sidebar-profile-plan">{{ $provider['state'] }}</span>
+                            <span class="sidebar-profile-plan">{{ $state }}</span>
                         </span>
                     </button>
                 @endforeach

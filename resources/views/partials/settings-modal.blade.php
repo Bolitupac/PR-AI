@@ -2,8 +2,8 @@
     $settingsVcsProviders = $vcsProviders ?? [
         ['name' => 'GitHub', 'state' => 'Connected'],
         ['name' => 'GitLab', 'state' => 'Available'],
-        ['name' => 'Bitbucket', 'state' => 'Available'],
-        ['name' => 'Azure DevOps', 'state' => 'Available'],
+        ['name' => 'Bitbucket', 'state' => 'Coming Soon'],
+        ['name' => 'Azure DevOps', 'state' => 'Coming Soon'],
     ];
 @endphp
 
@@ -443,11 +443,12 @@
                             @php
                                 $isGitHubProvider = $provider['key'] === 'github';
                                 $isConnected = !empty($provider['connected']);
-                                $stateLabel = $provider['state'] ?? ($isConnected ? 'Connected' : 'Not connected');
+                                $isComingSoon = in_array($provider['key'] ?? '', ['bitbucket', 'azure']);
+                                $stateLabel = $isComingSoon ? 'Coming Soon' : ($provider['state'] ?? ($isConnected ? 'Connected' : 'Not connected'));
                                 $profile = $provider['profile'] ?? [];
                                 $connectionMeta = $provider['connection_meta'] ?? [];
                             @endphp
-                            <li class="settings-vcs-item">
+                            <li class="settings-vcs-item {{ $isComingSoon ? 'is-disabled' : '' }}">
                                 <div class="settings-vcs-main">
                                     <span class="settings-vcs-logo" aria-hidden="true">
                                         @if($provider['name'] === 'GitHub')
@@ -464,7 +465,9 @@
                                     <div class="settings-vcs-meta">
                                         <div class="settings-vcs-item-name">{{ $provider['name'] }}</div>
 
-                                        @if(!empty($profile['username']) || !empty($profile['name']))
+                                        @if($isComingSoon)
+                                            <div class="settings-vcs-sub">Coming soon — stay tuned.</div>
+                                        @elseif(!empty($profile['username']) || !empty($profile['name']))
                                             <div class="settings-vcs-account">
                                                 @if(!empty($profile['avatar_url']))
                                                     <img class="settings-vcs-avatar" src="{{ $profile['avatar_url'] }}" alt="{{ $provider['name'] }} avatar" loading="lazy">
@@ -478,12 +481,14 @@
                                 </div>
 
                                 <div class="settings-vcs-right">
-                                    <span class="settings-vcs-item-state {{ $isConnected ? 'is-connected' : '' }}">
+                                    <span class="settings-vcs-item-state {{ $isConnected ? 'is-connected' : '' }} {{ $isComingSoon ? 'is-coming-soon' : '' }}">
                                         <span class="settings-vcs-dot" aria-hidden="true"></span>
                                         {{ $stateLabel }}
                                     </span>
 
-                                    @if($isGitHubProvider && $isConnected)
+                                    @if($isComingSoon)
+                                        {{-- No action — coming soon --}}
+                                    @elseif($isGitHubProvider && $isConnected)
                                         <form action="{{ route('logout') }}" method="POST" class="settings-vcs-logout-form" data-loading-form>
                                             @csrf
                                             <button class="settings-vcs-logout" type="submit" data-loading-text="Logging out">Log out</button>
@@ -501,7 +506,7 @@
                                     @endif
                                 </div>
 
-                                @unless($isGitHubProvider || $provider['key'] === 'gitlab')
+                                @unless($isGitHubProvider || $provider['key'] === 'gitlab' || $isComingSoon)
                                     <div class="settings-api-box" style="margin-top:16px; width:100%;">
                                         <form action="{{ route('vcs.connections.store', ['provider' => $provider['key']]) }}" method="POST" style="display:grid; gap:12px;">
                                             @csrf

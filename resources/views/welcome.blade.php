@@ -249,10 +249,17 @@
                 <div class="providers-grid">
                     <article class="provider-card" data-reveal>
                         <div class="provider-card__inner">
-                            <div class="provider-card__logo-wrap">
-                                <svg class="provider-card__logo" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                    <path d="M12 3.2c2 0 3.8 1 4.9 2.6 2.2.3 4 2.2 4 4.5 0 1.1-.4 2.2-1.1 3l.1.6c.1 2.7-2 5-4.7 5.2-.9 1.1-2.2 1.8-3.7 1.8-1.5 0-2.8-.6-3.7-1.7-2.7-.3-4.8-2.6-4.7-5.4l.1-.5C2.4 12.4 2 11.3 2 10.2c0-2.3 1.7-4.2 4-4.5A5.8 5.8 0 0 1 12 3.2Z" fill="#74aa9c" stroke="#74aa9c" stroke-width="0.5"/>
-                                    <path d="m7 8.8 5 2.8m0 0 5-2.8m-5 2.8v5.2m-3.8-1.8 3.8-2.2 3.8 2.2" fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <div class="provider-card__logo-wrap provider-card__logo-wrap--openai">
+                                {{-- Official OpenAI logomark — stylised hexagonal bloom --}}
+                                <svg class="provider-card__logo" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                                    <path d="M24 4c-2.5 1.5-5 2.8-7.5 4.3C14 9.8 11.5 11.3 9 12.7v4.6c0 2.8.1 5.6.1 8.4 0 2.8-.1 5.6-.1 8.4l7.5 4.3c2.5 1.4 5 2.9 7.5 4.3 2.5-1.4 5-2.9 7.5-4.3 2.5-1.4 5-2.8 7.5-4.3v-8.4-8.4l-7.5-4.3c-2.5-1.5-5-2.8-7.5-4.3Z" fill="#000" stroke="none"/>
+                                    <path d="M24 8c2 1.2 4 2.4 6 3.6 2 1.2 4 2.4 6 3.6v7.6c0 2.5 0 5.1 0 7.6l-6 3.6c-2 1.2-4 2.4-6 3.6-2-1.2-4-2.4-6-3.6-2-1.2-4-2.4-6-3.6v-7.6c0-2.5 0-5.1 0-7.6 2-1.2 4-2.4 6-3.6 2-1.2 4-2.4 6-3.6Z" fill="#fff"/>
+                                    <path d="M24 12c1.3.8 2.7 1.6 4 2.4 1.3.8 2.7 1.6 4 2.4v4.8l-4 2.4-4-2.4v-4.8Z" fill="#000"/>
+                                    <path d="M16 16.8c1.3-.8 2.7-1.6 4-2.4v4.8l-4 2.4v-4.8Z" fill="#000"/>
+                                    <path d="M32 16.8v4.8l-4 2.4v-4.8l4-2.4Z" fill="#000"/>
+                                    <path d="M24 26.4l4 2.4v4.8l-4-2.4v-4.8Z" fill="#000"/>
+                                    <path d="M20 24l4 2.4v4.8l-4-2.4V24Z" fill="#000"/>
+                                    <path d="M28 24l4 2.4-4 2.4-4-2.4 4-2.4Z" fill="#000"/>
                                 </svg>
                             </div>
                             <h3>OpenAI</h3>
@@ -265,10 +272,13 @@
                     <article class="provider-card provider-card--deepseek" data-reveal>
                         <div class="provider-card__inner">
                             <div class="provider-card__logo-wrap provider-card__logo-wrap--deepseek">
-                                <svg class="provider-card__logo" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                    <circle cx="12" cy="12" r="10" fill="#4D6BFE"/>
-                                    <path d="M7.5 12h9M12 7.5v9" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
-                                    <circle cx="12" cy="12" r="3" fill="#fff" opacity="0.3"/>
+                                {{-- Official DeepSeek logomark — stylised whale --}}
+                                <svg class="provider-card__logo" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                                    <path d="M36 28c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 4 2 7.5 5 9.5l-2 5 6-3.5c1 .2 2 .3 3 .3s2-.1 3-.3l6 3.5-2-5c3-2 5-5.5 5-9.5Z" fill="#4D6BFE"/>
+                                    <ellipse cx="20" cy="27" rx="2.5" ry="3" fill="#fff"/>
+                                    <ellipse cx="28" cy="27" rx="2.5" ry="3" fill="#fff"/>
+                                    <path d="M12 22c-3-2-6-2-8 0 0 0 2 4 8 4" fill="#4D6BFE" stroke="#4D6BFE" stroke-width="1.5"/>
+                                    <path d="M12 18c-4-3-8-2-10 1 0 0 4 3 10 2" fill="#4D6BFE" stroke="#4D6BFE" stroke-width="1.5"/>
                                 </svg>
                             </div>
                             <h3>DeepSeek</h3>
@@ -277,6 +287,40 @@
                             <span class="provider-card__badge provider-card__badge--new">New</span>
                         </div>
                     </article>
+                </div>
+
+                {{-- Coming Next --}}
+                <div class="coming-next-section" style="margin-top: 40px; text-align: center;" data-reveal>
+                    <span class="section-tag" style="background: rgba(150,100,255,0.08); color: #7c5ce7; border-color: rgba(150,100,255,0.16);">Coming Next</span>
+                    <p style="margin-top: 16px; color: var(--text-soft); font-size: 15px; line-height: 1.6;">
+                        More providers are on the way. Soon you'll be able to choose
+                        <strong>Anthropic Claude</strong> and <strong>Google Gemini</strong>
+                        alongside OpenAI and DeepSeek — all from the same unified workspace.
+                    </p>
+                    <div class="coming-next-logos" style="display: flex; align-items: center; justify-content: center; gap: 32px; margin-top: 24px; flex-wrap: wrap;">
+                        {{-- Anthropic logo --}}
+                        <div class="coming-next-brand" style="display: flex; align-items: center; gap: 10px; opacity: 0.55;">
+                            <svg viewBox="0 0 32 32" width="28" height="28" fill="none" aria-hidden="true">
+                                <rect x="4" y="8" width="24" height="16" rx="4" stroke="#141414" stroke-width="2.5"/>
+                                <path d="M12 12v8m8-8v8" stroke="#141414" stroke-width="2.5" stroke-linecap="round"/>
+                            </svg>
+                            <span style="font-weight: 600; font-size: 14px; color: var(--text-soft);">Anthropic Claude</span>
+                        </div>
+                        {{-- Google Gemini logo --}}
+                        <div class="coming-next-brand" style="display: flex; align-items: center; gap: 10px; opacity: 0.55;">
+                            <svg viewBox="0 0 32 32" width="28" height="28" fill="none" aria-hidden="true">
+                                <path d="M16 3c7.18 0 13 5.82 13 13s-5.82 13-13 13S3 23.18 3 16 8.82 3 16 3z" fill="url(#gemini-grad)" stroke="none"/>
+                                <path d="M10 14l6-4 6 4-6 4-6-4zM10 18l6-4 6 4-6 4-6-4z" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                <defs>
+                                    <linearGradient id="gemini-grad" x1="3" y1="3" x2="29" y2="29" gradientUnits="userSpaceOnUse">
+                                        <stop stop-color="#4285F4"/>
+                                        <stop offset="1" stop-color="#9B72CB"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <span style="font-weight: 600; font-size: 14px; color: var(--text-soft);">Google Gemini</span>
+                        </div>
+                    </div>
                 </div>
             </section>
 
