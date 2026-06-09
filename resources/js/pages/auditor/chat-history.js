@@ -42,13 +42,14 @@ export function renderSidebarHistory(conversations, activeId = null, onSelect = 
     }
 
     list.innerHTML = conversations.map((chat) => {
-        const isActive = String(chat.id) === String(activeId);
-        const url = `/auditor?conversation_id=${chat.id}`;
-        
+        const publicId = chat.public_id || chat.id;
+        const isActive = String(publicId) === String(activeId);
+        const url = `/auditor?conversation_id=${publicId}`;
+
         return `
-            <li class="sidebar-chat-item-wrapper" data-id="${chat.id}" style="position: relative; group;">
-                <div class="sidebar-item-container" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                    <a class="sidebar-item ${isActive ? 'is-active' : ''}" href="${url}" style="flex-grow: 1; padding-right: 32px;" data-chat-id="${chat.id}">
+            <li class="sidebar-chat-item-wrapper" data-id="${publicId}" style="position: relative;">
+                <div class="sidebar-item-container" style="display: flex; align-items: center; width: 100%;">
+                    <a class="sidebar-item ${isActive ? 'is-active' : ''}" href="${url}" style="flex: 1; min-width: 0;" data-chat-id="${publicId}">
                         <span class="sidebar-icon" aria-hidden="true" style="flex-shrink:0;">
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
@@ -56,20 +57,7 @@ export function renderSidebarHistory(conversations, activeId = null, onSelect = 
                         </span>
                         <span class="sidebar-label" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;" title="${escapeHtml(chat.title)}">${escapeHtml(chat.title)}</span>
                     </a>
-                    <button class="delete-chat-btn" data-id="${chat.id}" title="Delete chat" style="
-                        position: absolute;
-                        right: 8px;
-                        background: none;
-                        border: none;
-                        color: var(--text-soft);
-                        cursor: pointer;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        padding: 4px;
-                        border-radius: 4px;
-                        z-index: 10;
-                    " aria-label="Delete chat">
+                    <button class="delete-chat-btn" data-id="${publicId}" title="Delete chat" aria-label="Delete chat">
                         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="3 6 5 6 21 6"></polyline>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -89,12 +77,10 @@ export function renderSidebarHistory(conversations, activeId = null, onSelect = 
                 const id = btn.dataset.id;
                 const success = await deleteConversation(id);
                 if (success) {
-                    // Refresh
                     const updated = await fetchConversations();
                     renderSidebarHistory(updated, activeId, onSelect);
                     renderImportsHistory(updated);
-                    
-                    // If deleted the active one, redirect to clean auditor
+
                     if (String(id) === String(activeId)) {
                         window.location.href = '/auditor';
                     }
@@ -107,7 +93,6 @@ export function renderSidebarHistory(conversations, activeId = null, onSelect = 
         list.querySelectorAll('a[data-chat-id]').forEach((link) => {
             link.addEventListener('click', (e) => {
                 const id = link.dataset.chatId;
-                // If on auditor page, intercept navigation to dynamically load
                 if (window.location.pathname.startsWith('/auditor') || window.location.pathname === '/') {
                     e.preventDefault();
                     onSelect(id);
@@ -131,6 +116,7 @@ export function renderImportsHistory(conversations) {
     }
 
     list.innerHTML = conversations.map((chat) => {
+        const publicId = chat.public_id || chat.id;
         const time = new Date(chat.updated_at).toLocaleDateString(undefined, {
             month: 'short',
             day: 'numeric',
@@ -152,7 +138,7 @@ export function renderImportsHistory(conversations) {
                         <span>•</span>
                         <span>${time}</span>
                     </div>
-                    <a class="imports-activity-action-btn" href="/auditor?conversation_id=${chat.id}" style="
+                    <a class="imports-activity-action-btn" href="/auditor?conversation_id=${publicId}" style="
                         display: inline-flex;
                         align-items: center;
                         justify-content: center;

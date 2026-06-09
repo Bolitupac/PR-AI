@@ -80,16 +80,21 @@ export function initAuditorPage() {
             document.title = 'PR-AI Auditor';
 
             // Clear the prompt input
-            const promptInput = document.getElementById('chat-prompt');
+            const promptInput = document.getElementById('user-prompt');
             if (promptInput) {
                 promptInput.value = '';
                 promptInput.style.height = 'auto';
                 promptInput.focus();
             }
 
-            // Show empty state if present
+            // Rebuild and show empty state with greeting
             const emptyState = document.getElementById('chat-empty-state');
-            if (emptyState) emptyState.classList.remove('is-hidden');
+            if (emptyState) {
+                emptyState.classList.remove('is-hidden');
+                emptyState.style.display = '';
+                // Scroll to top to show the greeting
+                if (responseArea) responseArea.scrollTop = 0;
+            }
 
             // Deselect active history item
             if (typeof window.refreshGlobalChatHistory === 'function') {

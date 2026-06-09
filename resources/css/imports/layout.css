@@ -23,7 +23,7 @@
     min-height: 0;
 }
 
-/* --- Imports left sidebar — 50/50 split --- */
+/* --- Imports left sidebar — panels fill available space --- */
 .imports-left {
     display: flex;
     flex-direction: column;
@@ -32,7 +32,7 @@
 }
 
 .imports-left .imports-side-panel {
-    flex: 1 1 50%;
+    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
     min-height: 0;

@@ -31,7 +31,7 @@ class SimpleChatController extends Controller
             'history.*.role' => ['required_with:history', 'string', Rule::in(['user', 'assistant'])],
             'history.*.content' => ['required_with:history', 'string', 'max:8000'],
             'docgen_mode_active' => ['nullable', 'boolean'],
-            'conversation_id' => ['nullable', 'integer', 'exists:chat_conversations,id'],
+            'conversation_id' => ['nullable', 'string', 'max:32'],
         ]);
 
         $message = (string) $payload['message'];
@@ -52,7 +52,7 @@ class SimpleChatController extends Controller
                 'provider' => $selectedProvider,
                 'model' => $selectedModel ?? (string) config("{$selectedProvider}.model", 'gpt-4o-mini'),
                 'reply' => $reply,
-                'conversation_id' => $conversation->id,
+                'conversation_id' => $conversation->public_id,
             ]);
         }
 
@@ -91,7 +91,7 @@ class SimpleChatController extends Controller
             'provider' => $selectedProvider,
             'model' => $selectedModel ?? (string) config("{$selectedProvider}.model", 'gpt-4o-mini'),
             'reply' => $reply,
-            'conversation_id' => $conversation->id,
+            'conversation_id' => $conversation->public_id,
         ]);
     }
 
@@ -176,7 +176,7 @@ class SimpleChatController extends Controller
             'history.*.role' => ['required_with:history', 'string', Rule::in(['user', 'assistant'])],
             'history.*.content' => ['required_with:history', 'string', 'max:8000'],
             'docgen_mode_active' => ['nullable', 'boolean'],
-            'conversation_id' => ['nullable', 'integer', 'exists:chat_conversations,id'],
+            'conversation_id' => ['nullable', 'string', 'max:32'],
         ]);
 
         $message = (string) $payload['message'];
@@ -196,13 +196,13 @@ class SimpleChatController extends Controller
             return response()->stream(function () use ($reply, $conversation) {
                 echo ':' . str_repeat(' ', 1024) . "\n\n";
                 echo "event: conversation_id\n";
-                echo 'data: '.json_encode(['id' => $conversation->id])."\n\n";
+                echo 'data: '.json_encode(['id' => $conversation->public_id, 'title' => $conversation->title])."\n\n";
                 @ob_flush();
                 flush();
                 echo "event: token\n";
                 echo 'data: '.json_encode(['text' => $reply], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n\n";
                 echo "event: done\n";
-                echo 'data: '.json_encode(['reply' => $reply, 'conversation_id' => $conversation->id], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n\n";
+                echo 'data: '.json_encode(['reply' => $reply, 'conversation_id' => $conversation->public_id], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n\n";
                 @ob_flush();
                 flush();
             }, 200, [
@@ -246,7 +246,7 @@ class SimpleChatController extends Controller
 
             echo ':' . str_repeat(' ', 1024) . "\n\n";
             echo "event: conversation_id\n";
-            echo 'data: '.json_encode(['id' => $conversation->id, 'title' => $conversation->title])."\n\n";
+            echo 'data: '.json_encode(['id' => $conversation->public_id, 'title' => $conversation->title])."\n\n";
             @ob_flush();
             flush();
 
@@ -281,7 +281,7 @@ class SimpleChatController extends Controller
 
             $donePayload = json_encode([
                 'reply' => $fullReply,
-                'conversation_id' => $conversation->id,
+                'conversation_id' => $conversation->public_id,
             ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             echo "event: done\n";
             echo 'data: '.($donePayload ?: '{"reply":""}')."\n\n";
@@ -445,11 +445,11 @@ class SimpleChatController extends Controller
         return $suggestions;
     }
 
-    private function getOrCreateConversation(Request $request, ?int $conversationId, string $provider, ?string $model, string $firstUserMessage): ChatConversation
+    private function getOrCreateConversation(Request $request, ?string $conversationPublicId, string $provider, ?string $model, string $firstUserMessage): ChatConversation
     {
         $user = Auth::user();
-        if ($conversationId) {
-            $conversation = $user->conversations()->find($conversationId);
+        if ($conversationPublicId) {
+            $conversation = $user->conversations()->where('public_id', $conversationPublicId)->first();
             if ($conversation) {
                 return $conversation;
             }

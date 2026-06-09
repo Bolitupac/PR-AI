@@ -1,5 +1,5 @@
-<!-- Mobile redirect overlay — shown only on small screens -->
-<div class="mobile-redirect-overlay" id="mobile-redirect-overlay" style="display:none;">
+<!-- Mobile redirect overlay — shown via CSS @media on small screens -->
+<div class="mobile-redirect-overlay" id="mobile-redirect-overlay">
     <div class="mobile-redirect-card">
         <img src="{{ asset('images/git-pull-ai-Logo tp bg 512.png') }}" alt="PR ai logo" class="mobile-redirect-logo">
         <span class="mobile-redirect-tag">Mobile</span>
@@ -17,15 +17,25 @@
 
 <style>
     .mobile-redirect-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 9999;
-        background: linear-gradient(180deg, #f0ede8 0%, #efebe5 44%, #f6f3ef 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 24px;
-        font-family: 'Geologica', ui-sans-serif, system-ui, sans-serif;
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+        .mobile-redirect-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: linear-gradient(180deg, #f0ede8 0%, #efebe5 44%, #f6f3ef 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            font-family: 'Geologica', ui-sans-serif, system-ui, sans-serif;
+        }
+
+        .mobile-redirect-overlay.is-dismissed {
+            display: none;
+        }
     }
 
     .mobile-redirect-card {

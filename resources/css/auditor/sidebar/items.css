@@ -84,6 +84,18 @@ html:not([data-theme]) .pr-cat-logo {
     transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
+/* Hover anywhere on sidebar → logo changes to collapse/expand icon */
+.sidebar-bg:hover .sidebar-toggle-btn .pr-cat-logo {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+.sidebar-bg:hover .sidebar-toggle-btn .sidebar-collapse-svg {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Keep the swap on direct button hover too */
 .sidebar-toggle-btn:hover .pr-cat-logo {
     opacity: 0;
     transform: scale(0.8);
@@ -239,19 +251,51 @@ html[data-theme="dark"] .sidebar-theme-toggle .theme-toggle-icon--moon {
     color: #8cafff;
 }
 
-/* Chat History Delete Button styling */
-.sidebar-chat-item-wrapper .delete-chat-btn {
-    opacity: 0;
-    transition: opacity 0.2s ease, background 0.2s ease, color 0.2s ease;
+/* Chat History items — only individual item hover, not whole container */
+.sidebar-chat-item-wrapper .sidebar-item-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border-radius: 10px;
+    transition: background 0.2s ease;
 }
 
-.sidebar-chat-item-wrapper:hover .delete-chat-btn {
+.sidebar-chat-item-wrapper .sidebar-item-container:hover {
+    background: rgba(0, 133, 255, 0.07);
+}
+
+.sidebar-chat-item-wrapper .sidebar-item {
+    background: transparent !important;
+}
+
+.sidebar-chat-item-wrapper .sidebar-item:hover {
+    background: transparent !important;
+}
+
+/* Delete button visible only on hover of the row */
+.sidebar-chat-item-wrapper .delete-chat-btn {
+    opacity: 0;
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: var(--text-soft);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 6px;
+    margin-right: 4px;
+    transition: opacity 0.18s ease, background 0.18s ease, color 0.18s ease;
+}
+
+.sidebar-chat-item-wrapper .sidebar-item-container:hover .delete-chat-btn {
     opacity: 1;
 }
 
-.delete-chat-btn:hover {
-    background: rgba(220, 38, 38, 0.15) !important;
-    color: #ef4444 !important;
+.sidebar-chat-item-wrapper .delete-chat-btn:hover {
+    background: rgba(220, 38, 38, 0.12);
+    color: #ef4444;
 }
 
 .app-shell:not(.sidebar-expanded) .sidebar-chat-item-wrapper .delete-chat-btn {

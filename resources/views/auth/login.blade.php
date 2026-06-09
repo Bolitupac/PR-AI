@@ -223,19 +223,41 @@
                 linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(250, 251, 255, 0.98));
         }
 
+        .auth-panel-top-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
         .auth-brand {
             display: inline-flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             font-weight: 800;
             letter-spacing: -0.05em;
         }
 
         .auth-brand img {
-            width: 42px;
-            height: 42px;
+            width: 36px;
+            height: 36px;
             object-fit: contain;
             filter: brightness(0);
+        }
+
+        .auth-heading {
+            margin: 0;
+            font-size: clamp(3rem, 6vw, 4.4rem);
+            line-height: 1;
+            letter-spacing: -0.07em;
+            font-weight: 800;
+        }
+
+        .auth-subtext {
+            margin: 10px 0 0;
+            color: var(--text-soft);
+            font-size: 14px;
+            line-height: 1.6;
         }
 
         .auth-panel h2 {
@@ -464,20 +486,22 @@
             </div>
 
             <div class="auth-panel">
-                <a href="{{ url('/') }}" class="auth-back">← Back to homepage</a>
+                <div class="auth-panel-top-row">
+                    <a href="{{ url('/') }}" class="auth-back">← Back to homepage</a>
+                    <a href="{{ url('/') }}" class="auth-brand">
+                        <img src="{{ asset('images/git-pull-ai-Logo tp bg 512.png') }}" alt="PR ai logo">
+                        <span>PR ai</span>
+                    </a>
+                </div>
 
-                <a href="{{ url('/') }}" class="auth-brand">
-                    <img src="{{ asset('images/git-pull-ai-Logo tp bg 512.png') }}" alt="PR ai logo">
-                    <span>PR ai</span>
-                </a>
-
-                <h2>Sign in to your account</h2>
+                <h2 class="auth-heading">Sign in</h2>
+                <p class="auth-subtext">Don't have an account? Just sign in and we'll automatically create one for you.</p>
 
                 @if (session('auth_error'))
                     <div class="auth-error">{{ session('auth_error') }}</div>
                 @endif
 
-                <div class="auth-provider-list" style="margin-top: 28px;">
+                <div class="auth-provider-list" style="margin-top: 24px;">
                     <a href="{{ route('github.redirect') }}" class="auth-provider">
                         <img src="{{ asset('images/github.png') }}" alt="">
                         <span>GitHub</span>

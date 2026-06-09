@@ -89,6 +89,16 @@ export function initChatInput() {
         setTimeout(() => chatContainer.classList.remove('is-busy-blocked'), 260);
     };
 
+    const isNearBottom = (node, threshold = 50) => {
+        return node.scrollTop + node.clientHeight >= node.scrollHeight - threshold;
+    };
+
+    const scrollToBottomIfNear = (node, threshold = 50) => {
+        if (isNearBottom(node, threshold)) {
+            node.scrollTop = node.scrollHeight;
+        }
+    };
+
     const appendMessage = (text, role) => {
         const message = document.createElement('div');
         message.className = `msg ${role}`;
@@ -99,7 +109,12 @@ export function initChatInput() {
             message.textContent = text;
         }
         responseArea.appendChild(message);
-        responseArea.scrollTop = responseArea.scrollHeight;
+        // Always scroll for user messages, respect position for AI
+        if (role === 'user') {
+            responseArea.scrollTop = responseArea.scrollHeight;
+        } else {
+            scrollToBottomIfNear(responseArea);
+        }
         return message;
     };
 
@@ -439,7 +454,7 @@ export function initChatInput() {
                                 } catch (renderError) {
                                     console.error('DocGen stream render error:', renderError);
                                 }
-                                responseArea.scrollTop = responseArea.scrollHeight;
+                                scrollToBottomIfNear(responseArea);
                             }
                         }
                     } else if (eventName === 'error') {

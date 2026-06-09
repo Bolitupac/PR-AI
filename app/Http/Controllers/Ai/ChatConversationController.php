@@ -14,7 +14,8 @@ class ChatConversationController extends Controller
     {
         $conversations = Auth::user()
             ->conversations()
-            ->select(['id', 'title', 'provider', 'model', 'created_at', 'updated_at'])
+            ->select(['id', 'public_id', 'title', 'provider', 'model', 'created_at', 'updated_at'])
+            ->latest()
             ->get();
 
         return response()->json([
