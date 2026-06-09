@@ -51,6 +51,9 @@
             ],
         ];
 
+        $visibleCards = array_slice($featureCards, 0, 2);
+        $hiddenCards = array_slice($featureCards, 2);
+
         $faqs = [
             [
                 'question' => 'What can I import into PR ai?',
@@ -88,6 +91,7 @@
             <nav class="top-nav" aria-label="Primary">
                 <a href="#features">Features</a>
                 <a href="#docgen">DocGen</a>
+                <a href="#providers">AI Providers</a>
                 <a href="#help">Help</a>
                 <a href="{{ $toolEntryUrl }}" class="nav-cta">Try it</a>
             </nav>
@@ -100,11 +104,6 @@
                 <div class="hero-window">
                     <div class="hero-watermark" aria-hidden="true">
                         <img src="{{ asset('images/git-pull-ai-Logo tp bg 512.png') }}" alt="">
-                    </div>
-
-                    <div class="hero-window__nav">
-                        <span class="hero-window__brand">PR ai</span>
-                        <a href="{{ $toolEntryUrl }}" class="hero-window__cta">Try it</a>
                     </div>
 
                     <div class="hero-copy hero-copy--full">
@@ -127,30 +126,6 @@
                         </div>
                     </div>
 
-                    <div class="hero-floating hero-floating--left">
-                        <span class="hero-floating__label">Import flow</span>
-                        <strong>GitHub, branches, PRs, commits</strong>
-                    </div>
-
-                    <div class="hero-floating hero-floating--left-lower">
-                        <span class="hero-floating__label">Reviewer context</span>
-                        <strong>Comments, diffs, and active audit history</strong>
-                    </div>
-
-                    <div class="hero-floating hero-floating--right">
-                        <span class="hero-floating__label">Structured output</span>
-                        <strong>Audits, diagrams, reports, follow-ups</strong>
-                    </div>
-
-                    <div class="hero-floating hero-floating--right-lower">
-                        <span class="hero-floating__label">DocGen mode</span>
-                        <strong>Generate shareable docs and exportable PDFs</strong>
-                    </div>
-
-                    <div class="hero-floating hero-floating--bottom">
-                        <span class="hero-floating__label">Team workflow</span>
-                        <strong>Diffs, comments, DocGen mode, help docs</strong>
-                    </div>
                 </div>
             </section>
 
@@ -180,8 +155,8 @@
                     </p>
                 </div>
 
-                <div class="feature-grid">
-                    @foreach ($featureCards as $card)
+                <div class="feature-grid" id="feature-grid">
+                    @foreach ($visibleCards as $card)
                         <article class="feature-card" data-reveal>
                             <div class="feature-media">
                                 <img src="{{ asset($card['image']) }}" alt="{{ $card['title'] }}">
@@ -193,16 +168,37 @@
                         </article>
                     @endforeach
 
-                    <article class="feature-card feature-card--docgen" data-reveal>
-                        <div class="feature-media">
-                            <img src="{{ asset('images/homepage/viewgitrepos, pullrequests, commitsetc in out import page.png') }}"
-                                alt="PR ai import and app workflow">
-                        </div>
-                        <div class="feature-copy">
-                            <h3>Turn on DocGen mode in one click</h3>
-                            <p>Add DocGen to your workflow from the app gallery, then switch from audit chat into document generation without losing context.</p>
-                        </div>
-                    </article>
+                    <div class="feature-hidden-wrapper" id="feature-hidden-wrapper">
+                        @foreach ($hiddenCards as $card)
+                            <article class="feature-card" data-reveal>
+                                <div class="feature-media">
+                                    <img src="{{ asset($card['image']) }}" alt="{{ $card['title'] }}">
+                                </div>
+                                <div class="feature-copy">
+                                    <h3>{{ $card['title'] }}</h3>
+                                    <p>{{ $card['description'] }}</p>
+                                </div>
+                            </article>
+                        @endforeach
+
+                        <article class="feature-card feature-card--docgen" data-reveal>
+                            <div class="feature-media">
+                                <img src="{{ asset('images/homepage/viewgitrepos, pullrequests, commitsetc in out import page.png') }}"
+                                    alt="PR ai import and app workflow">
+                            </div>
+                            <div class="feature-copy">
+                                <h3>Turn on DocGen mode in one click</h3>
+                                <p>Add DocGen to your workflow from the app gallery, then switch from audit chat into document generation without losing context.</p>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="see-more-wrap">
+                    <button class="button button--ghost see-more-btn" id="see-more-btn" aria-expanded="false">
+                        <span class="see-more-text">See more</span>
+                        <span class="see-more-icon">&#8595;</span>
+                    </button>
                 </div>
             </section>
 
@@ -234,6 +230,51 @@
                         <div class="doc-panel">
                             <img src="{{ asset('images/homepage/PRAI audit page "chat with the ai good ui".png') }}"
                                 alt="PR ai DocGen preview and download experience">
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="providers-section" id="providers" data-reveal>
+                <div class="section-copy" data-reveal>
+                    <span class="section-tag">AI Providers</span>
+                    <h2>Powered by industry-leading AI models</h2>
+                    <p>
+                        PR ai gives you the freedom to choose between the best AI providers. Switch between OpenAI and
+                        DeepSeek on the fly — each connected directly through their official APIs, so you always get
+                        the real thing.
+                    </p>
+                </div>
+
+                <div class="providers-grid">
+                    <article class="provider-card" data-reveal>
+                        <div class="provider-card__inner">
+                            <div class="provider-card__logo-wrap">
+                                <svg class="provider-card__logo" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M12 3.2c2 0 3.8 1 4.9 2.6 2.2.3 4 2.2 4 4.5 0 1.1-.4 2.2-1.1 3l.1.6c.1 2.7-2 5-4.7 5.2-.9 1.1-2.2 1.8-3.7 1.8-1.5 0-2.8-.6-3.7-1.7-2.7-.3-4.8-2.6-4.7-5.4l.1-.5C2.4 12.4 2 11.3 2 10.2c0-2.3 1.7-4.2 4-4.5A5.8 5.8 0 0 1 12 3.2Z" fill="#74aa9c" stroke="#74aa9c" stroke-width="0.5"/>
+                                    <path d="m7 8.8 5 2.8m0 0 5-2.8m-5 2.8v5.2m-3.8-1.8 3.8-2.2 3.8 2.2" fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <h3>OpenAI</h3>
+                            <p class="provider-card__models">GPT-4o &amp; GPT-4o-mini</p>
+                            <p class="provider-card__desc">Industry-standard models for deep code analysis, security audits, and structured documentation generation. Connect your own API key or use the shared developer key.</p>
+                            <span class="provider-card__badge provider-card__badge--active">Active</span>
+                        </div>
+                    </article>
+
+                    <article class="provider-card provider-card--deepseek" data-reveal>
+                        <div class="provider-card__inner">
+                            <div class="provider-card__logo-wrap provider-card__logo-wrap--deepseek">
+                                <svg class="provider-card__logo" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="10" fill="#4D6BFE"/>
+                                    <path d="M7.5 12h9M12 7.5v9" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+                                    <circle cx="12" cy="12" r="3" fill="#fff" opacity="0.3"/>
+                                </svg>
+                            </div>
+                            <h3>DeepSeek</h3>
+                            <p class="provider-card__models">DeepSeek-Chat &amp; DeepSeek-Reasoner</p>
+                            <p class="provider-card__desc">High-performance reasoning models optimized for code understanding, logic verification, and cost-effective large-scale analysis. Now fully integrated into PR ai.</p>
+                            <span class="provider-card__badge provider-card__badge--new">New</span>
                         </div>
                     </article>
                 </div>
@@ -376,7 +417,9 @@
                     @foreach ($faqs as $faq)
                         <details class="faq-item" data-reveal @if ($loop->first) open @endif>
                             <summary>{{ $faq['question'] }}</summary>
-                            <p>{{ $faq['answer'] }}</p>
+                            <div class="faq-answer">
+                                <p>{{ $faq['answer'] }}</p>
+                            </div>
                         </details>
                     @endforeach
                 </div>
