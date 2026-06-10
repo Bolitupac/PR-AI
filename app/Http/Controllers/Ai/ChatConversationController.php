@@ -12,14 +12,9 @@ class ChatConversationController extends Controller
 {
     public function index(): JsonResponse
     {
-        $cols = ['id', 'title', 'provider', 'model', 'created_at', 'updated_at'];
-        if (\Illuminate\Support\Facades\Schema::hasColumn('chat_conversations', 'public_id')) {
-            array_splice($cols, 1, 0, 'public_id');
-        }
-
         $conversations = Auth::user()
             ->conversations()
-            ->select($cols)
+            ->select(['id', 'title', 'provider', 'model', 'created_at', 'updated_at'])
             ->latest()
             ->get();
 
@@ -37,10 +32,8 @@ class ChatConversationController extends Controller
             'active_audit_context' => ['nullable', 'string'],
         ]);
 
-        // Default title to "New Chat" if empty or not provided
         $title = trim($payload['title'] ?? '') ?: 'New Chat';
 
-        // Check if there is active_audit_context in session if not passed
         $context = $payload['active_audit_context'] ?? $request->session()->get('active_audit_context');
 
         $conversation = Auth::user()->conversations()->create([
@@ -61,7 +54,6 @@ class ChatConversationController extends Controller
             abort(403);
         }
 
-        // Restore context in session so follow-ups work
         if ($conversation->active_audit_context) {
             $request->session()->put('active_audit_context', $conversation->active_audit_context);
         } else {

@@ -42,15 +42,14 @@ export function renderSidebarHistory(conversations, activeId = null, onSelect = 
     }
 
     list.innerHTML = conversations.map((chat) => {
-        // Use public_id if available (new format), fallback to id (legacy)
-        const publicId = (chat.public_id && String(chat.public_id).trim()) ? chat.public_id : chat.id;
-        const isActive = String(publicId) === String(activeId);
-        const url = `/auditor?conversation_id=${publicId}`;
+        const id = chat.id;
+        const isActive = String(id) === String(activeId);
+        const url = `/auditor?conversation_id=${id}`;
 
         return `
-            <li class="sidebar-chat-item-wrapper" data-id="${publicId}" style="position: relative;">
+            <li class="sidebar-chat-item-wrapper" data-id="${id}" style="position: relative;">
                 <div class="sidebar-item-container" style="display: flex; align-items: center; width: 100%;">
-                    <a class="sidebar-item ${isActive ? 'is-active' : ''}" href="${url}" style="flex: 1; min-width: 0;" data-chat-id="${publicId}">
+                    <a class="sidebar-item ${isActive ? 'is-active' : ''}" href="${url}" style="flex: 1; min-width: 0;" data-chat-id="${id}">
                         <span class="sidebar-icon" aria-hidden="true" style="flex-shrink:0;">
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
@@ -58,7 +57,7 @@ export function renderSidebarHistory(conversations, activeId = null, onSelect = 
                         </span>
                         <span class="sidebar-label" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;" title="${escapeHtml(chat.title)}">${escapeHtml(chat.title)}</span>
                     </a>
-                    <button class="delete-chat-btn" data-id="${publicId}" title="Delete chat" aria-label="Delete chat">
+                    <button class="delete-chat-btn" data-id="${id}" title="Delete chat" aria-label="Delete chat">
                         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="3 6 5 6 21 6"></polyline>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -117,7 +116,7 @@ export function renderImportsHistory(conversations) {
     }
 
     list.innerHTML = conversations.map((chat) => {
-        const publicId = chat.public_id || chat.id;
+        const id = chat.id;
         const time = new Date(chat.updated_at).toLocaleDateString(undefined, {
             month: 'short',
             day: 'numeric',
@@ -139,7 +138,7 @@ export function renderImportsHistory(conversations) {
                         <span>•</span>
                         <span>${time}</span>
                     </div>
-                    <a class="imports-activity-action-btn" href="/auditor?conversation_id=${publicId}" style="
+                    <a class="imports-activity-action-btn" href="/auditor?conversation_id=${id}" style="
                         display: inline-flex;
                         align-items: center;
                         justify-content: center;

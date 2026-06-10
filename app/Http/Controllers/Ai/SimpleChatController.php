@@ -29,9 +29,9 @@ class SimpleChatController extends Controller
             'provider' => ['nullable', 'string', 'in:openai,deepseek'],
             'history' => ['nullable', 'array', 'max:20'],
             'history.*.role' => ['required_with:history', 'string', Rule::in(['user', 'assistant'])],
-            'history.*.content' => ['required_with:history', 'string', 'max:8000'],
+            'history.*.content' => ['required_with:history', 'string', 'max:20000'],
             'docgen_mode_active' => ['nullable', 'boolean'],
-            'conversation_id' => ['nullable', 'string', 'max:32'],
+            'conversation_id' => ['nullable', 'integer'],
         ]);
 
         $message = (string) $payload['message'];
@@ -52,7 +52,7 @@ class SimpleChatController extends Controller
                 'provider' => $selectedProvider,
                 'model' => $selectedModel ?? (string) config("{$selectedProvider}.model", 'gpt-4o-mini'),
                 'reply' => $reply,
-                'conversation_id' => ($conversation->public_id ?? $conversation->id),
+                'conversation_id' => $conversation->id,
             ]);
         }
 
@@ -91,7 +91,7 @@ class SimpleChatController extends Controller
             'provider' => $selectedProvider,
             'model' => $selectedModel ?? (string) config("{$selectedProvider}.model", 'gpt-4o-mini'),
             'reply' => $reply,
-            'conversation_id' => ($conversation->public_id ?? $conversation->id),
+            'conversation_id' => $conversation->id,
         ]);
     }
 
@@ -103,7 +103,7 @@ class SimpleChatController extends Controller
             'provider' => ['nullable', 'string', 'in:openai,deepseek'],
             'history' => ['nullable', 'array', 'max:20'],
             'history.*.role' => ['required_with:history', 'string', Rule::in(['user', 'assistant'])],
-            'history.*.content' => ['required_with:history', 'string', 'max:8000'],
+            'history.*.content' => ['required_with:history', 'string', 'max:20000'],
             'docgen_mode_active' => ['nullable', 'boolean'],
         ]);
 
@@ -174,9 +174,9 @@ class SimpleChatController extends Controller
             'provider' => ['nullable', 'string', 'in:openai,deepseek'],
             'history' => ['nullable', 'array', 'max:20'],
             'history.*.role' => ['required_with:history', 'string', Rule::in(['user', 'assistant'])],
-            'history.*.content' => ['required_with:history', 'string', 'max:8000'],
+            'history.*.content' => ['required_with:history', 'string', 'max:20000'],
             'docgen_mode_active' => ['nullable', 'boolean'],
-            'conversation_id' => ['nullable', 'string', 'max:32'],
+            'conversation_id' => ['nullable', 'integer'],
         ]);
 
         $message = (string) $payload['message'];
@@ -196,13 +196,13 @@ class SimpleChatController extends Controller
             return response()->stream(function () use ($reply, $conversation) {
                 echo ':' . str_repeat(' ', 1024) . "\n\n";
                 echo "event: conversation_id\n";
-                echo 'data: '.json_encode(['id' => ($conversation->public_id ?? $conversation->id), 'title' => $conversation->title])."\n\n";
+                echo 'data: '.json_encode(['id' => $conversation->id, 'title' => $conversation->title])."\n\n";
                 @ob_flush();
                 flush();
                 echo "event: token\n";
                 echo 'data: '.json_encode(['text' => $reply], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n\n";
                 echo "event: done\n";
-                echo 'data: '.json_encode(['reply' => $reply, 'conversation_id' => ($conversation->public_id ?? $conversation->id)], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n\n";
+                echo 'data: '.json_encode(['reply' => $reply, 'conversation_id' => $conversation->id], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n\n";
                 @ob_flush();
                 flush();
             }, 200, [
@@ -246,7 +246,7 @@ class SimpleChatController extends Controller
 
             echo ':' . str_repeat(' ', 1024) . "\n\n";
             echo "event: conversation_id\n";
-            echo 'data: '.json_encode(['id' => ($conversation->public_id ?? $conversation->id), 'title' => $conversation->title])."\n\n";
+            echo 'data: '.json_encode(['id' => $conversation->id, 'title' => $conversation->title])."\n\n";
             @ob_flush();
             flush();
 
@@ -287,7 +287,7 @@ class SimpleChatController extends Controller
 
             $donePayload = json_encode([
                 'reply' => $fullReply,
-                'conversation_id' => ($conversation->public_id ?? $conversation->id),
+                'conversation_id' => $conversation->id,
             ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             echo "event: done\n";
             echo 'data: '.($donePayload ?: '{"reply":""}')."\n\n";
@@ -451,23 +451,14 @@ class SimpleChatController extends Controller
         return $suggestions;
     }
 
-    private function getOrCreateConversation(Request $request, ?string $conversationPublicId, string $provider, ?string $model, string $firstUserMessage): ChatConversation
+    private function getOrCreateConversation(Request $request, ?int $conversationId, string $provider, ?string $model, string $firstUserMessage): ChatConversation
     {
         $user = Auth::user();
-        $hasPublicId = \Illuminate\Support\Facades\Schema::hasColumn('chat_conversations', 'public_id');
 
-        if ($conversationPublicId) {
-            // Try public_id lookup first (if column exists), then fall back to id
-            $conversation = null;
-            if ($hasPublicId) {
-                $conversation = $user->conversations()->where('public_id', $conversationPublicId)->first();
-            }
-            // Fallback: also try by plain id if public_id column exists but lookup failed, or if column doesn't exist
-            if (!$conversation && is_numeric($conversationPublicId)) {
-                $conversation = $user->conversations()->find((int) $conversationPublicId);
-            }
+        if ($conversationId) {
+            $conversation = $user->conversations()->find($conversationId);
             if ($conversation) {
-                // Update provider/model on existing conversation if explicitly selected
+                // Update provider/model on existing conversation if explicitly changed
                 if ($provider && $conversation->provider !== $provider) {
                     $conversation->update(['provider' => $provider, 'model' => $model]);
                 }

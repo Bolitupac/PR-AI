@@ -347,7 +347,10 @@ export function initChatInput() {
             resetDocGenState({ keepActive: true });
         }
         const previewAnchor = appendUserMessage ? appendMessage(text, 'user') : null;
-        const historyBefore = chatContextStore.list();
+        const historyBefore = chatContextStore.list().map(item => ({
+            ...item,
+            content: String(item.content || '').slice(0, 18000),
+        }));
         if (recordUserMessage) {
             chatContextStore.push('user', text);
         }
@@ -391,7 +394,7 @@ export function initChatInput() {
                     message: text,
                     model: selectedModel || undefined,
                     provider: selectedProvider || undefined,
-                    history: historyBefore,
+                    history: historyBefore.map(h => ({ ...h, content: h.content.slice(0, 18000) })),
                     docgen_mode_active: isDocGenModeEnabled(),
                     conversation_id: chatContextStore.getConversationId() || undefined,
                 }),
@@ -417,6 +420,13 @@ export function initChatInput() {
                 if (res.status === 419) {
                     status.markError('Session expired.');
                     requestState.replyNode = appendMessage('Your session has expired. Please refresh the page and try again.', 'ai');
+                    return false;
+                }
+                if (res.status === 422) {
+                    const errData = await res.json().catch(() => ({}));
+                    const errMsg = errData?.message || 'Request validation failed. Your message or history may be too long.';
+                    status.markError('Validation error.');
+                    requestState.replyNode = appendMessage(`⚠️ ${errMsg}`, 'ai');
                     return false;
                 }
                 if (res.status === 413) {
