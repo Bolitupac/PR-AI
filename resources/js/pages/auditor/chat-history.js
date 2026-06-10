@@ -42,7 +42,8 @@ export function renderSidebarHistory(conversations, activeId = null, onSelect = 
     }
 
     list.innerHTML = conversations.map((chat) => {
-        const publicId = chat.public_id || chat.id;
+        // Use public_id if available (new format), fallback to id (legacy)
+        const publicId = (chat.public_id && String(chat.public_id).trim()) ? chat.public_id : chat.id;
         const isActive = String(publicId) === String(activeId);
         const url = `/auditor?conversation_id=${publicId}`;
 

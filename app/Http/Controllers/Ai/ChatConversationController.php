@@ -12,9 +12,14 @@ class ChatConversationController extends Controller
 {
     public function index(): JsonResponse
     {
+        $cols = ['id', 'title', 'provider', 'model', 'created_at', 'updated_at'];
+        if (\Illuminate\Support\Facades\Schema::hasColumn('chat_conversations', 'public_id')) {
+            array_splice($cols, 1, 0, 'public_id');
+        }
+
         $conversations = Auth::user()
             ->conversations()
-            ->select(['id', 'public_id', 'title', 'provider', 'model', 'created_at', 'updated_at'])
+            ->select($cols)
             ->latest()
             ->get();
 
