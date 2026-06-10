@@ -155,11 +155,15 @@
                         <div class="settings-profile-user">
                             <img class="profile-modal-avatar" src="https://github.com/{{ auth()->user()->github_username }}.png"
                                 alt="GitHub avatar" style="width:58px;height:58px;border-radius:50%;border:2px solid #e0e6f2;flex-shrink:0;">
-                            <div style="display:flex;flex-direction:column;gap:2px;">
+                            <div style="display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;">
                                 <span style="font-size:16px;font-weight:700;color:var(--text-main);letter-spacing:-0.03em;">{{ auth()->user()->name ?? 'User' }}</span>
                                 <span style="font-size:13px;color:#5e6475;">&#64;{{ auth()->user()->github_username ?? 'github-user' }}</span>
                                 <span style="font-size:12px;color:#7c8398;">{{ auth()->user()->email ?? 'no-email' }}</span>
                             </div>
+                            <form action="{{ route('logout') }}" method="POST" data-loading-form style="flex-shrink:0;">
+                                @csrf
+                                <button class="profile-logout-btn" type="submit" data-loading-text="Logging out" style="white-space:nowrap;">Log out</button>
+                            </form>
                         </div>
 
                         <div class="settings-profile-grid">
@@ -202,10 +206,6 @@
                                 target="_blank" rel="noopener noreferrer">
                                 View on GitHub
                             </a>
-                            <form action="{{ route('logout') }}" method="POST" data-loading-form style="display:inline;">
-                                @csrf
-                                <button class="profile-logout-btn" type="submit" data-loading-text="Logging out">Log out</button>
-                            </form>
                             <button class="profile-delete-btn" id="settings-profile-delete-btn" type="button"
                                 data-delete-url="{{ route('account.delete') }}">
                                 Delete Profile

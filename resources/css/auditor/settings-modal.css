@@ -331,6 +331,29 @@
     margin-top: 2px;
 }
 
+.settings-profile-user .profile-logout-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 0 16px;
+    border: 1px solid #e0b4b4;
+    border-radius: 999px;
+    background: #fff;
+    color: #b42323;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.18s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.settings-profile-user .profile-logout-btn:hover {
+    background: rgba(207,34,46,0.06);
+}
+
 .settings-profile-grid {
     display: grid;
     gap: 14px;
@@ -985,6 +1008,14 @@ html[data-theme="dark"] .settings-profile-user {
 html[data-theme="dark"] .settings-profile-user .profile-modal-name { color: #e2e6f0; }
 html[data-theme="dark"] .settings-profile-user .profile-modal-handle { color: #949ab0; }
 html[data-theme="dark"] .settings-profile-user .profile-modal-email { color: #7a8098; }
+html[data-theme="dark"] .settings-profile-user .profile-logout-btn {
+    background: rgba(30,34,50,0.9);
+    border-color: rgba(255,100,100,0.25);
+    color: #f87171;
+}
+html[data-theme="dark"] .settings-profile-user .profile-logout-btn:hover {
+    background: rgba(207,34,46,0.15);
+}
 
 html[data-theme="dark"] .settings-profile-grid .profile-modal-box {
     background: rgba(30,34,50,0.7);
