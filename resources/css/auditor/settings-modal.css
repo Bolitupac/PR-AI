@@ -567,36 +567,123 @@
     background: rgba(207,34,46,0.06);
 }
 
-/* ─── Tutorial launch buttons (Help section) ─── */
+/* ─── Help walkthrough sections ─── */
 
-.tutorial-launch-btn {
+.help-walkthrough-section {
+    margin-top: 24px;
+    border: 1px solid var(--panel-stroke);
+    border-radius: 18px;
+    padding: 20px;
+    background: rgba(255,255,255,0.7);
+}
+
+.help-walkthrough-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.help-walkthrough-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+    line-height: 1;
+    margin-top: 2px;
+}
+
+.help-walkthrough-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -0.03em;
+}
+
+.help-walkthrough-sub {
+    font-size: 12px;
+    color: var(--text-soft);
+    margin-top: 2px;
+}
+
+.help-walkthrough-steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: walkthrough-step;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.help-walkthrough-steps li {
+    counter-increment: walkthrough-step;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--text-soft);
+    padding: 8px 10px;
+    border-radius: 10px;
+    transition: background 0.15s ease;
+}
+
+.help-walkthrough-steps li:hover {
+    background: rgba(73,101,255,0.04);
+}
+
+.help-walkthrough-steps li::before {
+    content: counter(walkthrough-step);
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    min-height: 44px;
-    padding: 0 20px;
-    border: none;
-    border-radius: 999px;
-    color: #fff;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
-}
-
-.tutorial-launch-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 12px 28px rgba(0,0,0,0.16);
-}
-
-.tutorial-launch-btn--auditor {
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    border-radius: 50%;
     background: linear-gradient(135deg, #4965ff, #304cff);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 1px;
 }
 
-.tutorial-launch-btn--imports {
-    background: linear-gradient(135deg, #009eff, #5d74ff);
+.help-walkthrough-steps li strong {
+    color: var(--text-main);
+    display: block;
+    margin-bottom: 1px;
+}
+
+.help-walkthrough-steps li span {
+    display: block;
+}
+
+.help-walkthrough-steps kbd {
+    display: inline-block;
+    padding: 1px 6px;
+    font-size: 11px;
+    font-family: inherit;
+    font-weight: 600;
+    color: #4965ff;
+    background: rgba(73,101,255,0.08);
+    border: 1px solid rgba(73,101,255,0.15);
+    border-radius: 5px;
+    line-height: 1.5;
+}
+
+html[data-theme="dark"] .help-walkthrough-section {
+    background: rgba(30,34,50,0.6);
+}
+
+html[data-theme="dark"] .help-walkthrough-steps li:hover {
+    background: rgba(73,101,255,0.06);
+}
+
+html[data-theme="dark"] .help-walkthrough-steps kbd {
+    color: #8cafff;
+    background: rgba(73,101,255,0.12);
+    border-color: rgba(73,101,255,0.2);
 }
 
 /* ─── Section cards ─── */

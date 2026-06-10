@@ -113,14 +113,6 @@
     @include('partials.settings-modal')
     @include('partials.mobile-redirect')
 
-    {{-- Tutorial data for first-time users --}}
-    @auth
-        @unless(auth()->user()->tutorial_completed_at)
-            <script>
-                window.__PR_AI_TUTORIAL__ = { show: true, page: 'imports' };
-            </script>
-        @endunless
-    @endauth
 </body>
 
 </html>

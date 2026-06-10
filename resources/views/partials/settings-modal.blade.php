@@ -519,41 +519,82 @@
                         <h4>Getting Started</h4>
                         <p>PR-AI accelerates code reviews, security checks, and documentation with AI. Sign in with <strong>GitHub</strong> or <strong>GitLab</strong> on the login page, then use <strong>Imports</strong> to browse repos or the <strong>Auditor</strong> to review diffs. Full details are in <code>APP.md</code> in the project repository.</p>
 
-                        {{-- Interactive Tutorial — step-by-step guided walkthrough --}}
-                        <div style="margin-top: 24px; border: 1px solid rgba(73,101,255,0.18); border-radius: 18px; background: rgba(73,101,255,0.04); padding: 18px 20px;">
-                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                                <span style="font-size:18px;">🎓</span>
-                                <span style="font-weight:700;font-size:14px;color:#12141c;">Interactive Tutorial</span>
+                        {{-- First Walkthrough — Auditor Workspace --}}
+                        <div class="help-walkthrough-section">
+                            <div class="help-walkthrough-header">
+                                <span class="help-walkthrough-icon">🖥️</span>
+                                <div>
+                                    <div class="help-walkthrough-title">Auditor Workspace Walkthrough</div>
+                                    <div class="help-walkthrough-sub">Learn your way around the main review environment</div>
+                                </div>
                             </div>
-                            <p style="margin:0 0 14px;font-size:12px;color:#7c8398;line-height:1.5;">New to PR-AI? Take a guided walkthrough of the workspace — we'll show you where everything is and how to use it.</p>
-                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                <button class="tutorial-launch-btn tutorial-launch-btn--auditor" type="button"
-                                    onclick="(function(){
-                                        document.querySelector('[data-close=\'settings-modal\']')?.click();
-                                        setTimeout(function(){
-                                            if (typeof window.startAuditorTutorial === 'function') {
-                                                window.startAuditorTutorial();
-                                            } else {
-                                                window.location.href = '/auditor?tutorial=1';
-                                            }
-                                        }, 400);
-                                    })()">
-                                    <span style="font-size:15px;">🖥️</span> Auditor Walkthrough
-                                </button>
-                                <button class="tutorial-launch-btn tutorial-launch-btn--imports" type="button"
-                                    onclick="(function(){
-                                        document.querySelector('[data-close=\'settings-modal\']')?.click();
-                                        setTimeout(function(){
-                                            if (typeof window.startImportsTutorial === 'function') {
-                                                window.startImportsTutorial();
-                                            } else {
-                                                window.location.href = '/imports?tutorial=1';
-                                            }
-                                        }, 400);
-                                    })()">
-                                    <span style="font-size:15px;">📥</span> Import Walkthrough
-                                </button>
+                            <ol class="help-walkthrough-steps">
+                                <li>
+                                    <strong>Chat Box</strong>
+                                    <span>The central text area at the bottom — type prompts, ask coding questions, or request code reviews. Press <kbd>Enter</kbd> or click the send button to submit.</span>
+                                </li>
+                                <li>
+                                    <strong>Voice Input</strong>
+                                    <span>Click the <strong>🎤 microphone button</strong> in the chat toolbar to speak directly to PR-AI. Your voice is transcribed and sent as a prompt.</span>
+                                </li>
+                                <li>
+                                    <strong>Import Button (+)</strong>
+                                    <span>The <strong>➕ plus button</strong> in the chat toolbar lets you upload diff files, paste code in the Monaco editor, or jump to the Imports page to browse repos.</span>
+                                </li>
+                                <li>
+                                    <strong>Send Button</strong>
+                                    <span>The <strong>blue send arrow</strong> (or press <kbd>Enter</kbd>) submits your prompt. The AI streams its response in real time.</span>
+                                </li>
+                                <li>
+                                    <strong>Response Area</strong>
+                                    <span>The main scrollable area above the chat box displays AI audit results, security scores, OWASP coverage, Mermaid diagrams, and follow-up suggestions.</span>
+                                </li>
+                                <li>
+                                    <strong>AI Provider &amp; Model Selectors</strong>
+                                    <span>Top-right dropdowns let you switch between <strong>OpenAI</strong> and <strong>DeepSeek</strong>, and pick specific models like GPT-4o or DeepSeek-Chat.</span>
+                                </li>
+                                <li>
+                                    <strong>Diff Viewer</strong>
+                                    <span>After importing code, the bottom panel shows a syntax-highlighted side-by-side diff with file navigation and inline review comments.</span>
+                                </li>
+                            </ol>
+                        </div>
+
+                        {{-- First Walkthrough — Import Page --}}
+                        <div class="help-walkthrough-section">
+                            <div class="help-walkthrough-header">
+                                <span class="help-walkthrough-icon">📥</span>
+                                <div>
+                                    <div class="help-walkthrough-title">Import Page Walkthrough</div>
+                                    <div class="help-walkthrough-sub">How to bring repositories and code into PR-AI</div>
+                                </div>
                             </div>
+                            <ol class="help-walkthrough-steps">
+                                <li>
+                                    <strong>Recent Activity</strong>
+                                    <span>The top section shows your <strong>recent pull requests, commits, and merge conflicts</strong> across connected repos. Click any item to import and audit it instantly.</span>
+                                </li>
+                                <li>
+                                    <strong>Repository Browser</strong>
+                                    <span>Click a repository to expand it and see <strong>branches, pull requests, and commits</strong>. Use the provider dropdown to switch between GitHub and GitLab.</span>
+                                </li>
+                                <li>
+                                    <strong>Import a Pull Request</strong>
+                                    <span>Click any pull request to <strong>fetch its diff, metadata, and comments</strong>. PR-AI opens the Auditor and auto-runs a full VAPT + OWASP security audit.</span>
+                                </li>
+                                <li>
+                                    <strong>Audit a Branch</strong>
+                                    <span>Click a branch name to <strong>compute the diff against the default branch</strong> (main) and audit the entire branch. Great for feature branch reviews before opening a PR.</span>
+                                </li>
+                                <li>
+                                    <strong>Manual Import Options</strong>
+                                    <span>From the Auditor, use the <strong>➕ Import button</strong> to upload <code>.diff</code> / <code>.patch</code> files or paste code directly into the built-in Monaco editor.</span>
+                                </li>
+                                <li>
+                                    <strong>API Keys &amp; Providers</strong>
+                                    <span>Go to <strong>Settings → API Keys</strong> to add your personal OpenAI or DeepSeek key. Switch between developer (shared) and personal key modes anytime.</span>
+                                </li>
+                            </ol>
                         </div>
 
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px;">

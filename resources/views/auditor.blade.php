@@ -289,15 +289,6 @@
         </div>
     </div>
 
-    {{-- Tutorial data for first-time users --}}
-    @auth
-        @unless(auth()->user()->tutorial_completed_at)
-            <script>
-                window.__PR_AI_TUTORIAL__ = { show: true, page: 'auditor' };
-            </script>
-        @endunless
-    @endauth
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.min.js" defer></script>
 
 </body>

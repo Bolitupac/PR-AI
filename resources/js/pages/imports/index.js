@@ -10,7 +10,6 @@ import * as Renderers from './renderers';
 import { buildBranchAuditPayload, buildCommitAuditPayload, buildPullRequestAuditPayload, startAuditSession } from './audit-session';
 import { initRecentPullRequestsPanel } from './recent-pulls';
 import { initGlobalChatHistory } from '../auditor/chat-history';
-import { startImportsTutorial } from './imports-tutorial';
 
 const PAGE_SIZE = 20;
 const METADATA_START_DELAY_MS = 1200;
@@ -24,19 +23,6 @@ export async function initImportsPage() {
     const providerConfig = JSON.parse(page.dataset.vcsProviders || '{}');
     const providerSelect = document.getElementById('imports-provider-select');
     let currentProvider = providerSelect?.value || page.dataset.defaultProvider || 'github';
-
-    // ── Tutorial ──
-    window.startImportsTutorial = startImportsTutorial;
-
-    const urlParams = new URLSearchParams(window.location.search);
-    if (window.__PR_AI_TUTORIAL__?.show || urlParams.get('tutorial') === '1') {
-        setTimeout(() => startImportsTutorial(), 600);
-        if (urlParams.get('tutorial') === '1') {
-            const url = new URL(window.location.href);
-            url.searchParams.delete('tutorial');
-            window.history.replaceState({}, '', url.toString());
-        }
-    }
 
     initSidebar();
     initThemeToggle();
