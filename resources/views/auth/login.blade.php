@@ -309,6 +309,12 @@
             filter: brightness(0) invert(1);
         }
 
+        .auth-provider-img--gitlab {
+            width: 36px !important;
+            height: 36px !important;
+            filter: none !important;
+        }
+
         .auth-provider-disabled {
             border: 1px solid var(--line);
             background: #f4f6fa;
@@ -366,6 +372,163 @@
             color: #9c2f2f;
             font-size: 14px;
             line-height: 1.55;
+        }
+
+        .auth-tos-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 22px;
+            font-size: 13px;
+            color: var(--text-soft);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .auth-tos-check input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--brand);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .auth-tos-check a {
+            color: var(--brand);
+            text-decoration: underline;
+            font-weight: 600;
+        }
+
+        .auth-tos-check a:hover {
+            color: var(--brand-deep);
+        }
+
+        .auth-provider:disabled,
+        .auth-provider--disabled {
+            opacity: 0.45;
+            cursor: not-allowed !important;
+            pointer-events: none;
+            filter: grayscale(0.6);
+        }
+
+        /* TOS Modal */
+        .tos-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+
+        .tos-modal.is-open {
+            display: flex;
+        }
+
+        .tos-modal-card {
+            position: relative;
+            width: min(640px, 95vw);
+            max-height: 80vh;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 28px 64px rgba(0,0,0,0.25);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tos-modal-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 22px;
+            border-bottom: 1px solid #e5e7eb;
+            flex-shrink: 0;
+        }
+
+        .tos-modal-head h3 {
+            margin: 0;
+            font-size: 17px;
+            font-weight: 700;
+            color: #12141c;
+        }
+
+        .tos-modal-close {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            background: #f9fafb;
+            color: #5e6475;
+            font-size: 18px;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            transition: background 0.15s;
+        }
+
+        .tos-modal-close:hover {
+            background: #f3f4f6;
+        }
+
+        .tos-modal-body {
+            padding: 22px;
+            overflow-y: auto;
+            flex: 1;
+            font-size: 13px;
+            line-height: 1.75;
+            color: #374151;
+        }
+
+        .tos-modal-body h4 {
+            margin: 0 0 8px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #12141c;
+        }
+
+        .tos-modal-body p {
+            margin: 0 0 14px;
+        }
+
+        .tos-modal-body ul {
+            margin: 0 0 14px;
+            padding-left: 20px;
+        }
+
+        .tos-modal-body li {
+            margin-bottom: 6px;
+        }
+
+        .tos-modal-footer {
+            padding: 14px 22px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .tos-modal-btn {
+            height: 40px;
+            padding: 0 20px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .tos-modal-btn:hover { transform: translateY(-1px); }
+
+        .tos-modal-btn--close {
+            background: #f3f4f6;
+            color: #5e6475;
+            border: 1px solid #e5e7eb;
         }
 
         .auth-terms {
@@ -501,20 +664,25 @@
                     <div class="auth-error">{{ session('auth_error') }}</div>
                 @endif
 
-                <div class="auth-provider-list" style="margin-top: 24px;">
-                    <a href="{{ route('github.redirect') }}" class="auth-provider">
+                <label class="auth-tos-check">
+                    <input type="checkbox" id="tos-checkbox">
+                    <span>I accept the <a href="#" id="tos-link">Terms of Service</a></span>
+                </label>
+
+                <div class="auth-provider-list" style="margin-top: 16px;" id="auth-provider-list">
+                    <button class="auth-provider auth-provider--github" id="github-signin-btn" type="button" disabled>
                         <img src="{{ asset('images/github.png') }}" alt="">
                         <span>GitHub</span>
-                    </a>
+                    </button>
 
-                    <a href="{{ route('gitlab.redirect') }}" class="auth-provider">
-                        <img src="{{ asset('images/gitlab-logo-500-rgb.svg') }}" alt="GitLab" style="width:18px;height:18px;">
+                    <button class="auth-provider auth-provider--gitlab" id="gitlab-signin-btn" type="button" disabled>
+                        <img src="{{ asset('images/gitlab-logo-500-rgb.svg') }}" alt="GitLab" class="auth-provider-img--gitlab">
                         <span>GitLab</span>
-                    </a>
+                    </button>
 
                     <form action="{{ route('temp.login') }}" method="POST" style="margin: 0;">
                         @csrf
-                        <button type="submit" class="auth-provider" style="width: 100%; border: none; cursor: pointer; background: linear-gradient(135deg, #304cff, #1e2e99);">
+                        <button type="submit" class="auth-provider auth-provider--temp" style="width: 100%; border: none; cursor: pointer; background: linear-gradient(135deg, #304cff, #1e2e99);">
                             <span>TEMPORARY LOGIN</span>
                         </button>
                     </form>
@@ -522,6 +690,143 @@
             </div>
         </section>
     </main>
+
+    {{-- Terms of Service Modal --}}
+    <div class="tos-modal" id="tos-modal" aria-hidden="true">
+        <div class="tos-modal-card">
+            <div class="tos-modal-head">
+                <h3>Terms of Service</h3>
+                <button class="tos-modal-close" id="tos-modal-close-btn" type="button" aria-label="Close">&times;</button>
+            </div>
+            <div class="tos-modal-body">
+                <p><strong>Last updated:</strong> June 10, 2026</p>
+
+                <h4>1. Acceptance of Terms</h4>
+                <p>By accessing or using PR ai ("the Service"), you agree to be bound by these Terms of Service. If you do not agree, do not use the Service.</p>
+
+                <h4>2. Description of Service</h4>
+                <p>PR ai is an AI-powered code review and pull request assistant. It analyzes code diffs, generates security audits, and provides documentation generation capabilities. The Service integrates with third-party platforms including GitHub, GitLab, and AI providers (OpenAI, DeepSeek).</p>
+
+                <h4>3. User Accounts</h4>
+                <p>You may sign in using GitHub OAuth or GitLab OAuth. You are responsible for maintaining the security of your account and any activities that occur under it. PR ai does not store your GitHub or GitLab passwords — authentication is handled entirely through OAuth.</p>
+
+                <h4>4. API Keys & Third-Party Services</h4>
+                <p>You may provide your own API keys for OpenAI or DeepSeek. These keys are encrypted at rest. PR ai also provides a shared developer key for convenience. You are responsible for any costs incurred through your personal API keys. PR ai is not liable for charges from third-party API providers.</p>
+
+                <h4>5. Code & Data Privacy</h4>
+                <p>Code diffs you submit for analysis are processed by the selected AI provider (OpenAI or DeepSeek). By using the Service, you acknowledge that your code is transmitted to these providers for processing. PR ai does not permanently store your code diffs on our servers beyond what is necessary for chat history. We do not sell, share, or train on your code.</p>
+
+                <h4>6. Acceptable Use</h4>
+                <p>You agree not to use the Service to:</p>
+                <ul>
+                    <li>Upload malicious code, malware, or exploit payloads</li>
+                    <li>Attempt to bypass rate limits or abuse API resources</li>
+                    <li>Use the Service for any illegal activity</li>
+                    <li>Reverse engineer or extract the underlying AI system prompts</li>
+                    <li>Submit code that you do not have the right to share</li>
+                </ul>
+
+                <h4>7. Disclaimer of Warranties</h4>
+                <p>The Service is provided "as is" without warranties of any kind. AI-generated code reviews are suggestions only and should not replace human review. PR ai makes no guarantees about the accuracy, completeness, or security of AI-generated output. Always review AI suggestions before applying them to production code.</p>
+
+                <h4>8. Limitation of Liability</h4>
+                <p>PR ai and its creators shall not be liable for any damages arising from the use of the Service, including but not limited to: missed security vulnerabilities in AI-generated audits, incorrect code suggestions, data loss from API failures, or costs from third-party API usage.</p>
+
+                <h4>9. Changes to Terms</h4>
+                <p>We reserve the right to modify these terms at any time. Continued use of the Service after changes constitutes acceptance of the new terms.</p>
+
+                <h4>10. Contact</h4>
+                <p>For questions about these Terms, contact the developer at <strong>bolitupac.github.io</strong>.</p>
+            </div>
+            <div class="tos-modal-footer">
+                <button class="tos-modal-btn tos-modal-btn--close" id="tos-modal-decline-btn" type="button">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const tosCheckbox = document.getElementById('tos-checkbox');
+            const githubBtn = document.getElementById('github-signin-btn');
+            const gitlabBtn = document.getElementById('gitlab-signin-btn');
+            const tosLink = document.getElementById('tos-link');
+            const tosModal = document.getElementById('tos-modal');
+            const tosCloseBtn = document.getElementById('tos-modal-close-btn');
+            const tosDeclineBtn = document.getElementById('tos-modal-decline-btn');
+            if (!tosCheckbox) return;
+
+            const githubHref = '{{ route('github.redirect') }}';
+            const gitlabHref = '{{ route('gitlab.redirect') }}';
+
+            const updateButtons = () => {
+                const checked = tosCheckbox.checked;
+                if (githubBtn) {
+                    githubBtn.disabled = !checked;
+                    githubBtn.classList.toggle('auth-provider--disabled', !checked);
+                }
+                if (gitlabBtn) {
+                    gitlabBtn.disabled = !checked;
+                    gitlabBtn.classList.toggle('auth-provider--disabled', !checked);
+                }
+            };
+
+            const openTosModal = () => {
+                if (tosModal) {
+                    tosModal.classList.add('is-open');
+                    tosModal.setAttribute('aria-hidden', 'false');
+                    document.body.style.overflow = 'hidden';
+                }
+            };
+
+            const closeTosModal = () => {
+                if (tosModal) {
+                    tosModal.classList.remove('is-open');
+                    tosModal.setAttribute('aria-hidden', 'true');
+                    document.body.style.overflow = '';
+                }
+            };
+
+            tosCheckbox.addEventListener('change', updateButtons);
+
+            if (tosLink) {
+                tosLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    openTosModal();
+                });
+            }
+
+            if (tosCloseBtn) tosCloseBtn.addEventListener('click', closeTosModal);
+            if (tosDeclineBtn) tosDeclineBtn.addEventListener('click', closeTosModal);
+
+            if (tosModal) {
+                tosModal.addEventListener('click', function(e) {
+                    if (e.target === tosModal) closeTosModal();
+                });
+            }
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && tosModal && tosModal.classList.contains('is-open')) {
+                    closeTosModal();
+                }
+            });
+
+            // Sign-in buttons navigate on click when enabled
+            if (githubBtn) {
+                githubBtn.addEventListener('click', function() {
+                    if (tosCheckbox.checked) {
+                        window.location.href = githubHref;
+                    }
+                });
+            }
+            if (gitlabBtn) {
+                gitlabBtn.addEventListener('click', function() {
+                    if (tosCheckbox.checked) {
+                        window.location.href = gitlabHref;
+                    }
+                });
+            }
+        })();
+    </script>
 </body>
 
 </html>
