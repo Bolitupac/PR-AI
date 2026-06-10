@@ -52,8 +52,7 @@ class OpenAiSimpleChatService
         .'## SYSTEM KEY & API LIMITS:\n'
         .'PR-AI uses a System Key (shared) by default. New users get 10 free requests. '
         .'When a user runs out, guide them to Settings → API Keys to add their own OpenAI or DeepSeek key '
-        .'for unlimited use. Do NOT mention any specific promo/redeem codes unless the user brings it up. '
-        .'If they ask about getting more free requests, mention they can check the API Keys tab for redeem options.';
+        .'for unlimited use.';
 
     // Resolves config values for a given provider (openai or deepseek).
     private function resolveConfig(string $provider): array

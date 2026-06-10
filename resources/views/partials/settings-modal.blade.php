@@ -353,27 +353,6 @@
                             </div>
                         </article>
                     </div>
-
-                    {{-- Redeem Code --}}
-                    @auth
-                    <div class="settings-redeem-box">
-                        <div class="settings-redeem-header">
-                            <span style="font-size:18px;">🎟️</span>
-                            <div>
-                                <div class="settings-redeem-title">Redeem a Promo Code</div>
-                                <div class="settings-redeem-sub">Got a promo code? Redeem it here for extra System Key credits.</div>
-                                <div class="settings-redeem-credits" id="settings-redeem-credits">
-                                    Credits remaining: <strong>{{ auth()->user()->system_key_credits ?? 10 }}</strong>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="settings-redeem-form">
-                            <input class="settings-redeem-input" id="settings-redeem-input" type="text" placeholder="Enter code (e.g. BETA50)" maxlength="50" autocomplete="off">
-                            <button class="settings-redeem-btn" id="settings-redeem-btn" type="button">Redeem</button>
-                        </div>
-                        <div class="profile-api-state" id="settings-redeem-state"></div>
-                    </div>
-                    @endauth
                 </section>
 
                 <section class="settings-pane" data-settings-pane="ai-settings">
@@ -629,7 +608,7 @@
                                 </li>
                                 <li>
                                     <strong>API Keys &amp; System Credits</strong>
-                                    <span>New users get <strong>10 free System Key requests</strong>. After that, add your personal OpenAI or DeepSeek key in <strong>Settings → API Keys</strong> for unlimited use. Got a promo code? Redeem it at the bottom of the API Keys tab for extra credits — try <strong>BETA50</strong> for +50 requests during beta.</span>
+                                    <span>New users get <strong>10 free System Key requests</strong>. After that, add your personal OpenAI or DeepSeek key in <strong>Settings → API Keys</strong> for unlimited use. Switch the dropdown from "System key" to "Personal key" and paste your API key.</span>
                                 </li>
                             </ol>
                         </div>
