@@ -17,6 +17,7 @@ class ChatConversation extends Model
         'provider',
         'model',
         'active_audit_context',
+        'diff_text',
     ];
 
     public function user(): BelongsTo

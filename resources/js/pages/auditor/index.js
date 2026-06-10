@@ -65,41 +65,7 @@ export function initAuditorPage() {
     const newChatBtn = document.getElementById('new-chat-btn');
     if (newChatBtn) {
         newChatBtn.addEventListener('click', () => {
-            // Clear response area
-            const responseArea = document.getElementById('ai-response-area');
-            if (responseArea) responseArea.innerHTML = '';
-
-            // Reset conversation context and URL
-            if (window.chatContextStore) {
-                window.chatContextStore.clear();
-            }
-            const cleanUrl = window.location.pathname;
-            window.history.replaceState({}, '', cleanUrl);
-
-            // Reset browser tab title
-            document.title = 'PR-AI Auditor';
-
-            // Clear the prompt input
-            const promptInput = document.getElementById('user-prompt');
-            if (promptInput) {
-                promptInput.value = '';
-                promptInput.style.height = 'auto';
-                promptInput.focus();
-            }
-
-            // Rebuild and show empty state with greeting
-            const emptyState = document.getElementById('chat-empty-state');
-            if (emptyState) {
-                emptyState.classList.remove('is-hidden');
-                emptyState.style.display = '';
-                // Scroll to top to show the greeting
-                if (responseArea) responseArea.scrollTop = 0;
-            }
-
-            // Deselect active history item
-            if (typeof window.refreshGlobalChatHistory === 'function') {
-                window.refreshGlobalChatHistory(null);
-            }
+            window.location.href = '/auditor';
         });
     }
 

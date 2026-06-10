@@ -60,6 +60,12 @@ class ChatConversationController extends Controller
             $request->session()->forget('active_audit_context');
         }
 
+        if ($conversation->diff_text) {
+            $request->session()->put('active_diff_text', $conversation->diff_text);
+        } else {
+            $request->session()->forget('active_diff_text');
+        }
+
         return response()->json([
             'conversation' => $conversation,
             'messages' => $conversation->messages,

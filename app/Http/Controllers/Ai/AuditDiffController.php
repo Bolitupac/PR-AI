@@ -108,6 +108,7 @@ class AuditDiffController extends Controller
             'review_comments' => $reviewComments,
         ]);
         $request->session()->put('active_audit_context', $chatContext);
+        $request->session()->put('active_diff_text', $diffText);
 
         $userPrompt = $this->auditPromptComposer->compose([
             'source' => $source,
@@ -282,6 +283,7 @@ class AuditDiffController extends Controller
             'review_comments' => $reviewComments,
         ]);
         $request->session()->put('active_audit_context', $chatContext);
+        $request->session()->put('active_diff_text', $diffText);
 
         $userPrompt = $this->auditPromptComposer->compose([
             'source' => $source,
