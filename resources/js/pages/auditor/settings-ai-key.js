@@ -129,16 +129,30 @@ function initProviderKeyBox(boxId, modeSelectId, inputId, saveBtnId, removeBtnId
         });
     }
 
-    modeSelect.addEventListener('change', async () => {
-        setState(state, 'Switching...');
-        const result = await requestJson(modeUrl, 'POST', { mode: modeSelect.value });
-        if (!result.ok) {
-            setState(state, result.json?.message || 'Failed to switch.', 'is-error');
-            await loadStatus();
-            return;
+    modeSelect.addEventListener('change', () => {
+        const selected = modeSelect.value;
+        // Show/hide the key input row immediately based on dropdown choice
+        if (keyRow) {
+            keyRow.style.display = selected === 'personal' ? 'block' : 'none';
         }
-        updateUi(result.json);
-        setState(state, result.json?.message || 'Key source updated.', 'is-ok');
+        // If switching back to system key, call the mode endpoint
+        if (selected !== 'personal') {
+            setState(state, 'Switching...');
+            requestJson(modeUrl, 'POST', { mode: selected }).then(result => {
+                if (!result.ok) {
+                    setState(state, result.json?.message || 'Failed to switch.', 'is-error');
+                    loadStatus();
+                    return;
+                }
+                updateUi(result.json);
+                setState(state, result.json?.message || 'Switched to system key.', 'is-ok');
+            }).catch(() => {
+                setState(state, 'Could not switch.', 'is-error');
+            });
+        } else {
+            // Switching to personal — just reveal the input, let save handle the rest
+            setState(state, 'Enter your API key below and click Save.', 'is-ok');
+        }
     });
 
     loadStatus().catch(() => {
