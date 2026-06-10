@@ -14,6 +14,11 @@ return [
     |
     */
 
+    // Default System Key credits for new users (before they add a personal key).
+    // Each AI request (chat, audit, etc.) consumes 1 credit when on System Key.
+    // Users with a personal API key are unlimited.
+    'default_system_key_credits' => (int) env('SYSTEM_KEY_DEFAULT_CREDITS', 10),
+
     // Maximum AI requests per user per day
     'max_requests_per_day' => (int) env('AI_RATE_LIMIT_REQUESTS_PER_DAY', 200),
 

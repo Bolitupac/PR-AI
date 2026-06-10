@@ -17,7 +17,7 @@ function updateStatusBadge(badgeEl, isPersonal) {
         badgeEl.style.color = '#b45309';
         badgeEl.style.borderColor = 'rgba(245,158,11,0.3)';
     } else {
-        badgeEl.textContent = 'Developer key active';
+        badgeEl.textContent = 'System key active';
         badgeEl.style.background = 'rgba(45,164,78,0.1)';
         badgeEl.style.color = '#1a7f37';
         badgeEl.style.borderColor = 'rgba(45,164,78,0.3)';
@@ -31,7 +31,7 @@ function updateStatusText(textEl, isPersonal, masked) {
     } else if (isPersonal) {
         textEl.textContent = 'Personal key active';
     } else {
-        textEl.textContent = 'Developer key active';
+        textEl.textContent = 'System key active';
     }
 }
 
@@ -71,7 +71,7 @@ function initProviderKeyBox(boxId, modeSelectId, inputId, saveBtnId, removeBtnId
     if (!statusUrl || !saveUrl || !removeUrl || !modeUrl || !modeSelect) return;
 
     const updateUi = (payload) => {
-        const mode = payload?.mode === 'personal' ? 'personal' : 'developer';
+        const mode = payload?.mode === 'personal' ? 'personal' : 'system';
         const hasKey = Boolean(payload?.has_personal_key);
         const masked = payload?.masked_key || '';
 

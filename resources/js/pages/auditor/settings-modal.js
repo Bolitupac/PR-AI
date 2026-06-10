@@ -155,6 +155,45 @@ export function initSettingsModal() {
         }
     });
 
+    // ── Redeem code handler ──
+    const redeemInput = document.getElementById('settings-redeem-input');
+    const redeemBtn = document.getElementById('settings-redeem-btn');
+    const redeemState = document.getElementById('settings-redeem-state');
+    const redeemCredits = document.getElementById('settings-redeem-credits');
+
+    redeemBtn?.addEventListener('click', async () => {
+        const code = redeemInput?.value?.trim();
+        if (!code) {
+            if (redeemState) { redeemState.textContent = 'Enter a code first.'; redeemState.className = 'profile-api-state is-error'; }
+            return;
+        }
+
+        redeemBtn.disabled = true;
+        redeemBtn.textContent = 'Redeeming...';
+        if (redeemState) { redeemState.textContent = ''; redeemState.className = 'profile-api-state'; }
+
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            const res = await fetch('/api/redeem', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+                body: JSON.stringify({ code }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+                if (redeemState) { redeemState.textContent = data.message; redeemState.className = 'profile-api-state is-ok'; }
+                if (redeemCredits) redeemCredits.innerHTML = 'Credits remaining: <strong>' + data.credits_remaining + '</strong>';
+                if (redeemInput) redeemInput.value = '';
+            } else {
+                if (redeemState) { redeemState.textContent = data.message || 'Failed to redeem code.'; redeemState.className = 'profile-api-state is-error'; }
+            }
+        } catch {
+            if (redeemState) { redeemState.textContent = 'Something went wrong. Try again.'; redeemState.className = 'profile-api-state is-error'; }
+        }
+        redeemBtn.disabled = false;
+        redeemBtn.textContent = 'Redeem';
+    });
+
     const requestedTab = new URLSearchParams(window.location.search).get('settings');
     if (requestedTab && [...panes].some((pane) => pane.dataset.settingsPane === requestedTab)) {
         openModal(requestedTab);

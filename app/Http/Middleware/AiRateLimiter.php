@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\TokenUsage;
+use App\Services\Ai\SystemKeyGuard;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,7 +14,8 @@ class AiRateLimiter
     /**
      * Enforce per-user rate limits on AI endpoints.
      *
-     * Tracks request count and estimated token usage per day / per week.
+     * Checks system key credits first (if user has no personal API key),
+     * then tracks request count and estimated token usage per day / per week.
      * Returns 429 with retry-after headers when a cap is exceeded.
      */
     public function handle(Request $request, Closure $next): Response
@@ -25,6 +27,18 @@ class AiRateLimiter
         $user = Auth::user();
         if (! $user) {
             return $next($request);
+        }
+
+        // ── System Key credit check ──
+        $provider = (string) $request->input('provider', 'openai');
+        $guard = app(SystemKeyGuard::class);
+        $creditCheck = $guard->check($user, $provider);
+
+        if (! $creditCheck['ok']) {
+            return response()->json([
+                'message' => $creditCheck['message'],
+                'credits_remaining' => 0,
+            ], 429);
         }
 
         $dryRun = (bool) config('rate_limits.dry_run', false);
@@ -84,6 +98,14 @@ class AiRateLimiter
 
         $response = $next($request);
 
+        // ── Consume system key credit (only if user has no personal key) ──
+        $creditCheckAfter = $guard->check($user, $provider);
+        $usingSystemKey = ! ($provider === 'deepseek' ? $user->hasCustomDeepSeekKey() : $user->hasCustomOpenAiKey());
+
+        if ($usingSystemKey && ! $dryRun && $creditCheckAfter['ok']) {
+            $guard->consume($user);
+        }
+
         // ── Add rate-limit headers ──
         $remaining = max(0, $maxRequestsPerDay - $usage->request_count);
         $response->headers->set('X-RateLimit-Limit', (string) $maxRequestsPerDay);
@@ -94,6 +116,10 @@ class AiRateLimiter
             $response->headers->set('X-TokenLimit-Daily', (string) $maxTokensPerDay);
             $response->headers->set('X-TokenLimit-Remaining', (string) $tokenRemaining);
         }
+
+        // System key credits remaining header
+        $creditsLeft = max(0, (int) ($user->fresh()->system_key_credits ?? 0));
+        $response->headers->set('X-SystemKey-Credits', (string) $creditsLeft);
 
         return $response;
     }

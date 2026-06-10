@@ -19,6 +19,7 @@ use App\Http\Controllers\AuditSnapshotController;
 use App\Http\Controllers\ProfileAiKeyController;
 use App\Http\Controllers\AiPreferencesController;
 use App\Http\Controllers\Auth\DeleteAccountController;
+use App\Http\Controllers\RedeemCodeController;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
@@ -114,6 +115,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/ai-preferences', [AiPreferencesController::class, 'save'])->name('profile.ai-preferences.save');
 
     Route::delete('/account', DeleteAccountController::class)->name('account.delete');
+
+    Route::post('/api/redeem', RedeemCodeController::class)->name('redeem');
 
     Route::post('/api/tutorial/complete', function () {
         $user = Auth::user();

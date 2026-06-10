@@ -48,7 +48,12 @@ class OpenAiSimpleChatService
         .'Be encouraging, never condescending. You are here to help developers do their best work.\n\n'
         .'You have access to a comprehensive knowledge of PR-AI features and capabilities. '
         .'When users ask what you can do or need help, reference the capabilities document to give '
-        .'accurate, helpful responses about the platform.';
+        .'accurate, helpful responses about the platform.\n\n'
+        .'## SYSTEM KEY & API LIMITS:\n'
+        .'PR-AI uses a System Key (shared) by default. New users get 10 free requests. '
+        .'When a user runs out, guide them to Settings → API Keys to add their own OpenAI or DeepSeek key '
+        .'for unlimited use. Do NOT mention any specific promo/redeem codes unless the user brings it up. '
+        .'If they ask about getting more free requests, mention they can check the API Keys tab for redeem options.';
 
     // Resolves config values for a given provider (openai or deepseek).
     private function resolveConfig(string $provider): array

@@ -57,7 +57,7 @@ function initKeyBox({
     if (!statusUrl || !saveUrl || !removeUrl || !modeUrl || !modeSelect || !input || !saveBtn || !removeBtn) return;
 
     const updateUi = (payload) => {
-        const mode = payload?.mode === 'personal' ? 'personal' : 'developer';
+        const mode = payload?.mode === 'personal' ? 'personal' : 'system';
         const hasKey = Boolean(payload?.has_personal_key);
         const masked = payload?.masked_key || '';
 

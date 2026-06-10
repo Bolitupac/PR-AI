@@ -61,13 +61,16 @@ Supported providers: **GitHub** (OAuth sign-in), **GitLab** (OAuth sign-in), Bit
 - Click again or wait for silence detection to send
 - Also available as a floating button (bottom-right) on mobile
 
-**6. Multi-Provider AI**
+**6. Multi-Provider AI & System Credits**
 - Switch providers via the **provider dropdown** (top-right of Auditor, next to Import)
 - Supported: **OpenAI** (GPT-4o, GPT-4o-mini) and **DeepSeek** (DeepSeek-Chat, DeepSeek-Reasoner)
 - Use the **model dropdown** to pick specific models
 - Manage API keys in **Settings → API Keys**
-- Two key modes: **Developer key** (shared, free) or **Personal key** (your own billing)
-- Add your API key: Settings → API Keys → paste key → click Save
+- Two key modes: **System key** (shared, limited — new users get 10 free requests) or **Personal key** (your own billing, unlimited)
+- Add your API key: Settings → API Keys → switch to "Personal key" → paste key → click Save
+- If a user says they're out of System Key requests, guide them to Settings → API Keys to add their personal OpenAI or DeepSeek key
+- Users can also redeem promo codes at the bottom of the API Keys tab for extra System Key credits
+- The System Key is intended for evaluation. Personal keys are recommended for regular use
 
 **7. Diff Viewer**
 - Appears at the bottom of the Auditor when code is loaded
@@ -103,10 +106,17 @@ Supported providers: **GitHub** (OAuth sign-in), **GitLab** (OAuth sign-in), Bit
 2. Click a branch name (not the default branch)
 3. PR-AI computes the diff between that branch and main → opens Auditor → auto-audits
 
+**What to do when out of System Key requests:**
+1. Go to **Settings → API Keys**
+2. Switch the dropdown from "System key" to "Personal key"
+3. Paste your OpenAI or DeepSeek API key → click **Save key**
+4. You now have unlimited use with your own key
+5. Alternatively, redeem a promo code at the bottom of the API Keys tab (e.g., BETA50) for extra System Key credits
+
 **How to add a personal API key:**
 1. Click the **gear icon** (Settings) in the sidebar
 2. Go to **API Keys** tab
-3. Under OpenAI or DeepSeek, switch from "Developer key" to "Personal key"
+3. Under OpenAI or DeepSeek, switch from "System key" to "Personal key"
 4. Paste your API key → click **Save key**
 
 **How to use DocGen:**

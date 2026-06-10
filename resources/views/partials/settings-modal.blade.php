@@ -181,7 +181,7 @@
                                 <div class="profile-modal-label">OpenAI Key</div>
                                 <div style="display:flex;align-items:center;gap:10px;">
                                     <img src="{{ asset('images/openailogo.png') }}" alt="OpenAI" style="width:20px;height:20px;object-fit:contain;">
-                                    <span id="settings-profile-openai-badge" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(45,164,78,0.1);color:#1a7f37;border:1px solid rgba(45,164,78,0.3);">Developer key active</span>
+                                    <span id="settings-profile-openai-badge" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(45,164,78,0.1);color:#1a7f37;border:1px solid rgba(45,164,78,0.3);">System key active</span>
                                 </div>
                             </div>
 
@@ -191,7 +191,7 @@
                                 <div class="profile-modal-label">DeepSeek Key</div>
                                 <div style="display:flex;align-items:center;gap:10px;">
                                     <img src="{{ asset('images/deepseeklogo.png') }}" alt="DeepSeek" style="width:20px;height:20px;object-fit:contain;">
-                                    <span id="settings-profile-deepseek-badge" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(45,164,78,0.1);color:#1a7f37;border:1px solid rgba(45,164,78,0.3);">Developer key active</span>
+                                    <span id="settings-profile-deepseek-badge" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(45,164,78,0.1);color:#1a7f37;border:1px solid rgba(45,164,78,0.3);">System key active</span>
                                 </div>
                             </div>
 
@@ -243,7 +243,7 @@
                                     </span>
                                     <div>
                                         <div class="settings-provider-name">OpenAI</div>
-                                        <div class="settings-provider-sub" id="settings-openai-status-text">Developer key active</div>
+                                        <div class="settings-provider-sub" id="settings-openai-status-text">System key active</div>
                                     </div>
                                 </div>
                                 <span class="settings-provider-pill is-active" id="settings-openai-pill">Active</span>
@@ -258,10 +258,10 @@
                                     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                                         <span style="font-size:13px;font-weight:600;color:var(--text-main);">Key source:</span>
                                         <select class="settings-mode-select" id="settings-ai-key-mode" aria-label="OpenAI key source" style="width:auto;margin-bottom:0;">
-                                            <option value="developer">Developer key</option>
+                                            <option value="developer">System key</option>
                                             <option value="personal">Personal key</option>
                                         </select>
-                                        <span id="settings-openai-status-badge" style="font-size:11px;padding:3px 8px;border-radius:999px;font-weight:600;background:rgba(45,164,78,0.1);color:#1a7f37;border:1px solid rgba(45,164,78,0.3);">Developer</span>
+                                        <span id="settings-openai-status-badge" style="font-size:11px;padding:3px 8px;border-radius:999px;font-weight:600;background:rgba(45,164,78,0.1);color:#1a7f37;border:1px solid rgba(45,164,78,0.3);">System</span>
                                     </div>
                                     <div id="settings-openai-key-row" style="display:none;margin-top:10px;">
                                         <input class="settings-api-input" id="settings-api-input" type="password" placeholder="sk-...">
@@ -287,7 +287,7 @@
                                     </span>
                                     <div>
                                         <div class="settings-provider-name">DeepSeek</div>
-                                        <div class="settings-provider-sub" id="settings-deepseek-status-text">Developer key active</div>
+                                        <div class="settings-provider-sub" id="settings-deepseek-status-text">System key active</div>
                                     </div>
                                 </div>
                                 <span class="settings-provider-pill is-active" id="settings-deepseek-pill">Active</span>
@@ -302,10 +302,10 @@
                                     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                                         <span style="font-size:13px;font-weight:600;color:var(--text-main);">Key source:</span>
                                         <select class="settings-mode-select" id="settings-deepseek-key-mode" aria-label="DeepSeek key source" style="width:auto;margin-bottom:0;">
-                                            <option value="developer">Developer key</option>
+                                            <option value="developer">System key</option>
                                             <option value="personal">Personal key</option>
                                         </select>
-                                        <span id="settings-deepseek-status-badge" style="font-size:11px;padding:3px 8px;border-radius:999px;font-weight:600;background:rgba(45,164,78,0.1);color:#1a7f37;border:1px solid rgba(45,164,78,0.3);">Developer</span>
+                                        <span id="settings-deepseek-status-badge" style="font-size:11px;padding:3px 8px;border-radius:999px;font-weight:600;background:rgba(45,164,78,0.1);color:#1a7f37;border:1px solid rgba(45,164,78,0.3);">System</span>
                                     </div>
                                     <div id="settings-deepseek-key-row" style="display:none;margin-top:10px;">
                                         <input class="settings-api-input" id="settings-deepseek-api-input" type="password" placeholder="sk-...">
@@ -353,6 +353,27 @@
                             </div>
                         </article>
                     </div>
+
+                    {{-- Redeem Code --}}
+                    @auth
+                    <div class="settings-redeem-box">
+                        <div class="settings-redeem-header">
+                            <span style="font-size:18px;">🎟️</span>
+                            <div>
+                                <div class="settings-redeem-title">Redeem a Promo Code</div>
+                                <div class="settings-redeem-sub">Got a promo code? Redeem it here for extra System Key credits.</div>
+                                <div class="settings-redeem-credits" id="settings-redeem-credits">
+                                    Credits remaining: <strong>{{ auth()->user()->system_key_credits ?? 10 }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-redeem-form">
+                            <input class="settings-redeem-input" id="settings-redeem-input" type="text" placeholder="Enter code (e.g. BETA50)" maxlength="50" autocomplete="off">
+                            <button class="settings-redeem-btn" id="settings-redeem-btn" type="button">Redeem</button>
+                        </div>
+                        <div class="profile-api-state" id="settings-redeem-state"></div>
+                    </div>
+                    @endauth
                 </section>
 
                 <section class="settings-pane" data-settings-pane="ai-settings">
@@ -607,8 +628,8 @@
                                     <span>From the Auditor, use the <strong>➕ Import button</strong> to upload <code>.diff</code> / <code>.patch</code> files or paste code directly into the built-in Monaco editor.</span>
                                 </li>
                                 <li>
-                                    <strong>API Keys &amp; Providers</strong>
-                                    <span>Go to <strong>Settings → API Keys</strong> to add your personal OpenAI or DeepSeek key. Switch between System (shared) and Personal key modes anytime.</span>
+                                    <strong>API Keys &amp; System Credits</strong>
+                                    <span>New users get <strong>10 free System Key requests</strong>. After that, add your personal OpenAI or DeepSeek key in <strong>Settings → API Keys</strong> for unlimited use. Got a promo code? Redeem it at the bottom of the API Keys tab for extra credits — try <strong>BETA50</strong> for +50 requests during beta.</span>
                                 </li>
                             </ol>
                         </div>
@@ -998,14 +1019,14 @@ AI: [Proposes performance improvements]</pre>
                         <h4>Two-Mode Key System</h4>
                         <p>PR-AI supports two ways to handle OpenAI API keys:</p>
 
-                        <h4>Mode 1: Developer Key (Shared / Free)</h4>
+                        <h4>Mode 1: System Key (Shared / Free)</h4>
                         <ul>
                             <li>Uses a shared developer API key provided by PR-AI</li>
                             <li>No cost to you (PR-AI covers API costs for free tier)</li>
                             <li>Limited usage quotas</li>
                             <li>Good for: Getting started, light usage, teams</li>
                         </ul>
-                        <p><strong>How to Use:</strong> Sign up for PR-AI and you're automatically in "Developer" mode. Start auditing immediately — no API key needed.</p>
+                        <p><strong>How to Use:</strong> Sign up for PR-AI and you're automatically in "System" mode. Start auditing immediately — no API key needed.</p>
 
                         <h4>Mode 2: Personal Key (Your Own)</h4>
                         <ul>
@@ -1024,7 +1045,7 @@ AI: [Proposes performance improvements]</pre>
                         <h4>Managing Your Personal Key</h4>
                         <ul>
                             <li><strong>View your masked key:</strong> Settings shows <code>sk-••••••••••••••••1234</code> (last 4 characters visible)</li>
-                            <li><strong>Remove your key:</strong> In Settings, click <strong>Remove</strong> next to your key — you'll return to Developer mode</li>
+                            <li><strong>Remove your key:</strong> In Settings, click <strong>Remove</strong> next to your key — you'll return to System mode</li>
                             <li><strong>Change your key:</strong> Remove the old key, add a new key, verify it works with a test audit</li>
                         </ul>
 
@@ -1085,7 +1106,7 @@ AI: [Proposes performance improvements]</pre>
                         <ul>
                             <li><strong>Is my code secure?</strong> All code is processed securely. With a personal API key, your code is sent to OpenAI for analysis. With the developer key, code is processed with enterprise-grade privacy safeguards. Never upload highly sensitive credentials or private keys.</li>
                             <li><strong>Can I use PR-AI offline?</strong> No, PR-AI requires internet and connection to OpenAI/Gemini APIs. Offline analysis is not currently supported.</li>
-                            <li><strong>How do I cancel my personal API key?</strong> Go to Settings → API Keys → Remove. You'll return to Developer mode immediately.</li>
+                            <li><strong>How do I cancel my personal API key?</strong> Go to Settings → API Keys → Remove. You'll return to System mode immediately.</li>
                             <li><strong>Can I export the audit results?</strong> Yes, you can copy chat responses. Export of audit reports as PDF is coming soon.</li>
                             <li><strong>What if I hit my API quota?</strong> If using personal key, upgrade your OpenAI plan. If using developer key, wait for the monthly reset.</li>
                         </ul>
