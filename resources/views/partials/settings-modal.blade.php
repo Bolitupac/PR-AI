@@ -176,7 +176,8 @@
                             </div>
 
                             {{-- OpenAI Key Status --}}
-                            <div class="profile-modal-box" id="settings-profile-openai-status-box">
+                            <div class="profile-modal-box profile-key-status-box" id="settings-profile-openai-status-box"
+                                style="cursor:pointer;" data-nav-to="api-keys" title="Click to manage API keys">
                                 <div class="profile-modal-label">OpenAI Key</div>
                                 <div style="display:flex;align-items:center;gap:10px;">
                                     <img src="{{ asset('images/openailogo.png') }}" alt="OpenAI" style="width:20px;height:20px;object-fit:contain;">
@@ -185,7 +186,8 @@
                             </div>
 
                             {{-- DeepSeek Key Status --}}
-                            <div class="profile-modal-box" id="settings-profile-deepseek-status-box">
+                            <div class="profile-modal-box profile-key-status-box" id="settings-profile-deepseek-status-box"
+                                style="cursor:pointer;" data-nav-to="api-keys" title="Click to manage API keys">
                                 <div class="profile-modal-label">DeepSeek Key</div>
                                 <div style="display:flex;align-items:center;gap:10px;">
                                     <img src="{{ asset('images/deepseeklogo.png') }}" alt="DeepSeek" style="width:20px;height:20px;object-fit:contain;">

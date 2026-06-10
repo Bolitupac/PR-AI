@@ -14,6 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
         $middleware->redirectGuestsTo(fn () => route('login'));
         $middleware->append(\App\Http\Middleware\CheckPostSize::class);
+        $middleware->alias([
+            'ai.rate.limit' => \App\Http\Middleware\AiRateLimiter::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

@@ -145,6 +145,16 @@ export function initSettingsModal() {
         openModal('vcs');
     });
 
+    // Clicking OpenAI/DeepSeek key status boxes navigates to API Keys tab
+    document.addEventListener('click', (event) => {
+        const keyBox = event.target.closest('.profile-key-status-box');
+        if (!keyBox || !modal.contains(keyBox)) return;
+        const tab = keyBox.getAttribute('data-nav-to');
+        if (tab) {
+            setActiveTab(tab);
+        }
+    });
+
     const requestedTab = new URLSearchParams(window.location.search).get('settings');
     if (requestedTab && [...panes].some((pane) => pane.dataset.settingsPane === requestedTab)) {
         openModal(requestedTab);

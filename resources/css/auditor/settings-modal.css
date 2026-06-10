@@ -360,6 +360,14 @@
     margin-bottom: 20px;
 }
 
+.settings-profile-grid .profile-key-status-box {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.settings-profile-grid .profile-key-status-box:hover {
+    border-color: var(--brand, #4965ff);
+    box-shadow: 0 0 0 1px rgba(73,101,255,0.2);
+}
+
 .settings-profile-grid .profile-modal-box {
     border: 1px solid var(--panel-stroke);
     border-radius: 18px;

@@ -78,16 +78,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/vcs/{provider}/merge-conflicts', [VcsRepositoryController::class, 'mergeConflicts'])->name('vcs.merge-conflicts');
     Route::get('/api/git/commit-diff', [GitCommitController::class, 'diff'])
         ->name('git.commit-diff');
-    Route::post('/api/ai/chat', [SimpleChatController::class, 'chat'])->name('ai.chat');
-    Route::post('/api/ai/chat-stream', [SimpleChatController::class, 'chatStream'])->name('ai.chat.stream');
-    Route::post('/api/ai/docgen/chat', [DocGenController::class, 'chat'])->name('ai.docgen.chat');
-    Route::post('/api/ai/docgen/chat-stream', [DocGenController::class, 'chatStream'])->name('ai.docgen.chat-stream');
-    Route::post('/api/ai/docgen/export', [DocGenController::class, 'export'])->name('ai.docgen.export');
-    Route::post('/api/ai/inline-comments', [SimpleChatController::class, 'inlineComments'])->name('ai.inline-comments');
-    Route::post('/api/ai/followups', [SimpleChatController::class, 'followUps'])->name('ai.followups');
-    Route::post('/api/ai/transcribe', [TranscriptionController::class, 'transcribe'])->name('ai.transcribe');
-    Route::post('/api/ai/audit-diff', [AuditDiffController::class, 'audit'])->name('ai.audit-diff');
-    Route::post('/api/ai/audit-diff-stream', [AuditDiffController::class, 'auditStream'])->name('ai.audit-diff.stream');
+    Route::middleware('ai.rate.limit')->group(function () {
+        Route::post('/api/ai/chat', [SimpleChatController::class, 'chat'])->name('ai.chat');
+        Route::post('/api/ai/chat-stream', [SimpleChatController::class, 'chatStream'])->name('ai.chat.stream');
+        Route::post('/api/ai/docgen/chat', [DocGenController::class, 'chat'])->name('ai.docgen.chat');
+        Route::post('/api/ai/docgen/chat-stream', [DocGenController::class, 'chatStream'])->name('ai.docgen.chat-stream');
+        Route::post('/api/ai/docgen/export', [DocGenController::class, 'export'])->name('ai.docgen.export');
+        Route::post('/api/ai/inline-comments', [SimpleChatController::class, 'inlineComments'])->name('ai.inline-comments');
+        Route::post('/api/ai/followups', [SimpleChatController::class, 'followUps'])->name('ai.followups');
+        Route::post('/api/ai/transcribe', [TranscriptionController::class, 'transcribe'])->name('ai.transcribe');
+        Route::post('/api/ai/audit-diff', [AuditDiffController::class, 'audit'])->name('ai.audit-diff');
+        Route::post('/api/ai/audit-diff-stream', [AuditDiffController::class, 'auditStream'])->name('ai.audit-diff.stream');
+    });
     Route::post('/api/audit/snapshot', [AuditSnapshotController::class, 'store'])->name('audit.snapshot');
 
     // Chat Conversation Routes
