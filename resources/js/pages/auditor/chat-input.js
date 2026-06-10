@@ -99,6 +99,54 @@ export function initChatInput() {
         }
     };
 
+    // Copy button SVG icons
+    const COPY_ICON = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+    const TICK_ICON = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+
+    const addCopyButton = (msgEl, textContent) => {
+        const copyWrap = document.createElement('div');
+        copyWrap.className = 'msg-copy-wrap';
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'msg-copy-btn';
+        copyBtn.type = 'button';
+        copyBtn.setAttribute('aria-label', 'Copy message');
+        copyBtn.innerHTML = COPY_ICON;
+
+        copyBtn.addEventListener('click', async () => {
+            const content = textContent || msgEl.textContent || msgEl.innerText || '';
+            try {
+                await navigator.clipboard.writeText(content);
+                // Animate to tick
+                copyBtn.innerHTML = TICK_ICON;
+                copyBtn.classList.add('is-copied');
+                setTimeout(() => {
+                    copyBtn.innerHTML = COPY_ICON;
+                    copyBtn.classList.remove('is-copied');
+                }, 1800);
+            } catch {
+                // Fallback
+                const ta = document.createElement('textarea');
+                ta.value = content;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                copyBtn.innerHTML = TICK_ICON;
+                copyBtn.classList.add('is-copied');
+                setTimeout(() => {
+                    copyBtn.innerHTML = COPY_ICON;
+                    copyBtn.classList.remove('is-copied');
+                }, 1800);
+            }
+        });
+
+        copyWrap.appendChild(copyBtn);
+        msgEl.appendChild(copyWrap);
+    };
+
     const appendMessage = (text, role) => {
         const message = document.createElement('div');
         message.className = `msg ${role}`;
@@ -108,6 +156,10 @@ export function initChatInput() {
         } else {
             message.textContent = text;
         }
+        // Add copy button
+        const rawText = role === 'ai' ? stripInlineCommentsBlock(text) : text;
+        addCopyButton(message, rawText);
+
         responseArea.appendChild(message);
         // Always scroll for user messages, respect position for AI
         if (role === 'user') {

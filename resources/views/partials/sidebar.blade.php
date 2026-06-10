@@ -81,19 +81,7 @@
                                         fill="currentColor" />
                                 </svg>
                             @elseif($provider['name'] === 'GitLab')
-                                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
-                                    <path
-                                        d="M23.955 10.37L21.316 2.246a.82.82 0 0 0-1.564 0l-2.07 6.386H6.315L4.246 2.246a.82.82 0 0 0-1.564 0L.044 10.37a.822.822 0 0 0 .296.907L12 20.59l11.66-9.311a.822.822 0 0 0 .295-.91z"
-                                        fill="#FC6D26" />
-                                    <path
-                                        d="M12 20.59L.044 10.37a.822.822 0 0 1-.296-.906L2.68 1.34a.82.82 0 0 1 1.564 0l2.07 6.386H12v12.863z"
-                                        fill="#E24329" />
-                                    <path d="M12 20.59V8.632H6.315L12 20.59z" fill="#FCA326" />
-                                    <path
-                                        d="M12 20.59l11.956-10.22a.822.822 0 0 0 .295-.91L21.32 1.34a.82.82 0 0 0-1.564 0l-2.07 6.386H12v12.863z"
-                                        fill="#E24329" />
-                                    <path d="M12 20.59V8.632h5.685L12 20.59z" fill="#FCA326" />
-                                </svg>
+                                <img src="{{ asset('images/gitlab-logo-500-rgb.svg') }}" alt="GitLab" style="width:18px;height:18px;object-fit:contain;">
                             @elseif($provider['name'] === 'Bitbucket')
                                 <svg viewBox="0 0 24 24" aria-hidden="true">
                                     <path

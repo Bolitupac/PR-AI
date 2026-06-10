@@ -19,6 +19,7 @@
 </head>
 
 <body>
+    @include('partials.mobile-hamburger')
     @php
         $vcsClientProviders = collect($vcsProviders ?? [])->mapWithKeys(function ($provider) {
             return [

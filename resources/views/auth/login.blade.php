@@ -508,17 +508,7 @@
                     </a>
 
                     <a href="{{ route('gitlab.redirect') }}" class="auth-provider">
-                        <span class="provider-icon provider-icon--gitlab">
-                            <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M9 17.09 12.42 6.85H5.58L9 17.09z" fill="#FC6D26"/>
-                                <path d="M9 17.09 5.58 6.85H1.13L9 17.09z" fill="#E24329"/>
-                                <path d="M1.13 6.85.05 10.15a.75.75 0 0 0 .272.837L9 17.09 1.13 6.85z" fill="#FCA326"/>
-                                <path d="M1.13 6.85H5.58L3.73 1.17a.375.375 0 0 0-.712 0L1.13 6.85z" fill="#E24329"/>
-                                <path d="M9 17.09 12.42 6.85h4.45L9 17.09z" fill="#E24329"/>
-                                <path d="M16.87 6.85l1.08 3.3a.75.75 0 0 1-.272.837L9 17.09l7.87-10.24z" fill="#FCA326"/>
-                                <path d="M16.87 6.85H12.42l1.85-5.68a.375.375 0 0 1 .712 0l1.886 5.68z" fill="#E24329"/>
-                            </svg>
-                        </span>
+                        <img src="{{ asset('images/gitlab-logo-500-rgb.svg') }}" alt="GitLab" style="width:18px;height:18px;">
                         <span>GitLab</span>
                     </a>
 

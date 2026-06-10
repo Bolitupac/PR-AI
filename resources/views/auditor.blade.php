@@ -111,6 +111,7 @@
 </head>
 
 <body>
+    @include('partials.mobile-hamburger')
     <div class="app-shell">
         <section class="hero-view">
             @include('partials.sidebar')
