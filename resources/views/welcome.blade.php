@@ -4,9 +4,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description"
-        content="PR ai helps teams import pull requests, inspect diffs, and generate AI-powered code reviews in a fast, collaborative workspace.">
-    <title>PR ai | AI Pull Request Reviews</title>
+    @include('partials.meta', [
+        'metaTitle' => 'PR ai | AI Pull Request Reviews — Cut Review Time by 80%',
+        'metaDescription' => 'PR ai helps teams import pull requests from GitHub & GitLab, inspect diffs, generate AI-powered code audits with VAPT + OWASP Top 10 analysis, and ship safer code faster.',
+        'metaType' => 'website',
+    ])
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo 512 transp bg white color svg.svg') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

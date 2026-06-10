@@ -71,6 +71,7 @@ class User extends Authenticatable
             'custom_openai_api_key' => 'encrypted',
             'custom_deepseek_api_key' => 'encrypted',
             'ai_preferences' => 'array',
+            'tutorial_completed_at' => 'datetime',
         ];
     }
 

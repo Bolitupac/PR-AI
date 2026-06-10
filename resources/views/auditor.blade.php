@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    @include('partials.meta', [
+        'metaTitle' => 'PR ai | Auditor — AI Code Review Workspace',
+        'metaDescription' => 'Import pull requests, branch diffs, and commits into the AI-powered Auditor. Get structured VAPT security audits, OWASP Top 10 analysis, Mermaid diagrams, and context-aware code reviews.',
+        'metaType' => 'website',
+        'metaRobots' => 'noindex, nofollow',
+    ])
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nabla&family=Science+Gothic:wght@400;600;700&display=swap"
@@ -282,6 +288,15 @@
             <span class="voice-record-timer" id="voice-record-timer-fab">00:00</span>
         </div>
     </div>
+
+    {{-- Tutorial data for first-time users --}}
+    @auth
+        @unless(auth()->user()->tutorial_completed_at)
+            <script>
+                window.__PR_AI_TUTORIAL__ = { show: true, page: 'auditor' };
+            </script>
+        @endunless
+    @endauth
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.min.js" defer></script>
 

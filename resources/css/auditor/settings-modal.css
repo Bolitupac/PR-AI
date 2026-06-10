@@ -567,6 +567,38 @@
     background: rgba(207,34,46,0.06);
 }
 
+/* ─── Tutorial launch buttons (Help section) ─── */
+
+.tutorial-launch-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 20px;
+    border: none;
+    border-radius: 999px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.tutorial-launch-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.16);
+}
+
+.tutorial-launch-btn--auditor {
+    background: linear-gradient(135deg, #4965ff, #304cff);
+}
+
+.tutorial-launch-btn--imports {
+    background: linear-gradient(135deg, #009eff, #5d74ff);
+}
+
 /* ─── Section cards ─── */
 .settings-gh-section,
 .settings-provider-item,

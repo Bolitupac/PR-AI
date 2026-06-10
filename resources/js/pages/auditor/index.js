@@ -21,6 +21,7 @@ import { initAppsModal } from './document-generator/apps-modal';
 import { initGlobalChatHistory } from './chat-history';
 import { initDocGenMode } from './document-generator/doc-gen-mode';
 import { initAiSelectors } from './ai-selector';
+import { startAuditorTutorial } from './auditor-tutorial';
 import { appendRepoParams, buildVcsUrl } from '../../shared/vcs-repo-query.js';
 import { createLoadingProgress } from './loading-progress';
 import { conflictPayloadToDiffText, isMetadataOnlyConflict } from './conflict-diff-text';
@@ -49,6 +50,20 @@ export function initAuditorPage() {
     initAppsModal();
     initDocGenMode();
     initAiSelectors();
+
+    // ── Tutorial ──
+    window.startAuditorTutorial = startAuditorTutorial;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (window.__PR_AI_TUTORIAL__?.show || urlParams.get('tutorial') === '1') {
+        setTimeout(() => startAuditorTutorial(), 600);
+        // Clean URL
+        if (urlParams.get('tutorial') === '1') {
+            const url = new URL(window.location.href);
+            url.searchParams.delete('tutorial');
+            window.history.replaceState({}, '', url.toString());
+        }
+    }
 
     window.refreshGlobalChatHistory = (activeId) => {
         const urlParams = new URLSearchParams(window.location.search);

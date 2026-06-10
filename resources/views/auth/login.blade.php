@@ -4,8 +4,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Sign in to PR ai with GitHub to access the auditing workspace.">
-    <title>PR ai | Sign in</title>
+    @include('partials.meta', [
+        'metaTitle' => 'PR ai | Sign in — AI Code Review & PR Audit Tool',
+        'metaDescription' => 'Sign in with GitHub or GitLab to access PR ai — the AI-powered pull request auditing workspace with VAPT security analysis and OWASP Top 10 coverage.',
+        'metaType' => 'website',
+    ])
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo 512 transp bg white color svg.svg') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

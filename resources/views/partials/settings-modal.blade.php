@@ -519,6 +519,43 @@
                         <h4>Getting Started</h4>
                         <p>PR-AI accelerates code reviews, security checks, and documentation with AI. Sign in with <strong>GitHub</strong> or <strong>GitLab</strong> on the login page, then use <strong>Imports</strong> to browse repos or the <strong>Auditor</strong> to review diffs. Full details are in <code>APP.md</code> in the project repository.</p>
 
+                        {{-- Interactive Tutorial — step-by-step guided walkthrough --}}
+                        <div style="margin-top: 24px; border: 1px solid rgba(73,101,255,0.18); border-radius: 18px; background: rgba(73,101,255,0.04); padding: 18px 20px;">
+                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                                <span style="font-size:18px;">🎓</span>
+                                <span style="font-weight:700;font-size:14px;color:#12141c;">Interactive Tutorial</span>
+                            </div>
+                            <p style="margin:0 0 14px;font-size:12px;color:#7c8398;line-height:1.5;">New to PR-AI? Take a guided walkthrough of the workspace — we'll show you where everything is and how to use it.</p>
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <button class="tutorial-launch-btn tutorial-launch-btn--auditor" type="button"
+                                    onclick="(function(){
+                                        document.querySelector('[data-close=\'settings-modal\']')?.click();
+                                        setTimeout(function(){
+                                            if (typeof window.startAuditorTutorial === 'function') {
+                                                window.startAuditorTutorial();
+                                            } else {
+                                                window.location.href = '/auditor?tutorial=1';
+                                            }
+                                        }, 400);
+                                    })()">
+                                    <span style="font-size:15px;">🖥️</span> Auditor Walkthrough
+                                </button>
+                                <button class="tutorial-launch-btn tutorial-launch-btn--imports" type="button"
+                                    onclick="(function(){
+                                        document.querySelector('[data-close=\'settings-modal\']')?.click();
+                                        setTimeout(function(){
+                                            if (typeof window.startImportsTutorial === 'function') {
+                                                window.startImportsTutorial();
+                                            } else {
+                                                window.location.href = '/imports?tutorial=1';
+                                            }
+                                        }, 400);
+                                    })()">
+                                    <span style="font-size:15px;">📥</span> Import Walkthrough
+                                </button>
+                            </div>
+                        </div>
+
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px;">
                             <button class="settings-theme-btn" style="text-align:left;" type="button" onclick="document.querySelector('[data-settings-tab=\'help-c2\']').click()">
                                 <strong>The Auditor Workspace</strong><br>

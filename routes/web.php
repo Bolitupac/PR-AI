@@ -114,4 +114,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/ai-preferences', [AiPreferencesController::class, 'save'])->name('profile.ai-preferences.save');
 
     Route::delete('/account', DeleteAccountController::class)->name('account.delete');
+
+    Route::post('/api/tutorial/complete', function () {
+        $user = Auth::user();
+        if ($user && ! $user->tutorial_completed_at) {
+            $user->tutorial_completed_at = now();
+            $user->save();
+        }
+
+        return response()->json(['ok' => true]);
+    })->name('tutorial.complete');
 });
