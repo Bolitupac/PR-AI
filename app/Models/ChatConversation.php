@@ -24,7 +24,7 @@ class ChatConversation extends Model
     protected static function booted(): void
     {
         static::creating(function (ChatConversation $conversation) {
-            if (empty($conversation->public_id)) {
+            if (empty($conversation->public_id) && \Illuminate\Support\Facades\Schema::hasColumn('chat_conversations', 'public_id')) {
                 $conversation->public_id = Str::random(24);
             }
         });
@@ -32,7 +32,11 @@ class ChatConversation extends Model
 
     public function getRouteKeyName(): string
     {
-        return 'public_id';
+        // Fallback to 'id' if public_id column doesn't exist yet (migration not run)
+        if (\Illuminate\Support\Facades\Schema::hasColumn('chat_conversations', 'public_id')) {
+            return 'public_id';
+        }
+        return 'id';
     }
 
     public function user(): BelongsTo

@@ -52,7 +52,7 @@ class SimpleChatController extends Controller
                 'provider' => $selectedProvider,
                 'model' => $selectedModel ?? (string) config("{$selectedProvider}.model", 'gpt-4o-mini'),
                 'reply' => $reply,
-                'conversation_id' => $conversation->public_id,
+                'conversation_id' => ($conversation->public_id ?? $conversation->id),
             ]);
         }
 
@@ -91,7 +91,7 @@ class SimpleChatController extends Controller
             'provider' => $selectedProvider,
             'model' => $selectedModel ?? (string) config("{$selectedProvider}.model", 'gpt-4o-mini'),
             'reply' => $reply,
-            'conversation_id' => $conversation->public_id,
+            'conversation_id' => ($conversation->public_id ?? $conversation->id),
         ]);
     }
 
@@ -196,13 +196,13 @@ class SimpleChatController extends Controller
             return response()->stream(function () use ($reply, $conversation) {
                 echo ':' . str_repeat(' ', 1024) . "\n\n";
                 echo "event: conversation_id\n";
-                echo 'data: '.json_encode(['id' => $conversation->public_id, 'title' => $conversation->title])."\n\n";
+                echo 'data: '.json_encode(['id' => ($conversation->public_id ?? $conversation->id), 'title' => $conversation->title])."\n\n";
                 @ob_flush();
                 flush();
                 echo "event: token\n";
                 echo 'data: '.json_encode(['text' => $reply], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n\n";
                 echo "event: done\n";
-                echo 'data: '.json_encode(['reply' => $reply, 'conversation_id' => $conversation->public_id], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n\n";
+                echo 'data: '.json_encode(['reply' => $reply, 'conversation_id' => ($conversation->public_id ?? $conversation->id)], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n\n";
                 @ob_flush();
                 flush();
             }, 200, [
@@ -246,7 +246,7 @@ class SimpleChatController extends Controller
 
             echo ':' . str_repeat(' ', 1024) . "\n\n";
             echo "event: conversation_id\n";
-            echo 'data: '.json_encode(['id' => $conversation->public_id, 'title' => $conversation->title])."\n\n";
+            echo 'data: '.json_encode(['id' => ($conversation->public_id ?? $conversation->id), 'title' => $conversation->title])."\n\n";
             @ob_flush();
             flush();
 
@@ -281,7 +281,7 @@ class SimpleChatController extends Controller
 
             $donePayload = json_encode([
                 'reply' => $fullReply,
-                'conversation_id' => $conversation->public_id,
+                'conversation_id' => ($conversation->public_id ?? $conversation->id),
             ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             echo "event: done\n";
             echo 'data: '.($donePayload ?: '{"reply":""}')."\n\n";
@@ -448,8 +448,14 @@ class SimpleChatController extends Controller
     private function getOrCreateConversation(Request $request, ?string $conversationPublicId, string $provider, ?string $model, string $firstUserMessage): ChatConversation
     {
         $user = Auth::user();
+        $hasPublicId = \Illuminate\Support\Facades\Schema::hasColumn('chat_conversations', 'public_id');
+
         if ($conversationPublicId) {
-            $conversation = $user->conversations()->where('public_id', $conversationPublicId)->first();
+            if ($hasPublicId) {
+                $conversation = $user->conversations()->where('public_id', $conversationPublicId)->first();
+            } else {
+                $conversation = $user->conversations()->find($conversationPublicId);
+            }
             if ($conversation) {
                 return $conversation;
             }
