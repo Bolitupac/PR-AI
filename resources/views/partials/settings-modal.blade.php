@@ -535,7 +535,7 @@
                                 </li>
                                 <li>
                                     <strong>Voice Input</strong>
-                                    <span>Click the <strong>🎤 microphone button</strong> in the chat toolbar to speak directly to PR-AI. Your voice is transcribed and sent as a prompt.</span>
+                                    <span>Click the <strong>🎤 microphone button</strong> in the chat toolbar to speak directly to PR-AI. Your voice is transcribed and sent as a prompt. When the microphone button is scrolled past, a <strong>floating mic button appears at the bottom-right</strong> of the page so you can always use voice input.</span>
                                 </li>
                                 <li>
                                     <strong>Import Button (+)</strong>
@@ -548,6 +548,18 @@
                                 <li>
                                     <strong>Response Area</strong>
                                     <span>The main scrollable area above the chat box displays AI audit results, security scores, OWASP coverage, Mermaid diagrams, and follow-up suggestions.</span>
+                                </li>
+                                <li>
+                                    <strong>Navigation Sidebar</strong>
+                                    <span>The sidebar on the left lets you switch between <strong>Auditor</strong>, <strong>Imports</strong>, and <strong>Apps</strong>. At the bottom you'll find the <strong>theme toggle</strong> (light/dark mode), <strong>Settings</strong> gear, and your <strong>Profile</strong> avatar.</span>
+                                </li>
+                                <li>
+                                    <strong>Light &amp; Dark Theme</strong>
+                                    <span>Click the <strong>sun/moon icon</strong> at the bottom of the sidebar to switch between light and dark color modes. You can also change it in <strong>Settings → General → Theme</strong>.</span>
+                                </li>
+                                <li>
+                                    <strong>DocGen Mode (Apps)</strong>
+                                    <span>Open <strong>Apps</strong> in the sidebar and activate <strong>DocGen</strong> to enable document generation. When active, a <strong>yellow pill labeled "DocGen" appears in the chat box</strong>. You can close it by clicking the <strong>✕</strong> on the pill or by deactivating DocGen in the Apps panel.</span>
                                 </li>
                                 <li>
                                     <strong>AI Provider &amp; Model Selectors</strong>
@@ -587,12 +599,16 @@
                                     <span>Click a branch name to <strong>compute the diff against the default branch</strong> (main) and audit the entire branch. Great for feature branch reviews before opening a PR.</span>
                                 </li>
                                 <li>
+                                    <strong>Commit Audits</strong>
+                                    <span>Click any commit hash to <strong>audit a single commit's changes</strong>. Useful for reviewing specific work, understanding commit history, or doing post-merge analysis.</span>
+                                </li>
+                                <li>
                                     <strong>Manual Import Options</strong>
                                     <span>From the Auditor, use the <strong>➕ Import button</strong> to upload <code>.diff</code> / <code>.patch</code> files or paste code directly into the built-in Monaco editor.</span>
                                 </li>
                                 <li>
                                     <strong>API Keys &amp; Providers</strong>
-                                    <span>Go to <strong>Settings → API Keys</strong> to add your personal OpenAI or DeepSeek key. Switch between developer (shared) and personal key modes anytime.</span>
+                                    <span>Go to <strong>Settings → API Keys</strong> to add your personal OpenAI or DeepSeek key. Switch between System (shared) and Personal key modes anytime.</span>
                                 </li>
                             </ol>
                         </div>
