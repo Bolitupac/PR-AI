@@ -16,6 +16,16 @@ export function initAutoAudit() {
     const providerSelect = document.getElementById('chat-provider-select');
     if (!responseArea) return;
 
+    const isNearBottom = (node, threshold = 50) => {
+        return node.scrollTop + node.clientHeight >= node.scrollHeight - threshold;
+    };
+
+    const scrollToBottomIfNear = (node, threshold = 50) => {
+        if (isNearBottom(node, threshold)) {
+            node.scrollTop = node.scrollHeight;
+        }
+    };
+
     const hideEmptyState = () => emptyState?.classList.add('is-hidden');
     let followUpRequestId = 0;
 
@@ -29,7 +39,7 @@ export function initAutoAudit() {
             message.textContent = text;
         }
         responseArea.appendChild(message);
-        responseArea.scrollTop = responseArea.scrollHeight;
+        scrollToBottomIfNear(responseArea);
         return message;
     };
 
@@ -48,7 +58,7 @@ export function initAutoAudit() {
         }
 
         responseArea.appendChild(node);
-        responseArea.scrollTop = responseArea.scrollHeight;
+        scrollToBottomIfNear(responseArea);
         return node;
     };
 
@@ -152,7 +162,7 @@ export function initAutoAudit() {
             </div>
         `;
         responseArea.appendChild(card);
-        responseArea.scrollTop = responseArea.scrollHeight;
+        scrollToBottomIfNear(responseArea);
         return card;
     };
 
@@ -327,7 +337,7 @@ export function initAutoAudit() {
                                 lastMermaidRender = now;
                             }
                             
-                            responseArea.scrollTop = responseArea.scrollHeight;
+                            scrollToBottomIfNear(responseArea);
                         }
                     } else if (eventName === 'done') {
                         doneMeta = payload?.meta || null;
