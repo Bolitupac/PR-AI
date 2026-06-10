@@ -18,6 +18,7 @@ use App\Http\Controllers\Ai\ChatConversationController;
 use App\Http\Controllers\AuditSnapshotController;
 use App\Http\Controllers\ProfileAiKeyController;
 use App\Http\Controllers\AiPreferencesController;
+use App\Http\Controllers\Auth\DeleteAccountController;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
@@ -109,4 +110,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/profile/ai-preferences', [AiPreferencesController::class, 'show'])->name('profile.ai-preferences.show');
     Route::post('/profile/ai-preferences', [AiPreferencesController::class, 'save'])->name('profile.ai-preferences.save');
+
+    Route::delete('/account', DeleteAccountController::class)->name('account.delete');
 });

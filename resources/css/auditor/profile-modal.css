@@ -260,3 +260,25 @@
     font-weight: 700;
     cursor: pointer;
 }
+
+.profile-delete-btn {
+    width: 100%;
+    border: 1px solid #b91c1c;
+    background: #b91c1c;
+    color: #ffffff;
+    border-radius: var(--radius-sm);
+    padding: 9px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.profile-delete-btn:hover {
+    background: #991b1b;
+}
+
+.profile-delete-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

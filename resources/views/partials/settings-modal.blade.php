@@ -206,6 +206,10 @@
                                 @csrf
                                 <button class="profile-logout-btn" type="submit" data-loading-text="Logging out">Log out</button>
                             </form>
+                            <button class="profile-delete-btn" id="settings-profile-delete-btn" type="button"
+                                data-delete-url="{{ route('account.delete') }}">
+                                Delete Profile
+                            </button>
                         </div>
                     @endauth
 

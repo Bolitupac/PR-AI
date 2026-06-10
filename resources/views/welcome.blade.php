@@ -20,8 +20,8 @@
         $toolEntryUrl = auth()->check() ? route('auditor.index') : route('login');
         $featureCards = [
             [
-                'title' => 'Import pull requests from GitHub',
-                'description' => 'Pull live repositories, branches, pull requests, and recent activity into one clean workspace without opening ten browser tabs.',
+                'title' => 'Import pull requests from GitHub & GitLab',
+                'description' => 'Pull live repositories, branches, pull requests, and recent activity from both GitHub and GitLab into one clean workspace without opening ten browser tabs.',
                 'image' => 'images/homepage/prai import pull requests from repos.png',
             ],
             [
@@ -57,7 +57,7 @@
         $faqs = [
             [
                 'question' => 'What can I import into PR ai?',
-                'answer' => 'You can import GitHub pull requests, branch comparisons, local commits, uploaded diff files, pasted diffs, and editor content into the same audit workflow.',
+                'answer' => 'You can import GitHub and GitLab pull requests, branch comparisons, local commits, uploaded diff files, pasted diffs, and editor content into the same audit workflow.',
             ],
             [
                 'question' => 'Do I need my own OpenAI key to use it?',
@@ -115,9 +115,9 @@
                         <h1>Cut PR review time by 80% using AI</h1>
 
                         <p class="hero-lead">
-                            Import pull requests, branch diffs, commits, or pasted code into one focused workspace. PR ai
-                            turns changes into structured reviews, visual impact maps, follow-up answers, and a smoother
-                            path from diff to decision.
+                            Import pull requests, branch diffs, commits, or pasted code from GitHub and GitLab into one
+                            focused workspace. PR ai turns changes into structured reviews, visual impact maps,
+                            follow-up answers, and a smoother path from diff to decision.
                         </p>
 
                         <div class="hero-actions">
@@ -131,8 +131,8 @@
 
             <section class="stats-strip" aria-label="Product summary" data-reveal>
                 <article class="stat-card" data-reveal>
-                    <strong>GitHub to audit in one flow</strong>
-                    <span>Import repositories, pull requests, branches, and comments without leaving the app.</span>
+                    <strong>GitHub &amp; GitLab to audit in one flow</strong>
+                    <span>Import repositories, pull requests, branches, and comments from GitHub and GitLab without leaving the app.</span>
                 </article>
                 <article class="stat-card" data-reveal>
                     <strong>Structured reviews, not generic chat</strong>
@@ -218,7 +218,7 @@
                         <span class="docgen-card__tag">What users get today</span>
                         <h3>Import code, audit faster, ask better questions</h3>
                         <ul class="details-list">
-                            <li>GitHub repository, branch, pull request, and comment import</li>
+                            <li>GitHub &amp; GitLab repository, branch, pull request, and comment import</li>
                             <li>Commit-level auditing from local git history</li>
                             <li>Structured AI review responses with findings and visual impact maps</li>
                             <li>Follow-up chat grounded in the active audit context</li>
@@ -397,6 +397,22 @@
                         <div class="comparison-yes comparison-brand">Yes</div>
                         <div class="comparison-no">No native workflow</div>
                         <div class="comparison-partial">Yes</div>
+                        <div class="comparison-no">No</div>
+                    </div>
+
+                    <div class="comparison-row comparison-grid">
+                        <div class="comparison-label">GitLab PR and branch import</div>
+                        <div class="comparison-yes comparison-brand">Yes</div>
+                        <div class="comparison-no">No native workflow</div>
+                        <div class="comparison-partial">Yes</div>
+                        <div class="comparison-no">No</div>
+                    </div>
+
+                    <div class="comparison-row comparison-grid">
+                        <div class="comparison-label">Multi-provider VCS support (GitHub + GitLab)</div>
+                        <div class="comparison-yes comparison-brand">Yes</div>
+                        <div class="comparison-no">No</div>
+                        <div class="comparison-partial">GitHub only</div>
                         <div class="comparison-no">No</div>
                     </div>
 

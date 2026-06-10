@@ -144,7 +144,8 @@ export function initChatInput() {
         });
 
         copyWrap.appendChild(copyBtn);
-        msgEl.appendChild(copyWrap);
+        // Place copy button after the message so it sits outside the chat bubble
+        msgEl.insertAdjacentElement('afterend', copyWrap);
     };
 
     const appendMessage = (text, role) => {

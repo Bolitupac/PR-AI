@@ -7,6 +7,7 @@ import { initImportUi } from './import';
 import { initVoiceInput } from './voice';
 import { initAutoAudit } from './auto-audit';
 import { initProfileAiKey } from './profile-ai-key';
+import { initProfileModal } from './profile-modal';
 import { initSettingsModal } from './settings-modal';
 import { initSettingsAiKey, initSettingsDeepSeekKey } from './settings-ai-key';
 import { initSettingsAiPreferences } from './settings-ai-preferences';
@@ -39,6 +40,7 @@ export function initAuditorPage() {
     initVoiceInput();
     initAutoAudit();
     initProfileAiKey();
+    initProfileModal();
     initSettingsModal();
     initSettingsAiKey();
     initSettingsDeepSeekKey();
