@@ -251,6 +251,7 @@ class SimpleChatController extends Controller
             flush();
 
             $fullReply = '';
+            $streamError = null;
 
             $this->openAiSimpleChatService->streamReplyWithHistory(
                 $messageForModel,
@@ -265,7 +266,8 @@ class SimpleChatController extends Controller
                     @ob_flush();
                     flush();
                 },
-                function (string $message): void {
+                function (string $message) use (&$streamError): void {
+                    $streamError = $message;
                     $json = json_encode(['message' => $message], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
                     echo "event: error\n";
                     echo 'data: '.($json ?: '{"message":"Request failed."}')."\n\n";
@@ -274,6 +276,10 @@ class SimpleChatController extends Controller
                 },
                 $selectedProvider
             );
+
+            if ($streamError && trim($fullReply) === '') {
+                $fullReply = 'Sorry, the AI request failed: ' . $streamError;
+            }
 
             if (trim($fullReply) !== '') {
                 $conversation->messages()->create(['role' => 'assistant', 'content' => $fullReply]);
@@ -451,18 +457,33 @@ class SimpleChatController extends Controller
         $hasPublicId = \Illuminate\Support\Facades\Schema::hasColumn('chat_conversations', 'public_id');
 
         if ($conversationPublicId) {
+            // Try public_id lookup first (if column exists), then fall back to id
+            $conversation = null;
             if ($hasPublicId) {
                 $conversation = $user->conversations()->where('public_id', $conversationPublicId)->first();
-            } else {
-                $conversation = $user->conversations()->find($conversationPublicId);
+            }
+            // Fallback: also try by plain id if public_id column exists but lookup failed, or if column doesn't exist
+            if (!$conversation && is_numeric($conversationPublicId)) {
+                $conversation = $user->conversations()->find((int) $conversationPublicId);
             }
             if ($conversation) {
+                // Update provider/model on existing conversation if explicitly selected
+                if ($provider && $conversation->provider !== $provider) {
+                    $conversation->update(['provider' => $provider, 'model' => $model]);
+                }
                 return $conversation;
             }
         }
 
-        // Generate a friendly title using AI based on the request
-        $title = $this->openAiSimpleChatService->generateConversationTitle($firstUserMessage, $user, $provider);
+        // Generate title safely — never let title generation break the request
+        $title = 'New Chat';
+        try {
+            $title = $this->openAiSimpleChatService->generateConversationTitle($firstUserMessage, $user, $provider);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Failed to generate conversation title: ' . $e->getMessage());
+            $words = preg_split('/\s+/', trim($firstUserMessage));
+            $title = implode(' ', array_slice($words, 0, 5)) ?: 'New Chat';
+        }
 
         return $user->conversations()->create([
             'title' => $title,
