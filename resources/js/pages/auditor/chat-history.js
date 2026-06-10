@@ -89,17 +89,7 @@ export function renderSidebarHistory(conversations, activeId = null, onSelect = 
         });
     });
 
-    if (onSelect) {
-        list.querySelectorAll('a[data-chat-id]').forEach((link) => {
-            link.addEventListener('click', (e) => {
-                const id = link.dataset.chatId;
-                if (window.location.pathname.startsWith('/auditor') || window.location.pathname === '/') {
-                    e.preventDefault();
-                    onSelect(id);
-                }
-            });
-        });
-    }
+    // History clicks navigate via full page reload so diff + audit data load properly
 }
 
 export function renderImportsHistory(conversations) {

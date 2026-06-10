@@ -269,7 +269,6 @@
     @include('partials.diff-upload')
     @include('partials.import-monaco')
     @include('partials.import-paste')
-    @include('partials.profile-modal')
     @include('partials.settings-modal')
     @include('partials.apps-modal')
     @include('partials.mobile-redirect')

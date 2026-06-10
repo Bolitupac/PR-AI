@@ -6,7 +6,6 @@ import { initChatPrelayout } from './chat-prelayout';
 import { initImportUi } from './import';
 import { initVoiceInput } from './voice';
 import { initAutoAudit } from './auto-audit';
-import { initProfileModal } from './profile-modal';
 import { initProfileAiKey } from './profile-ai-key';
 import { initSettingsModal } from './settings-modal';
 import { initSettingsAiKey, initSettingsDeepSeekKey } from './settings-ai-key';
@@ -39,7 +38,6 @@ export function initAuditorPage() {
     initChatScrollBottomButton();
     initVoiceInput();
     initAutoAudit();
-    initProfileModal();
     initProfileAiKey();
     initSettingsModal();
     initSettingsAiKey();
