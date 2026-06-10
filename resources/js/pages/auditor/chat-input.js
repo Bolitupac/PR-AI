@@ -764,7 +764,22 @@ export function initChatInput() {
                     chatContextStore.push(msg.role, msg.content);
                 });
             }
-            
+
+            // Restore diff viewer if conversation has stored diff text
+            if (data.conversation?.diff_text) {
+                document.dispatchEvent(new CustomEvent('auditor:diff-selected', {
+                    detail: {
+                        diffText: data.conversation.diff_text,
+                        comments: [],
+                    },
+                }));
+                const scrollBtn = document.getElementById('diff-ready-scroll-btn');
+                if (scrollBtn) {
+                    scrollBtn.style.display = 'block';
+                    scrollBtn.style.opacity = '1';
+                }
+            }
+
             status.stopDots();
             status.remove(200);
 

@@ -481,6 +481,7 @@ class SimpleChatController extends Controller
             'provider' => $provider,
             'model' => $model ?? (string) config("{$provider}.model", 'gpt-4o-mini'),
             'active_audit_context' => $request->session()->get('active_audit_context'),
+            'diff_text' => $request->session()->get('active_diff_text'),
         ]);
     }
 }
