@@ -1447,9 +1447,9 @@ html[data-theme="light"] .msg.ai .mermaid svg .edgeLabel rect {
 
 .credits-popover {
     position: absolute;
-    bottom: calc(100% + 8px);
+    top: calc(100% + 8px);
     left: 50%;
-    transform: translateX(-50%) translateY(4px);
+    transform: translateX(-50%) translateY(-4px);
     background: var(--panel-bg, #fff);
     border: 1px solid var(--panel-stroke, #e0e6f2);
     border-radius: 6px;
@@ -1474,11 +1474,11 @@ html[data-theme="light"] .msg.ai .mermaid svg .edgeLabel rect {
 .credits-popover::after {
     content: '';
     position: absolute;
-    top: 100%;
+    bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
     border: 5px solid transparent;
-    border-top-color: var(--panel-stroke, #e0e6f2);
+    border-bottom-color: var(--panel-stroke, #e0e6f2);
 }
 
 .credits-popover-text {
