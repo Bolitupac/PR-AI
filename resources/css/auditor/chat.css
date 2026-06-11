@@ -1446,10 +1446,7 @@ html[data-theme="light"] .msg.ai .mermaid svg .edgeLabel rect {
 }
 
 .credits-popover {
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%) translateY(-4px);
+    position: fixed;
     background: var(--panel-bg, #fff);
     border: 1px solid var(--panel-stroke, #e0e6f2);
     border-radius: 6px;
@@ -1462,7 +1459,7 @@ html[data-theme="light"] .msg.ai .mermaid svg .edgeLabel rect {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.18s ease, transform 0.18s ease;
-    z-index: 300;
+    z-index: 500;
 }
 
 .credits-popover.is-visible {

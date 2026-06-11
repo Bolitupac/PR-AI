@@ -1,5 +1,5 @@
 /**
- * Credits indicator — three-dots button in the chat toolbar
+ * Credits indicator — three-dots button in the top-right header
  * that shows remaining Developer Key requests or ∞ for personal keys.
  */
 
@@ -46,6 +46,15 @@ function renderPopoverContent(data, textEl) {
     }
 }
 
+function positionPopover(popover, btn) {
+    const rect = btn.getBoundingClientRect();
+    popover.style.position = 'fixed';
+    popover.style.top = (rect.bottom + 8) + 'px';
+    popover.style.left = (rect.left + rect.width / 2) + 'px';
+    popover.style.transform = 'translateX(-50%) translateY(-4px)';
+    popover.style.bottom = 'auto';
+}
+
 function hidePopover(popover, btn) {
     popover.classList.remove('is-visible');
     popover.setAttribute('aria-hidden', 'true');
@@ -54,6 +63,7 @@ function hidePopover(popover, btn) {
 }
 
 function showPopover(popover, btn) {
+    positionPopover(popover, btn);
     popover.classList.add('is-visible');
     popover.setAttribute('aria-hidden', 'false');
     btn.classList.add('is-active');
@@ -67,6 +77,9 @@ export function initCreditsIndicator() {
 
     if (!btn || !popover || !textEl) return;
 
+    // Move popover to body to avoid overflow clipping from parent panels
+    document.body.appendChild(popover);
+
     const creditsUrl = btn.dataset.creditsUrl;
     if (!creditsUrl) return;
 
@@ -78,7 +91,6 @@ export function initCreditsIndicator() {
             return;
         }
 
-        // Show loading state
         showPopover(popover, btn);
         textEl.innerHTML = '...';
 
@@ -96,6 +108,14 @@ export function initCreditsIndicator() {
         e.stopPropagation();
         toggle();
     });
+
+    // Reposition on scroll/resize
+    window.addEventListener('scroll', () => {
+        if (popoverVisible) positionPopover(popover, btn);
+    }, { passive: true });
+    window.addEventListener('resize', () => {
+        if (popoverVisible) positionPopover(popover, btn);
+    }, { passive: true });
 
     // Dismiss on outside click
     document.addEventListener('click', (e) => {
