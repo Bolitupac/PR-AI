@@ -5,6 +5,16 @@ export function initLoadingInteractions() {
     if (document.body.dataset.loadingInteractionsBound === 'true') return;
     document.body.dataset.loadingInteractionsBound = 'true';
 
+    // Clear any stale loading spinners when the page is restored from
+    // the browser's back-forward cache (bfcache).
+    window.addEventListener('pageshow', (event) => {
+        if (event.persisted) {
+            document.querySelectorAll('.is-btn-loading').forEach(btn => {
+                setButtonLoading(btn, false);
+            });
+        }
+    });
+
     document.addEventListener('submit', (event) => {
         const form = event.target.closest('form[data-loading-form]');
         if (!form) return;
