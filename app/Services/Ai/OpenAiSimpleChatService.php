@@ -49,8 +49,8 @@ class OpenAiSimpleChatService
         .'You have access to a comprehensive knowledge of PR-AI features and capabilities. '
         .'When users ask what you can do or need help, reference the capabilities document to give '
         .'accurate, helpful responses about the platform.\n\n'
-        .'## SYSTEM KEY & API LIMITS:\n'
-        .'PR-AI uses a System Key (shared) by default. New users get 10 free requests. '
+        .'## DEVELOPER KEY & API LIMITS:\n'
+        .'PR-AI uses a Developer Key (shared) by default. New users get 10 free requests. '
         .'When a user runs out, guide them to Settings → API Keys to add their own OpenAI or DeepSeek key '
         .'for unlimited use.';
 

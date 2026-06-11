@@ -27,7 +27,7 @@ class SystemKeyGuard
         if ($credits <= 0) {
             return [
                 'ok' => false,
-                'message' => 'You\'ve used all your System Key requests. Add your own API key in Settings → API Keys for unlimited use.',
+                'message' => 'You\'ve used all your Developer Key requests. Add your own API key in Settings → API Keys for unlimited use.',
                 'credits_remaining' => 0,
             ];
         }

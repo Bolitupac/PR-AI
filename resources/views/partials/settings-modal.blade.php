@@ -181,7 +181,7 @@
                                 <div class="profile-modal-label">OpenAI Key</div>
                                 <div style="display:flex;align-items:center;gap:10px;">
                                     <img src="{{ asset('images/openailogo.png') }}" alt="OpenAI" style="width:20px;height:20px;object-fit:contain;">
-                                    <span id="settings-profile-openai-badge" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(45,164,78,0.1);color:#1a7f37;border:1px solid rgba(45,164,78,0.3);">System key active</span>
+                                    <span id="settings-profile-openai-badge" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(45,164,78,0.1);color:#1a7f37;border:1px solid rgba(45,164,78,0.3);">Developer key active</span>
                                 </div>
                             </div>
 
@@ -191,7 +191,7 @@
                                 <div class="profile-modal-label">DeepSeek Key</div>
                                 <div style="display:flex;align-items:center;gap:10px;">
                                     <img src="{{ asset('images/deepseeklogo.png') }}" alt="DeepSeek" style="width:20px;height:20px;object-fit:contain;">
-                                    <span id="settings-profile-deepseek-badge" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(45,164,78,0.1);color:#1a7f37;border:1px solid rgba(45,164,78,0.3);">System key active</span>
+                                    <span id="settings-profile-deepseek-badge" style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(45,164,78,0.1);color:#1a7f37;border:1px solid rgba(45,164,78,0.3);">Developer key active</span>
                                 </div>
                             </div>
 
@@ -243,7 +243,7 @@
                                     </span>
                                     <div>
                                         <div class="settings-provider-name">OpenAI</div>
-                                        <div class="settings-provider-sub" id="settings-openai-status-text">System key active</div>
+                                        <div class="settings-provider-sub" id="settings-openai-status-text">Developer key active</div>
                                     </div>
                                 </div>
                                 <span class="settings-provider-pill is-active" id="settings-openai-pill">Active</span>
@@ -258,10 +258,10 @@
                                     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                                         <span style="font-size:13px;font-weight:600;color:var(--text-main);">Key source:</span>
                                         <select class="settings-mode-select" id="settings-ai-key-mode" aria-label="OpenAI key source" style="width:auto;margin-bottom:0;">
-                                            <option value="developer">System key</option>
-                                            <option value="personal">Personal key</option>
+                                            <option value="developer">Developer Key</option>
+                                            <option value="personal">Personal</option>
                                         </select>
-                                        <span id="settings-openai-status-badge" style="font-size:11px;padding:3px 8px;border-radius:999px;font-weight:600;background:rgba(45,164,78,0.1);color:#1a7f37;border:1px solid rgba(45,164,78,0.3);">System</span>
+                                        <span id="settings-openai-status-badge" style="font-size:11px;padding:3px 8px;border-radius:999px;font-weight:600;background:rgba(45,164,78,0.1);color:#1a7f37;border:1px solid rgba(45,164,78,0.3);">Developer</span>
                                     </div>
                                     <div id="settings-openai-key-row" style="display:none;margin-top:10px;">
                                         <input class="settings-api-input" id="settings-api-input" type="password" placeholder="sk-...">
@@ -287,7 +287,7 @@
                                     </span>
                                     <div>
                                         <div class="settings-provider-name">DeepSeek</div>
-                                        <div class="settings-provider-sub" id="settings-deepseek-status-text">System key active</div>
+                                        <div class="settings-provider-sub" id="settings-deepseek-status-text">Developer key active</div>
                                     </div>
                                 </div>
                                 <span class="settings-provider-pill is-active" id="settings-deepseek-pill">Active</span>
@@ -302,10 +302,10 @@
                                     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                                         <span style="font-size:13px;font-weight:600;color:var(--text-main);">Key source:</span>
                                         <select class="settings-mode-select" id="settings-deepseek-key-mode" aria-label="DeepSeek key source" style="width:auto;margin-bottom:0;">
-                                            <option value="developer">System key</option>
-                                            <option value="personal">Personal key</option>
+                                            <option value="developer">Developer Key</option>
+                                            <option value="personal">Personal</option>
                                         </select>
-                                        <span id="settings-deepseek-status-badge" style="font-size:11px;padding:3px 8px;border-radius:999px;font-weight:600;background:rgba(45,164,78,0.1);color:#1a7f37;border:1px solid rgba(45,164,78,0.3);">System</span>
+                                        <span id="settings-deepseek-status-badge" style="font-size:11px;padding:3px 8px;border-radius:999px;font-weight:600;background:rgba(45,164,78,0.1);color:#1a7f37;border:1px solid rgba(45,164,78,0.3);">Developer</span>
                                     </div>
                                     <div id="settings-deepseek-key-row" style="display:none;margin-top:10px;">
                                         <input class="settings-api-input" id="settings-deepseek-api-input" type="password" placeholder="sk-...">
@@ -608,7 +608,7 @@
                                 </li>
                                 <li>
                                     <strong>API Keys &amp; System Credits</strong>
-                                    <span>New users get <strong>10 free System Key requests</strong>. After that, add your personal OpenAI or DeepSeek key in <strong>Settings → API Keys</strong> for unlimited use. Switch the dropdown from "System key" to "Personal key" and paste your API key.</span>
+                                    <span>New users get <strong>10 free Developer Key requests</strong>. After that, add your personal OpenAI or DeepSeek key in <strong>Settings → API Keys</strong> for unlimited use. Switch the dropdown from "Developer Key" to "Personal" and paste your API key.</span>
                                 </li>
                             </ol>
                         </div>

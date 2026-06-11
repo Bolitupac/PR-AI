@@ -103,7 +103,7 @@ class ProfileAiKeyController extends Controller
         $user->save();
 
         return response()->json([
-            'message' => $mode === 'personal' ? 'Switched to personal API key.' : 'Switched to system API key.',
+            'message' => $mode === 'personal' ? 'Switched to personal API key.' : 'Switched to developer API key.',
             'mode' => (string) $user->ai_key_mode,
             'has_personal_key' => $user->hasCustomOpenAiKey(),
             'masked_key' => (string) $user->masked_open_ai_key,

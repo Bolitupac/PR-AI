@@ -34,7 +34,7 @@
 
                         <label class="profile-mode-label" for="profile-ai-key-mode">Key source</label>
                         <select class="profile-mode-select" id="profile-ai-key-mode" aria-label="API key source">
-                            <option value="developer">Use system key (10 free requests)</option>
+                            <option value="developer">Use developer key (10 free requests)</option>
                             <option value="personal">Use my key</option>
                         </select>
 

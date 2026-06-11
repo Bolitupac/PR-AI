@@ -17,7 +17,7 @@ function updateStatusBadge(badgeEl, isPersonal) {
         badgeEl.style.color = '#b45309';
         badgeEl.style.borderColor = 'rgba(245,158,11,0.3)';
     } else {
-        badgeEl.textContent = 'System key active';
+        badgeEl.textContent = 'Developer key active';
         badgeEl.style.background = 'rgba(45,164,78,0.1)';
         badgeEl.style.color = '#1a7f37';
         badgeEl.style.borderColor = 'rgba(45,164,78,0.3)';
@@ -31,7 +31,7 @@ function updateStatusText(textEl, isPersonal, masked) {
     } else if (isPersonal) {
         textEl.textContent = 'Personal key active';
     } else {
-        textEl.textContent = 'System key active';
+        textEl.textContent = 'Developer key active';
     }
 }
 
@@ -135,7 +135,7 @@ function initProviderKeyBox(boxId, modeSelectId, inputId, saveBtnId, removeBtnId
         if (keyRow) {
             keyRow.style.display = selected === 'personal' ? 'block' : 'none';
         }
-        // If switching back to system key, call the mode endpoint
+        // If switching back to developer key, call the mode endpoint
         if (selected !== 'personal') {
             setState(state, 'Switching...');
             requestJson(modeUrl, 'POST', { mode: selected }).then(result => {
@@ -145,7 +145,7 @@ function initProviderKeyBox(boxId, modeSelectId, inputId, saveBtnId, removeBtnId
                     return;
                 }
                 updateUi(result.json);
-                setState(state, result.json?.message || 'Switched to system key.', 'is-ok');
+                setState(state, result.json?.message || 'Switched to developer key.', 'is-ok');
             }).catch(() => {
                 setState(state, 'Could not switch.', 'is-error');
             });
