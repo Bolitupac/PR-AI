@@ -29,17 +29,20 @@ function getCurrentProvider() {
 
 function renderPopoverContent(data, textEl) {
     if (!data) {
-        textEl.innerHTML = '—';
+        textEl.textContent = 'AI calls left: —';
         return;
     }
 
     if (data.unlimited) {
-        textEl.innerHTML = '<span class="infinity-symbol">∞</span> Unlimited';
+        textEl.innerHTML = 'AI calls left: <span class="infinity-symbol">∞</span>';
     } else {
         const n = data.credits_remaining ?? 0;
-        textEl.innerHTML = n === 0
-            ? '<span style="color:#ef4444;">0</span> left'
-            : `<strong>${n}</strong> left`;
+        textEl.textContent = 'AI calls left: ' + n;
+        if (n === 0) {
+            textEl.style.color = '#ef4444';
+        } else {
+            textEl.style.color = '';
+        }
     }
 }
 

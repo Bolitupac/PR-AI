@@ -996,36 +996,44 @@ AI: [Proposes performance improvements]</pre>
                     </header>
                     <div class="help-doc-content">
                         <h4>Two-Mode Key System</h4>
-                        <p>PR-AI supports two ways to handle OpenAI API keys:</p>
+                        <p>PR-AI supports two ways to handle API keys:</p>
 
-                        <h4>Mode 1: System Key (Shared / Free)</h4>
+                        <h4>Mode 1: Developer Key (Shared / Free)</h4>
                         <ul>
                             <li>Uses a shared developer API key provided by PR-AI</li>
                             <li>No cost to you (PR-AI covers API costs for free tier)</li>
-                            <li>Limited usage quotas</li>
+                            <li>New users get <strong>10 free AI calls</strong></li>
                             <li>Good for: Getting started, light usage, teams</li>
                         </ul>
-                        <p><strong>How to Use:</strong> Sign up for PR-AI and you're automatically in "System" mode. Start auditing immediately — no API key needed.</p>
+                        <p><strong>How to Use:</strong> Sign up for PR-AI and you're automatically in "Developer Key" mode. Start auditing immediately — no API key needed.</p>
 
                         <h4>Mode 2: Personal Key (Your Own)</h4>
                         <ul>
-                            <li>You provide your own OpenAI API key</li>
+                            <li>You provide your own OpenAI or DeepSeek API key</li>
                             <li>You control billing and costs</li>
-                            <li>Full quota limits (your OpenAI account limits)</li>
+                            <li>Unlimited AI calls (no credit limit)</li>
                             <li>Good for: Heavy usage, enterprises, cost control, privacy</li>
                         </ul>
                         <p><strong>How to Set Up:</strong></p>
                         <ol>
-                            <li>Get your OpenAI API key at <strong>platform.openai.com/api-keys</strong> — create a new API key and copy it (you'll only see it once).</li>
-                            <li>Add it to PR-AI: Click <strong>Settings</strong> in sidebar → go to <strong>API Keys</strong> section → paste your OpenAI key → click <strong>Save</strong>.</li>
-                            <li>Switch to Personal mode: click the toggle to switch to <strong>Personal</strong> mode. All subsequent audits use your key and you're billed directly through OpenAI.</li>
+                            <li>Get your API key at <strong>platform.openai.com/api-keys</strong> (OpenAI) or <strong>platform.deepseek.com/api_keys</strong> (DeepSeek).</li>
+                            <li>Add it to PR-AI: Click <strong>Settings</strong> in sidebar → go to <strong>API Keys</strong> tab → switch dropdown from "Developer Key" to "Personal" → paste your key → click <strong>Save key</strong>.</li>
+                            <li>PR-AI validates your key by sending a test message to the AI behind the scenes. If it works, your key is saved.</li>
                         </ol>
+
+                        <h4>Checking Your AI Calls Left</h4>
+                        <p>Look for the <strong>⋯ (three dots)</strong> button in the top-right corner of the Auditor page, next to the model selector. Click it to see a small popup:</p>
+                        <ul>
+                            <li>If using a <strong>Personal key</strong> → shows <strong>AI calls left: ∞</strong> (unlimited)</li>
+                            <li>If using the <strong>Developer Key</strong> → shows your exact remaining count, e.g. <strong>AI calls left: 7</strong></li>
+                            <li>When you reach <strong>0</strong>, add your own API key in Settings → API Keys to keep going</li>
+                        </ul>
 
                         <h4>Managing Your Personal Key</h4>
                         <ul>
                             <li><strong>View your masked key:</strong> Settings shows <code>sk-••••••••••••••••1234</code> (last 4 characters visible)</li>
-                            <li><strong>Remove your key:</strong> In Settings, click <strong>Remove</strong> next to your key — you'll return to System mode</li>
-                            <li><strong>Change your key:</strong> Remove the old key, add a new key, verify it works with a test audit</li>
+                            <li><strong>Remove your key:</strong> In Settings, click <strong>Remove</strong> next to your key — you'll return to Developer Key mode</li>
+                            <li><strong>Change your key:</strong> Remove the old key, add a new key, verify it works with a test</li>
                         </ul>
 
                         <h4>Billing Considerations</h4>

@@ -61,7 +61,7 @@ Supported providers: **GitHub** (OAuth sign-in), **GitLab** (OAuth sign-in), Bit
 - Click again or wait for silence detection to send
 - Also available as a floating button (bottom-right) on mobile
 
-**6. Multi-Provider AI & System Credits**
+**6. Multi-Provider AI & Developer Credits**
 - Switch providers via the **provider dropdown** (top-right of Auditor, next to Import)
 - Supported: **OpenAI** (GPT-4o, GPT-4o-mini) and **DeepSeek** (DeepSeek-Chat, DeepSeek-Reasoner)
 - Use the **model dropdown** to pick specific models
@@ -70,6 +70,7 @@ Supported providers: **GitHub** (OAuth sign-in), **GitLab** (OAuth sign-in), Bit
 - Add your API key: Settings → API Keys → switch to "Personal" → paste key → click Save
 - If a user says they're out of Developer Key requests, guide them to Settings → API Keys to add their personal OpenAI or DeepSeek key
 - The Developer Key is intended for evaluation. Personal keys are recommended for regular use
+- **Check remaining calls**: Click the **⋯ (three dots)** button in the top-right header → a popup shows "AI calls left: ∞" (personal key) or "AI calls left: N" (developer key)
 
 **7. Diff Viewer**
 - Appears at the bottom of the Auditor when code is loaded
