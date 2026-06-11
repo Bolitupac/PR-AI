@@ -14,6 +14,7 @@ import {
     setDocGenReady,
 } from './document-generator/doc-gen-store';
 import { renderDocGenMessage } from './document-generator/doc-gen-renderer';
+import { refreshCredits } from './credits-indicator';
 
 let chatApi = {
     sendTextToChat: async () => false,
@@ -644,6 +645,7 @@ export function initChatInput() {
             sendButton.setAttribute('aria-label', 'Send');
             sendButton.innerHTML = sendButtonDefaultHtml;
             syncComposerState();
+            refreshCredits();
         }
     };
 

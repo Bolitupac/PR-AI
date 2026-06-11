@@ -7,6 +7,7 @@ import { extractInlineComments, stripInlineCommentsBlock } from './ai-inline-com
 import { extractAgentFixPrompt, renderAgentPromptBox, stripAgentFixPromptBlock } from './agent-prompt-box';
 import { attachFollowUpSuggestions, clearFollowUpSuggestions, fetchFollowUpSuggestions } from './chat-followups';
 import { sendTextToChat } from './chat-input';
+import { refreshCredits } from './credits-indicator';
 
 // Auto-runs AI audit whenever a diff is selected from any source.
 export function initAutoAudit() {
@@ -388,9 +389,11 @@ export function initAutoAudit() {
             }));
             status.markSuccess('Audit complete.');
             status.remove(700);
+            refreshCredits();
         } catch (error) {
             status.markError('Audit failed.');
             appendMessage('Could not reach audit service.', 'ai');
+            refreshCredits();
         }
     };
 

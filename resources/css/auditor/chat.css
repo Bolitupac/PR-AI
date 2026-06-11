@@ -1449,13 +1449,13 @@ html[data-theme="light"] .msg.ai .mermaid svg .edgeLabel rect {
     position: fixed;
     background: var(--panel-bg, #fff);
     border: 1px solid var(--panel-stroke, #e0e6f2);
-    border-radius: 6px;
-    padding: 5px 10px;
-    font-size: 11px;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--text-main, #1a1d2b);
     white-space: nowrap;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.18s ease, transform 0.18s ease;
@@ -1485,7 +1485,7 @@ html[data-theme="light"] .msg.ai .mermaid svg .edgeLabel rect {
 }
 
 .credits-popover .infinity-symbol {
-    font-size: 16px;
+    font-size: 20px;
     line-height: 1;
     color: var(--brand, #0085ff);
 }
