@@ -46,6 +46,7 @@ export async function initImportsPage() {
     let metadataStarted = false;
     let metadataProcessing = false;
     const metadataQueue = [];
+    let currentLoadId = 0; // increment on provider switch to ignore stale responses
 
     const isConnectedProvider = () => Boolean(providerConfig?.[currentProvider]?.connected);
     const providerLabel = () => providerConfig?.[currentProvider]?.label || currentProvider;
@@ -248,6 +249,9 @@ export async function initImportsPage() {
     });
 
     const loadProviderRepos = async () => {
+        const loadId = ++currentLoadId;
+
+        // Reset all state for the new provider
         allRepos = [];
         shownCount = 0;
         repoElements = [];
@@ -258,16 +262,29 @@ export async function initImportsPage() {
         if (loadMoreWrap) repoContainer.appendChild(loadMoreWrap);
         setImportStatus('', false);
 
+        // Always reload the recent panels for the new provider
+        const recentPrPanel = document.getElementById('recent-pull-requests-list');
+        if (recentPrPanel) {
+            recentPrPanel.innerHTML = '<li class="imports-history-item" style="color: var(--text-soft); font-size: 12px;">Loading recent pull requests...</li>';
+        }
+
         if (!isConnectedProvider()) {
-            renderDisconnectedText(document.getElementById('recent-pull-requests-list'), `${providerLabel()} not connected.`);
+            if (recentPrPanel) {
+                renderDisconnectedText(recentPrPanel, `${providerLabel()} not connected.`);
+            }
             renderProviderPrompt(repoContainer, `${providerLabel()} not connected`, `Connect ${providerLabel()} to import repositories and pull requests.`);
             return;
         }
 
+        // Fire-and-forget recent panels — they handle themselves
         initRecentPullRequestsPanel(apiBase, currentProvider, setImportStatus);
 
         try {
             const repos = await API.fetchRepos(apiBase, currentProvider);
+
+            // Ignore stale responses
+            if (loadId !== currentLoadId) return;
+
             repoContainer.innerHTML = '';
             if (loadMoreWrap) {
                 repoContainer.appendChild(loadMoreWrap);
@@ -287,6 +304,9 @@ export async function initImportsPage() {
             renderNextPage();
             startMetadataAfterInitialPaint();
         } catch (error) {
+            // Ignore stale errors
+            if (loadId !== currentLoadId) return;
+
             console.error('Error initializing imports:', error);
             if (error.status === 401) {
                 renderProviderPrompt(repoContainer, `${providerLabel()} not connected`, `Connect ${providerLabel()} to import repositories and pull requests.`);
