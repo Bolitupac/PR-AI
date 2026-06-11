@@ -1426,27 +1426,23 @@ html[data-theme="light"] .msg.ai .mermaid svg .edgeLabel rect {
     position: relative;
     display: inline-flex;
     align-items: center;
-    margin-left: auto;
 }
 
 .credits-dots-btn {
     width: 28px;
     height: 28px;
-    border-radius: 50%;
-    border: 1px solid transparent;
+    border: none;
     background: transparent;
     color: #7c8398;
     cursor: pointer;
     display: grid;
     place-items: center;
-    transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+    transition: color 0.18s ease;
 }
 
 .credits-dots-btn:hover,
 .credits-dots-btn.is-active {
     color: var(--brand, #0085ff);
-    background: rgba(0, 133, 255, 0.07);
-    border-color: rgba(0, 133, 255, 0.25);
 }
 
 .credits-popover {

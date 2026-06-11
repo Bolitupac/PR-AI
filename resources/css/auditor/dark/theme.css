@@ -653,8 +653,3 @@ html[data-theme="dark"] .credits-popover {
 html[data-theme="dark"] .credits-popover::after {
     border-top-color: rgba(197, 185, 218, 0.2);
 }
-
-html[data-theme="dark"] .credits-dots-btn:hover,
-html[data-theme="dark"] .credits-dots-btn.is-active {
-    background: rgba(0, 133, 255, 0.12);
-}
