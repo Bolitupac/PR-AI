@@ -641,3 +641,20 @@ html[data-theme="dark"] .auto-hide-scrollbar::-webkit-scrollbar-thumb:hover:hori
         background-position: 200% 50%;
     }
 }
+
+/* ── Credits popover dark tweaks ── */
+
+html[data-theme="dark"] .credits-popover {
+    background: #14172a;
+    border-color: rgba(197, 185, 218, 0.2);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.38);
+}
+
+html[data-theme="dark"] .credits-popover::after {
+    border-top-color: rgba(197, 185, 218, 0.2);
+}
+
+html[data-theme="dark"] .credits-dots-btn:hover,
+html[data-theme="dark"] .credits-dots-btn.is-active {
+    background: rgba(0, 133, 255, 0.12);
+}

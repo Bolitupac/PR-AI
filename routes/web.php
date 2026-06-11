@@ -102,6 +102,36 @@ Route::middleware('auth')->group(function () {
     Route::post('/vcs/{provider}/connect', [VcsConnectionController::class, 'store'])->name('vcs.connections.store');
     Route::delete('/vcs/{provider}/connect', [VcsConnectionController::class, 'destroy'])->name('vcs.connections.destroy');
 
+    Route::get('/profile/ai-key/credits', function () {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['unlimited' => false, 'credits_remaining' => 0, 'message' => 'Sign in required.'], 401);
+        }
+
+        $provider = request()->query('provider', 'openai');
+        $hasPersonalKey = $provider === 'deepseek'
+            ? $user->hasCustomDeepSeekKey()
+            : $user->hasCustomOpenAiKey();
+
+        if ($hasPersonalKey) {
+            return response()->json([
+                'unlimited' => true,
+                'credits_remaining' => null,
+                'message' => 'Unlimited — using your personal key.',
+            ]);
+        }
+
+        $credits = max(0, (int) $user->system_key_credits);
+
+        return response()->json([
+            'unlimited' => false,
+            'credits_remaining' => $credits,
+            'message' => $credits === 0
+                ? 'No Developer Key requests left. Add your API key in Settings.'
+                : $credits . ' Developer Key request' . ($credits !== 1 ? 's' : '') . ' left.',
+        ]);
+    })->name('profile.ai-key.credits');
+
     Route::get('/profile/ai-key/status', [ProfileAiKeyController::class, 'status'])->name('profile.ai-key.status');
     Route::post('/profile/ai-key', [ProfileAiKeyController::class, 'save'])->name('profile.ai-key.save');
     Route::delete('/profile/ai-key', [ProfileAiKeyController::class, 'remove'])->name('profile.ai-key.remove');

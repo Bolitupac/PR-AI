@@ -21,6 +21,7 @@ import { initAppsModal } from './document-generator/apps-modal';
 import { initGlobalChatHistory } from './chat-history';
 import { initDocGenMode } from './document-generator/doc-gen-mode';
 import { initAiSelectors } from './ai-selector';
+import { initCreditsIndicator } from './credits-indicator';
 import { appendRepoParams, buildVcsUrl } from '../../shared/vcs-repo-query.js';
 import { createLoadingProgress } from './loading-progress';
 import { conflictPayloadToDiffText, isMetadataOnlyConflict } from './conflict-diff-text';
@@ -49,6 +50,7 @@ export function initAuditorPage() {
     initAppsModal();
     initDocGenMode();
     initAiSelectors();
+    initCreditsIndicator();
 
     window.refreshGlobalChatHistory = (activeId) => {
         const urlParams = new URLSearchParams(window.location.search);

@@ -262,6 +262,20 @@
                                     <span class="doc-gen-text">DocGen</span>
                                 </div>
                             </div>
+                            <div class="credits-indicator-wrap" id="credits-indicator-wrap">
+                                <button class="action-btn ghost credits-dots-btn" id="credits-dots-btn" type="button"
+                                    aria-label="AI calls remaining" title="AI calls remaining"
+                                    data-credits-url="{{ route('profile.ai-key.credits') }}">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+                                        <circle cx="12" cy="5" r="2"/>
+                                        <circle cx="12" cy="12" r="2"/>
+                                        <circle cx="12" cy="19" r="2"/>
+                                    </svg>
+                                </button>
+                                <div class="credits-popover" id="credits-popover" aria-hidden="true">
+                                    <span class="credits-popover-text" id="credits-popover-text">—</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
