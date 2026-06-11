@@ -63,7 +63,7 @@ class AuditDiffController extends Controller
         $auditKind = (string) ($payload['audit_kind'] ?? '');
         $auditStatus = (string) ($payload['audit_status'] ?? '');
         $conflictPayload = (array) ($payload['conflict_payload'] ?? []);
-        $diffText = $this->truncateDiffIfNeeded((string) $payload['diff_text'], $auditTitle);
+        $diffText = $this->truncateDiffIfNeeded((string) $payload['diff_text'], $auditTitle, $auditKind);
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
         $selectedProvider = isset($payload['provider']) ? (string) $payload['provider'] : 'openai';
         $conversationId = isset($payload['conversation_id']) ? (int) $payload['conversation_id'] : null;
@@ -238,7 +238,7 @@ class AuditDiffController extends Controller
         $auditKind = (string) ($payload['audit_kind'] ?? '');
         $auditStatus = (string) ($payload['audit_status'] ?? '');
         $conflictPayload = (array) ($payload['conflict_payload'] ?? []);
-        $diffText = $this->truncateDiffIfNeeded((string) $payload['diff_text'], (string) ($payload['audit_title'] ?? ''));
+        $diffText = $this->truncateDiffIfNeeded((string) $payload['diff_text'], (string) ($payload['audit_title'] ?? ''), $auditKind);
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
         $selectedProvider = isset($payload['provider']) ? (string) $payload['provider'] : 'openai';
         $conversationId = isset($payload['conversation_id']) ? (int) $payload['conversation_id'] : null;
@@ -551,8 +551,13 @@ class AuditDiffController extends Controller
      * Truncates diff to a safe token budget for the AI model.
      * Keeps file headers so context is preserved. Appends a notice.
      */
-    private function truncateDiffIfNeeded(string $diffText, string $auditTitle = '', int $maxChars = 120000): string
+    private function truncateDiffIfNeeded(string $diffText, string $auditTitle = '', string $auditKind = '', int $maxChars = 120000): string
     {
+        // Branch audits get a larger budget since they cover more ground
+        if ($auditKind === 'branch_audit') {
+            $maxChars = 200000;
+        }
+
         if (strlen($diffText) <= $maxChars) {
             return $diffText;
         }

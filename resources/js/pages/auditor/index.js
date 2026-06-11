@@ -237,7 +237,12 @@ export function initAuditorPage() {
                             if (!diffText || !diffText.trim()) {
                                 progress.stop();
                                 status.markError('Diff is empty.');
-                                appendMessage('Fetched diff was empty.', 'ai');
+                                const isBranch = data?.auditKind === 'branch_audit' || (data?.branch && data?.base);
+                                if (isBranch) {
+                                    appendMessage('This branch has no changes compared to `' + (data?.base || 'main') + '`. The branch may be empty, already merged, or point to the same commit as the base branch. Try auditing a different branch with active commits.', 'ai');
+                                } else {
+                                    appendMessage('Fetched diff was empty. The source may have no changes to compare.', 'ai');
+                                }
                                 return;
                             }
                             // Client-side size guard: warn if diff exceeds 30MB (post_max_size is 32M)

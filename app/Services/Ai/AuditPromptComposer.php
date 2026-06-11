@@ -54,7 +54,8 @@ class AuditPromptComposer
         if (empty($changedLines)) {
             $parts[] = '- No changed lines parsed.';
         } else {
-            foreach (array_slice($changedLines, 0, 700) as $line) {
+            $lineLimit = ($auditKind === 'branch_audit') ? 1400 : 700;
+            foreach (array_slice($changedLines, 0, $lineLimit) as $line) {
                 $parts[] = sprintf(
                     '- %s | %s | %s line %s | %s',
                     $line['file'] ?? 'unknown-file',
@@ -289,10 +290,13 @@ class AuditPromptComposer
 
         if ($auditKind === 'branch_audit') {
             return array_merge($base, [
-                'AUDIT CONTEXT: This is a branch audit before integration with the base branch.',
-                'FOCUS: Branch readiness, missing checks, integration risk, and what must change before merge.',
+                'AUDIT CONTEXT: This is a branch audit before integration with the base branch. The diff compares the entire branch against its base — it may be large.',
+                'BRANCH OVERVIEW: Start the report with a "Branch Overview" section (before Executive Summary). Summarize what this branch is for in 3-5 sentences: what feature/fix it implements, what files and systems it touches, and what the overall change pattern looks like. Use specific file names and function signatures from the diff.',
+                'FOCUS: Branch readiness, missing checks, integration risk, and what must change before merge. Summarize the high-level change categories rather than listing every single line.',
                 'VAPT FOCUS: Assess the full attack surface introduced by this branch compared to the base. Treat every new endpoint, middleware bypass, or data access path as a potential VAPT finding.',
+                'LARGE DIFF HANDLING: If the diff is truncated, acknowledge it and focus on the visible portion. Flag files that appear incomplete and recommend re-auditing specific files individually if needed.',
                 'Pay special attention to A01 (access control) and A05 (security misconfiguration) for branch-level changes.',
+                'Include a file count in the Executive Summary: "This branch changes X files across Y directories."',
             ]);
         }
 
