@@ -683,12 +683,6 @@
                         <span>GitLab</span>
                     </button>
 
-                    <form action="{{ route('temp.login') }}" method="POST" style="margin: 0;">
-                        @csrf
-                        <button type="submit" class="auth-provider auth-provider--temp" style="width: 100%; border: none; cursor: pointer; background: linear-gradient(135deg, #304cff, #1e2e99);">
-                            <span>TEMPORARY LOGIN</span>
-                        </button>
-                    </form>
                 </div>
             </div>
         </section>

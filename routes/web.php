@@ -45,7 +45,6 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/auth/github', [GitHubOAuthController::class, 'redirect'])->name('github.redirect');
     Route::get('/auth/github/callback', [GitHubOAuthController::class, 'callback'])->name('github.callback');
-    Route::post('/auth/temp-login', [App\Http\Controllers\Auth\TempLoginController::class, 'login'])->name('temp.login');
 });
 
 Route::get('/auth/gitlab', [GitLabOAuthController::class, 'redirect'])->name('gitlab.redirect');
