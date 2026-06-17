@@ -63,7 +63,6 @@ class AuditDiffController extends Controller
         $auditKind = (string) ($payload['audit_kind'] ?? '');
         $auditStatus = (string) ($payload['audit_status'] ?? '');
         $conflictPayload = (array) ($payload['conflict_payload'] ?? []);
-        $diffText = $this->truncateDiffIfNeeded((string) $payload['diff_text'], $auditTitle, $auditKind);
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
         $selectedProvider = isset($payload['provider']) ? (string) $payload['provider'] : 'openai';
         $conversationId = isset($payload['conversation_id']) ? (int) $payload['conversation_id'] : null;
@@ -86,6 +85,8 @@ class AuditDiffController extends Controller
         $auditKind = $this->resolveAuditKind($auditKind, $source, $compareType, $prNumber);
         $auditStatus = $this->resolveAuditStatus($auditStatus, $auditKind, $source, $compareType, $pullDetails);
         $auditTitle = $this->resolveAuditTitle($auditTitle, $auditKind, $repo, $prNumber, $prTitle, $headBranch, (string) ($payload['file_name'] ?? ''), (string) ($payload['commit_hash'] ?? ''));
+
+        $diffText = $this->truncateDiffIfNeeded((string) $payload['diff_text'], $auditTitle, $auditKind);
 
         $changedLines = $this->auditSnapshotWriter->extractChangedLines($diffText);
         $chatContext = $this->auditPromptComposer->composeChatContext([
@@ -238,7 +239,6 @@ class AuditDiffController extends Controller
         $auditKind = (string) ($payload['audit_kind'] ?? '');
         $auditStatus = (string) ($payload['audit_status'] ?? '');
         $conflictPayload = (array) ($payload['conflict_payload'] ?? []);
-        $diffText = $this->truncateDiffIfNeeded((string) $payload['diff_text'], (string) ($payload['audit_title'] ?? ''), $auditKind);
         $selectedModel = isset($payload['model']) ? (string) $payload['model'] : null;
         $selectedProvider = isset($payload['provider']) ? (string) $payload['provider'] : 'openai';
         $conversationId = isset($payload['conversation_id']) ? (int) $payload['conversation_id'] : null;
@@ -261,6 +261,8 @@ class AuditDiffController extends Controller
         $auditKind = $this->resolveAuditKind($auditKind, $source, $compareType, $prNumber);
         $auditStatus = $this->resolveAuditStatus($auditStatus, $auditKind, $source, $compareType, $pullDetails);
         $auditTitle = $this->resolveAuditTitle($auditTitle, $auditKind, $repo, $prNumber, $prTitle, $headBranch, (string) ($payload['file_name'] ?? ''), (string) ($payload['commit_hash'] ?? ''));
+
+        $diffText = $this->truncateDiffIfNeeded((string) $payload['diff_text'], $auditTitle, $auditKind);
 
         $changedLines = $this->auditSnapshotWriter->extractChangedLines($diffText);
         $chatContext = $this->auditPromptComposer->composeChatContext([
