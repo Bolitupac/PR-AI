@@ -321,7 +321,47 @@ class GitLabVcsProvider implements VcsProviderInterface
 
         $diff = $this->diffBuilder->fromEntries($response->json('diffs') ?? []);
 
+        if (trim($diff) === '') {
+            return $this->getMergeCommitDiffForBranch($connection, $repo, $head, $base);
+        }
+
         return ['ok' => true, 'status' => 200, 'data' => $diff];
+    }
+
+    /**
+     * Finds the merge commit that merged $head into $base and returns its diff.
+     */
+    private function getMergeCommitDiffForBranch(array $connection, array $repo, string $head, string $base): array
+    {
+        $response = $this->client($connection)->get(
+            $this->projectPath($connection, $repo).'/repository/commits',
+            ['ref_name' => $base, 'per_page' => 50]
+        );
+
+        if ($response->failed()) {
+            return ['ok' => true, 'status' => 200, 'data' => ''];
+        }
+
+        $mergeSha = null;
+        $headLower = strtolower($head);
+
+        foreach ($response->json() as $commit) {
+            $parentIds = $commit['parent_ids'] ?? [];
+            if (count($parentIds) >= 2) {
+                $title = strtolower((string) ($commit['title'] ?? ''));
+                $message = strtolower((string) ($commit['message'] ?? ''));
+                if (str_contains($title.$message, $headLower)) {
+                    $mergeSha = $commit['id'];
+                    break;
+                }
+            }
+        }
+
+        if ($mergeSha === null) {
+            return ['ok' => true, 'status' => 200, 'data' => ''];
+        }
+
+        return $this->getCommitDiff($connection, $repo, $mergeSha);
     }
 
     public function getCommitDiff(array $connection, array $repo, string $commit): array

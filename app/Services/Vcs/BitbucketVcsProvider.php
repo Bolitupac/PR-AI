@@ -261,7 +261,68 @@ class BitbucketVcsProvider implements VcsProviderInterface
             return ['ok' => false, 'status' => $response->status(), 'data' => ''];
         }
 
-        return ['ok' => true, 'status' => 200, 'data' => $response->body()];
+        $diff = $response->body();
+
+        if (trim($diff) === '') {
+            return $this->getMergeCommitDiffForBranch($connection, $repo, $head, $base);
+        }
+
+        return ['ok' => true, 'status' => 200, 'data' => $diff];
+    }
+
+    /**
+     * Finds the merge commit that merged $head into $base and returns its diff.
+     *
+     * Bitbucket does not support commit-diff endpoints, so we diff the
+     * first parent against the merge commit directly.
+     */
+    private function getMergeCommitDiffForBranch(array $connection, array $repo, string $head, string $base): array
+    {
+        [$workspace, $slug] = $this->repoParts($connection, $repo);
+
+        $commitsResponse = $this->client($connection)->get(
+            $this->apiBase()."/repositories/{$workspace}/{$slug}/commits/{$base}",
+            ['pagelen' => 50]
+        );
+
+        if ($commitsResponse->failed()) {
+            return ['ok' => true, 'status' => 200, 'data' => ''];
+        }
+
+        $mergeCommit = null;
+        $headLower = strtolower($head);
+
+        foreach ($commitsResponse->json('values') ?? [] as $commit) {
+            $parents = $commit['parents'] ?? [];
+            if (count($parents) >= 2) {
+                $message = strtolower($commit['message'] ?? '');
+                if (str_contains($message, $headLower)) {
+                    $mergeCommit = $commit;
+                    break;
+                }
+            }
+        }
+
+        if ($mergeCommit === null) {
+            return ['ok' => true, 'status' => 200, 'data' => ''];
+        }
+
+        $mergeHash = $mergeCommit['hash'] ?? '';
+        $firstParentHash = $mergeCommit['parents'][0]['hash'] ?? '';
+
+        if ($mergeHash === '' || $firstParentHash === '') {
+            return ['ok' => true, 'status' => 200, 'data' => ''];
+        }
+
+        $diffResponse = $this->client($connection)
+            ->withHeaders(['Accept' => 'text/plain'])
+            ->get($this->apiBase()."/repositories/{$workspace}/{$slug}/diff/{$firstParentHash}..{$mergeHash}");
+
+        if ($diffResponse->failed()) {
+            return ['ok' => true, 'status' => 200, 'data' => ''];
+        }
+
+        return ['ok' => true, 'status' => 200, 'data' => $diffResponse->body()];
     }
 
     public function getCommitDiff(array $connection, array $repo, string $commit): array

@@ -350,6 +350,9 @@ class GitHubApiService
 
     /**
      * Fetches unified diff text comparing two branches.
+     *
+     * Falls back to the merge commit diff when the branch comparison
+     * returns empty (e.g. the branch was already merged).
      */
     public function getBranchDiff(string $encryptedToken, string $repo, string $base, string $head): array
     {
@@ -362,7 +365,49 @@ class GitHubApiService
             return ['ok' => false, 'status' => $response->status(), 'data' => ''];
         }
 
-        return ['ok' => true, 'status' => 200, 'data' => $response->body()];
+        $diff = $response->body();
+
+        if (trim($diff) === '') {
+            return $this->getMergeCommitDiffForBranch($encryptedToken, $repo, $head, $base);
+        }
+
+        return ['ok' => true, 'status' => 200, 'data' => $diff];
+    }
+
+    /**
+     * Finds the merge commit that merged $head into $base and returns its diff.
+     */
+    private function getMergeCommitDiffForBranch(string $encryptedToken, string $repo, string $head, string $base): array
+    {
+        $commitsResponse = $this->client($encryptedToken)
+            ->get("https://api.github.com/repos/{$repo}/commits", [
+                'sha' => $base,
+                'per_page' => 50,
+            ]);
+
+        if ($commitsResponse->failed()) {
+            return ['ok' => true, 'status' => 200, 'data' => ''];
+        }
+
+        $mergeSha = null;
+        $headLower = strtolower($head);
+
+        foreach ($commitsResponse->json() as $commit) {
+            $parents = $commit['parents'] ?? [];
+            if (count($parents) >= 2) {
+                $message = strtolower($commit['commit']['message'] ?? '');
+                if (str_contains($message, $headLower)) {
+                    $mergeSha = $commit['sha'];
+                    break;
+                }
+            }
+        }
+
+        if ($mergeSha === null) {
+            return ['ok' => true, 'status' => 200, 'data' => ''];
+        }
+
+        return $this->getCommitDiff($encryptedToken, $repo, $mergeSha);
     }
 
     /**

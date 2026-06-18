@@ -277,7 +277,53 @@ class AzureDevOpsVcsProvider implements VcsProviderInterface
 
     public function getBranchDiff(array $connection, array $repo, string $base, string $head): array
     {
-        return $this->buildDiffFromVersions($connection, $repo, $base, 'branch', $head, 'branch');
+        $result = $this->buildDiffFromVersions($connection, $repo, $base, 'branch', $head, 'branch');
+
+        if ($result['ok'] && trim((string) ($result['data'] ?? '')) === '') {
+            return $this->getMergeCommitDiffForBranch($connection, $repo, $head, $base);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Finds the merge commit that merged $head into $base and returns its diff.
+     */
+    private function getMergeCommitDiffForBranch(array $connection, array $repo, string $head, string $base): array
+    {
+        $commitsResponse = $this->client($connection)->get(
+            $this->repositoryApiBase($connection, $repo).'/commits',
+            [
+                'searchCriteria.$top' => 50,
+                'searchCriteria.itemVersion.version' => $base,
+                'searchCriteria.itemVersion.versionType' => 'branch',
+                'api-version' => '7.1',
+            ]
+        );
+
+        if ($commitsResponse->failed()) {
+            return ['ok' => true, 'status' => 200, 'data' => ''];
+        }
+
+        $mergeSha = null;
+        $headLower = strtolower($head);
+
+        foreach ($commitsResponse->json('value') ?? [] as $commit) {
+            $parents = $commit['parents'] ?? [];
+            if (count($parents) >= 2) {
+                $comment = strtolower((string) ($commit['comment'] ?? ''));
+                if (str_contains($comment, $headLower)) {
+                    $mergeSha = $commit['commitId'];
+                    break;
+                }
+            }
+        }
+
+        if ($mergeSha === null) {
+            return ['ok' => true, 'status' => 200, 'data' => ''];
+        }
+
+        return $this->getCommitDiff($connection, $repo, $mergeSha);
     }
 
     public function getCommitDiff(array $connection, array $repo, string $commit): array
