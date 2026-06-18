@@ -1,6 +1,8 @@
 const THEME_KEY = 'auditor-theme';
 let transitionTimer = null;
 
+document.documentElement.classList.add('docs-js');
+
 function runThemeTransition() {
     const root = document.documentElement;
     root.classList.add('docs-theme-transitioning');
@@ -44,6 +46,15 @@ function initDocsSearch() {
     });
 }
 
+function initDocsPageReveal() {
+    const page = document.querySelector('[data-docs-page]');
+    if (!page) return;
+
+    requestAnimationFrame(() => {
+        page.classList.add('is-ready');
+    });
+}
+
 function initDocsThemeToggle() {
     const btn = document.getElementById('docs-theme-toggle');
     if (!btn) return;
@@ -63,4 +74,5 @@ function initDocsThemeToggle() {
 document.addEventListener('DOMContentLoaded', () => {
     initDocsThemeToggle();
     initDocsSearch();
+    initDocsPageReveal();
 });
