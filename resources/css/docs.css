@@ -19,18 +19,18 @@
 }
 
 html[data-theme="dark"] {
-    --docs-bg: #151a26;
-    --docs-panel: #1a2030;
-    --docs-panel-soft: #20273a;
-    --docs-line: #2d3446;
-    --docs-line-strong: #3a4257;
-    --docs-text: #eef2ff;
-    --docs-soft: #9aa3ba;
-    --docs-muted: #7d869f;
-    --docs-brand: #52a7ff;
-    --docs-brand-soft: rgba(82, 167, 255, 0.14);
-    --docs-shadow: 0 12px 28px rgba(0, 0, 0, 0.26);
-    --docs-shadow-soft: 0 6px 16px rgba(0, 0, 0, 0.18);
+    --docs-bg: #090b1e;
+    --docs-panel: #0f1122;
+    --docs-panel-soft: #13162b;
+    --docs-line: rgba(197, 185, 218, 0.2);
+    --docs-line-strong: rgba(197, 185, 218, 0.3);
+    --docs-text: #f9fafc;
+    --docs-soft: #aeb5cb;
+    --docs-muted: #c5b9da;
+    --docs-brand: #0085ff;
+    --docs-brand-soft: rgba(0, 133, 255, 0.16);
+    --docs-shadow: 0 18px 40px rgba(0, 0, 0, 0.46);
+    --docs-shadow-soft: 0 10px 22px rgba(0, 0, 0, 0.34);
 }
 
 * { box-sizing: border-box; }
@@ -40,6 +40,26 @@ body {
     font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     color: var(--docs-text);
     background: var(--docs-bg);
+}
+
+html[data-theme="dark"] body {
+    background:
+        radial-gradient(920px 460px at 18% -10%, rgba(0, 133, 255, 0.2) 0%, rgba(0, 133, 255, 0) 62%),
+        radial-gradient(860px 420px at 88% -14%, rgba(197, 185, 218, 0.15) 0%, rgba(197, 185, 218, 0) 58%),
+        repeating-linear-gradient(90deg, rgba(197, 185, 218, 0.06) 0 1px, transparent 1px calc(100% / 16)),
+        repeating-linear-gradient(0deg, rgba(197, 185, 218, 0.04) 0 1px, transparent 1px calc(100% / 12)),
+        linear-gradient(90deg, rgba(0, 133, 255, 0.12) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(0, 133, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(135deg, #090b1e 0%, #0b0f22 52%, #0e1229 100%);
+    background-size:
+        auto,
+        auto,
+        auto,
+        auto,
+        360px 360px,
+        360px 360px,
+        auto;
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
 }
 a { color: inherit; text-decoration: none; }
 img { display: block; max-width: 100%; }
@@ -58,6 +78,12 @@ img { display: block; max-width: 100%; }
     padding: 16px 12px;
     border-right: 1px solid var(--docs-line);
     background: var(--docs-panel);
+}
+
+html[data-theme="dark"] .docs-sidebar {
+    background: linear-gradient(180deg, rgba(14, 17, 34, 0.95) 0%, rgba(11, 14, 30, 0.96) 100%);
+    border-right-color: rgba(197, 185, 218, 0.16);
+    box-shadow: inset -1px 0 0 rgba(197, 185, 218, 0.08);
 }
 
 .docs-brand {
@@ -98,6 +124,12 @@ img { display: block; max-width: 100%; }
     border-color: var(--docs-line);
 }
 
+html[data-theme="dark"] .docs-nav-link:hover,
+html[data-theme="dark"] .docs-nav-link.is-active {
+    background: rgba(0, 133, 255, 0.16);
+    border-color: rgba(197, 185, 218, 0.16);
+}
+
 .docs-nav-link svg { width: 16px; height: 16px; flex: none; }
 
 .docs-sidebar-card {
@@ -106,6 +138,11 @@ img { display: block; max-width: 100%; }
     border: 1px solid var(--docs-line);
     border-radius: var(--docs-radius);
     background: var(--docs-panel-soft);
+}
+
+html[data-theme="dark"] .docs-sidebar-card {
+    background: linear-gradient(180deg, rgba(17, 20, 40, 0.72) 0%, rgba(14, 18, 36, 0.78) 100%);
+    border-color: rgba(197, 185, 218, 0.2);
 }
 
 .docs-sidebar-card h3,
@@ -139,6 +176,11 @@ img { display: block; max-width: 100%; }
     font-weight: 700;
 }
 
+html[data-theme="dark"] .docs-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(197, 185, 218, 0.26);
+}
+
 .docs-btn--primary {
     border-color: transparent;
     color: #fff;
@@ -164,6 +206,11 @@ img { display: block; max-width: 100%; }
     border-radius: var(--docs-radius);
     background: var(--docs-panel);
     box-shadow: var(--docs-shadow-soft);
+}
+
+html[data-theme="dark"] .docs-topbar {
+    background: linear-gradient(180deg, rgba(17, 20, 40, 0.72) 0%, rgba(14, 18, 36, 0.78) 100%);
+    border-color: rgba(197, 185, 218, 0.2);
 }
 
 .docs-hero-brand,
@@ -198,6 +245,10 @@ img { display: block; max-width: 100%; }
     background: var(--docs-panel-soft);
 }
 
+html[data-theme="dark"] .docs-topbar-search {
+    background: rgba(15, 17, 34, 0.92);
+}
+
 .docs-topbar-search input {
     width: 100%;
     border: 0;
@@ -212,9 +263,11 @@ img { display: block; max-width: 100%; }
 .docs-theme-toggle {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
+    width: 42px;
     min-height: 38px;
-    padding: 0 12px;
+    padding: 0;
     background: var(--docs-panel-soft);
     color: var(--docs-text);
     font: inherit;
@@ -224,12 +277,28 @@ img { display: block; max-width: 100%; }
 
 .docs-theme-toggle svg { width: 16px; height: 16px; }
 
+html[data-theme="dark"] .docs-theme-toggle {
+    background: rgba(15, 17, 34, 0.92);
+    border-color: rgba(197, 185, 218, 0.26);
+}
+
 .docs-page { display: grid; gap: 14px; }
 .docs-hero {
     padding: 20px;
     background: linear-gradient(180deg, var(--docs-panel), var(--docs-panel-soft));
     border: 1px solid var(--docs-line);
     border-radius: var(--docs-radius-lg);
+}
+
+html[data-theme="dark"] .docs-hero,
+html[data-theme="dark"] .docs-section,
+html[data-theme="dark"] .docs-card,
+html[data-theme="dark"] .docs-note,
+html[data-theme="dark"] .docs-faq-item,
+html[data-theme="dark"] .docs-table {
+    background: linear-gradient(180deg, rgba(17, 20, 40, 0.72) 0%, rgba(14, 18, 36, 0.78) 100%);
+    border-color: rgba(197, 185, 218, 0.2);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4);
 }
 
 .docs-kicker {
@@ -285,6 +354,12 @@ img { display: block; max-width: 100%; }
     padding: 14px;
 }
 
+html[data-theme="dark"] .docs-card,
+html[data-theme="dark"] .docs-note,
+html[data-theme="dark"] .docs-faq-item {
+    background: linear-gradient(180deg, rgba(17, 21, 44, 0.96) 0%, rgba(14, 18, 38, 0.97) 100%);
+}
+
 .docs-card h3 { font-size: 16px; }
 .docs-card p { margin: 8px 0 0; font-size: 13px; }
 
@@ -304,6 +379,10 @@ img { display: block; max-width: 100%; }
     overflow: hidden;
 }
 
+html[data-theme="dark"] .docs-table {
+    background: rgba(15, 17, 34, 0.92);
+}
+
 .docs-table th,
 .docs-table td {
     padding: 12px 14px;
@@ -314,6 +393,10 @@ img { display: block; max-width: 100%; }
 .docs-table th {
     color: var(--docs-text);
     background: rgba(0, 133, 255, 0.06);
+}
+
+html[data-theme="dark"] .docs-table th {
+    background: rgba(0, 133, 255, 0.12);
 }
 
 .docs-list { margin: 10px 0 0 20px; }

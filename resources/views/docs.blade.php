@@ -77,9 +77,8 @@
                 </svg>
                 <input id="docs-search" type="search" placeholder="Search this page">
             </div>
-            <button class="docs-theme-toggle" id="docs-theme-toggle" type="button">
+            <button class="docs-theme-toggle" id="docs-theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch theme">
                 <svg id="docs-theme-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11Z" fill="currentColor"></path></svg>
-                <span data-docs-theme-label>Dark mode</span>
             </button>
         </header>
 

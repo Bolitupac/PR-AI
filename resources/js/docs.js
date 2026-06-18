@@ -5,9 +5,13 @@ function applyTheme(theme) {
     const next = theme === 'dark' ? 'dark' : 'light';
     root.setAttribute('data-theme', next);
 
-    const label = document.querySelector('[data-docs-theme-label]');
     const icon = document.querySelector('[data-docs-theme-icon]');
-    if (label) label.textContent = next === 'dark' ? 'Light mode' : 'Dark mode';
+    const btn = document.getElementById('docs-theme-toggle');
+    if (btn) {
+        const switchTo = next === 'dark' ? 'light' : 'dark';
+        btn.setAttribute('aria-label', `Switch to ${switchTo} mode`);
+        btn.title = `Switch to ${switchTo} mode`;
+    }
     if (icon) icon.innerHTML = next === 'dark'
         ? '<path d="M12 2v2m0 16v2m10-10h-2M4 12H2m15.071 7.071-1.414-1.414M5.343 5.343 3.929 3.929m14.142 0-1.414 1.414M5.343 18.657l-1.414 1.414" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>'
         : '<path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11Z" fill="currentColor"/>';
