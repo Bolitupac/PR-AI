@@ -79,6 +79,7 @@
             ],
         ];
     @endphp
+    @php($docsUrl = route('docs.index'))
 
     <div class="homepage-shell" id="homepage-shell">
         <div class="bg-grid" aria-hidden="true"></div>
@@ -95,6 +96,7 @@
                 <a href="#docgen">DocGen</a>
                 <a href="#providers">AI Providers</a>
                 <a href="#help">Help</a>
+                <a href="{{ $docsUrl }}">Docs</a>
                 <a href="{{ $toolEntryUrl }}" class="nav-cta">Try it</a>
             </nav>
         </header>
@@ -124,6 +126,7 @@
 
                         <div class="hero-actions">
                             <a href="{{ $toolEntryUrl }}" class="button button--primary">Try demo</a>
+                            <a href="{{ $docsUrl }}" class="button button--ghost">Docs</a>
                             <a href="#features" class="button button--ghost">See features</a>
                         </div>
                     </div>

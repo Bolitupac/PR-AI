@@ -519,6 +519,25 @@
                         <h4>Getting Started</h4>
                         <p>PR-AI accelerates code reviews, security checks, and documentation with AI. Sign in with <strong>GitHub</strong> or <strong>GitLab</strong> on the login page, then use <strong>Imports</strong> to browse repos or the <strong>Auditor</strong> to review diffs. Full details are in <code>APP.md</code> in the project repository.</p>
 
+                        <div style="display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:12px; margin:20px 0 24px;">
+                            <a class="settings-theme-btn" style="text-align:left; display:block;" href="{{ route('docs.index', ['page' => 'overview']) }}">
+                                <strong>Open Full Docs</strong><br>
+                                <small>Go to the dedicated documentation page.</small>
+                            </a>
+                            <a class="settings-theme-btn" style="text-align:left; display:block;" href="{{ route('docs.index', ['page' => 'imports']) }}">
+                                <strong>Imports & Branches</strong><br>
+                                <small>Learn how audits are loaded.</small>
+                            </a>
+                            <a class="settings-theme-btn" style="text-align:left; display:block;" href="{{ route('docs.index', ['page' => 'security']) }}">
+                                <strong>Security Guide</strong><br>
+                                <small>VAPT and OWASP notes.</small>
+                            </a>
+                            <a class="settings-theme-btn" style="text-align:left; display:block;" href="{{ route('docs.index', ['page' => 'privacy']) }}">
+                                <strong>Privacy & Data</strong><br>
+                                <small>Read how code and metadata are handled.</small>
+                            </a>
+                        </div>
+
                         {{-- First Walkthrough — Auditor Workspace --}}
                         <div class="help-walkthrough-section">
                             <div class="help-walkthrough-header">

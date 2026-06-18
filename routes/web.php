@@ -26,6 +26,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/docs/{page?}', function (?string $page = null) {
+    return view('docs', ['currentPage' => $page ?: 'overview']);
+})->where('page', '[A-Za-z0-9\-]+')->name('docs.index');
+
 Route::get('/profile', function () {
     if (!Auth::check()) {
         return redirect()->route('login');
