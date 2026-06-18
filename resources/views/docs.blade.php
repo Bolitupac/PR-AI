@@ -19,18 +19,17 @@
     $toolEntryUrl = auth()->check() ? route('auditor.index') : route('login');
     $currentPage = $currentPage ?? 'overview';
     $pages = [
-        'overview' => ['label' => 'Overview'],
-        'quickstart' => ['label' => 'Quick start'],
-        'imports' => ['label' => 'Imports'],
-        'audits' => ['label' => 'Audit modes'],
-        'docgen' => ['label' => 'DocGen'],
-        'voice' => ['label' => 'Voice input'],
-        'keys' => ['label' => 'API keys'],
-        'security' => ['label' => 'Security'],
-        'privacy' => ['label' => 'Privacy'],
-        'faq' => ['label' => 'FAQ'],
+        'overview' => ['label' => 'Overview', 'icon' => 'M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v13A1.5 1.5 0 0 1 18.5 20h-13A1.5 1.5 0 0 1 4 18.5v-13Zm3 2.5h10v2H7V8Zm0 4h10v2H7v-2Zm0 4h6v2H7v-2Z', 'class' => 'docs-nav-link--overview'],
+        'quickstart' => ['label' => 'Quick start', 'icon' => 'M12 2 4 6v12l8 4 8-4V6l-8-4Zm0 4.2L16.9 8 12 10.8 7.1 8 12 6.2ZM6 9.4l5 2.8v5.8L6 15.2V9.4Zm12 5.8-5 2.8v-5.8l5-2.8v5.8Z', 'class' => 'docs-nav-link--quickstart'],
+        'imports' => ['label' => 'Imports', 'icon' => 'M12 2.5 20 6v3H4V6l8-3.5ZM5 10h14v9H5v-9Zm3 2v5h2v-5H8Zm4 0v5h2v-5h-2Z', 'class' => 'docs-nav-link--imports'],
+        'audits' => ['label' => 'Audit modes', 'icon' => 'M12 2 2 6l10 4 8-3.2V16h2V6L12 2Zm-7 8v4l7 3 7-3v-4l-7 3-7-3Z', 'class' => 'docs-nav-link--audits'],
+        'docgen' => ['label' => 'DocGen', 'icon' => 'M6 4h9l3 3v13H6V4Zm8 1.5V8h2.5L14 5.5ZM8 11h7v1.5H8V11Zm0 3h7v1.5H8V14Z', 'class' => 'docs-nav-link--docgen'],
+        'voice' => ['label' => 'Voice input', 'icon' => 'M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Zm-5-3a5 5 0 0 0 10 0h2a7 7 0 0 1-6 6.93V21h-2v-3.07A7 7 0 0 1 5 11h2Z', 'class' => 'docs-nav-link--voice'],
+        'keys' => ['label' => 'API keys', 'icon' => 'M14 3a5 5 0 0 0-3.6 8.5L4 18v2h2v-1h2v-2h2v-2h2l1.1-1.1A5 5 0 1 0 14 3Zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z', 'class' => 'docs-nav-link--keys'],
+        'security' => ['label' => 'Security', 'icon' => 'M12 2 4 5v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V5l-8-3Zm0 6a2 2 0 0 1 2 2v2h1v5H9v-5h1v-2a2 2 0 0 1 2-2Z', 'class' => 'docs-nav-link--security'],
+        'privacy' => ['label' => 'Privacy', 'icon' => 'M12 2a6 6 0 0 0-6 6v3H5a2 2 0 0 0-2 2v5h16v-5a2 2 0 0 0-2-2h-1V8a6 6 0 0 0-6-6Zm-3 9V8a3 3 0 1 1 6 0v3H9Z', 'class' => 'docs-nav-link--privacy'],
+        'faq' => ['label' => 'FAQ', 'icon' => 'M12 18h.01M12 14a4 4 0 1 0-4-4h2a2 2 0 1 1 2 2v2Z', 'class' => 'docs-nav-link--faq'],
     ];
-    $navIcon = 'M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v13A1.5 1.5 0 0 1 18.5 20h-13A1.5 1.5 0 0 1 4 18.5v-13Zm3 2.5h10v2H7V8Zm0 4h10v2H7v-2Zm0 4h6v2H7v-2Z';
 @endphp
 
 <div class="docs-shell">
@@ -46,8 +45,8 @@
         <nav class="docs-nav-group" aria-label="Documentation pages">
             <span class="docs-nav-label">Pages</span>
             @foreach ($pages as $slug => $page)
-                <a href="{{ route('docs.index', ['page' => $slug]) }}" class="docs-nav-link {{ $currentPage === $slug ? 'is-active' : '' }}">
-                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="{{ $navIcon }}"></path></svg>
+                <a href="{{ route('docs.index', ['page' => $slug]) }}" class="docs-nav-link {{ $page['class'] }} {{ $currentPage === $slug ? 'is-active' : '' }}">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="{{ $page['icon'] }}"></path></svg>
                     <span>{{ $page['label'] }}</span>
                 </a>
             @endforeach

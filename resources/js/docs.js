@@ -1,4 +1,15 @@
 const THEME_KEY = 'auditor-theme';
+let transitionTimer = null;
+
+function runThemeTransition() {
+    const root = document.documentElement;
+    root.classList.add('docs-theme-transitioning');
+    if (transitionTimer) clearTimeout(transitionTimer);
+    transitionTimer = setTimeout(() => {
+        root.classList.remove('docs-theme-transitioning');
+        transitionTimer = null;
+    }, 420);
+}
 
 function applyTheme(theme) {
     const root = document.documentElement;
@@ -43,6 +54,7 @@ function initDocsThemeToggle() {
     btn.addEventListener('click', () => {
         const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
         const next = current === 'dark' ? 'light' : 'dark';
+        runThemeTransition();
         applyTheme(next);
         localStorage.setItem(THEME_KEY, next);
     });
