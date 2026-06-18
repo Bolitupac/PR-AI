@@ -84,6 +84,15 @@ export function initAuditorPage() {
         return message;
     };
 
+    const readErrorMessage = async (res) => {
+        try {
+            const body = await res.json();
+            return body?.message || `HTTP ${res.status}`;
+        } catch {
+            return res.statusText || `HTTP ${res.status}`;
+        }
+    };
+
     const fetchPendingDiff = async (pending) => {
         if (!pending?.repo) return null;
         const provider = pending?.provider || pending?.source || 'github';
@@ -100,7 +109,7 @@ export function initAuditorPage() {
             appendRepoParams(url, repoPayload);
             url.searchParams.set('pr_number', pending.prNumber);
             const res = await fetch(url.toString());
-            if (!res.ok) throw new Error('Failed to fetch pull request diff');
+            if (!res.ok) throw new Error(await readErrorMessage(res));
             return await res.text();
         }
         if (pending?.commitHash) {
@@ -108,7 +117,7 @@ export function initAuditorPage() {
             appendRepoParams(url, repoPayload);
             url.searchParams.set('commit', pending.commitHash);
             const res = await fetch(url.toString());
-            if (!res.ok) throw new Error('Failed to fetch commit diff');
+            if (!res.ok) throw new Error(await readErrorMessage(res));
             return await res.text();
         }
         if (pending?.branch && pending?.base) {
@@ -117,7 +126,7 @@ export function initAuditorPage() {
             url.searchParams.set('base', pending.base);
             url.searchParams.set('head', pending.branch);
             const res = await fetch(url.toString());
-            if (!res.ok) throw new Error('Failed to fetch branch diff');
+            if (!res.ok) throw new Error(await readErrorMessage(res));
             return await res.text();
         }
         return null;
