@@ -1,11 +1,11 @@
 /**
- * Credits indicator — three-dots button in the top-right header
+ * Credits indicator — inline button before the Import button
  * that shows remaining Developer Key requests or ∞ for personal keys.
+ * Clicking opens Settings to the API Keys tab.
  *
  * Credits are preloaded on init and updated after each AI call.
  */
 
-let popoverVisible = false;
 let cachedData = null;
 
 function fetchCredits(url) {
@@ -22,47 +22,28 @@ function getCurrentProvider() {
     return providerSelect?.value || 'openai';
 }
 
-function renderPopoverContent(data, textEl) {
+function renderText(data, textEl) {
     if (!data) {
-        textEl.innerHTML = '<span style="color:var(--text-soft)">AI calls left: —</span>';
+        textEl.textContent = '—';
+        textEl.removeAttribute('data-unlimited');
+        textEl.removeAttribute('data-zero');
         return;
     }
 
     if (data.unlimited) {
-        textEl.innerHTML = 'AI calls left: <span class="infinity-symbol">∞</span>';
+        textEl.textContent = '∞ calls left';
+        textEl.setAttribute('data-unlimited', '');
+        textEl.removeAttribute('data-zero');
     } else {
         const n = data.credits_remaining ?? 0;
+        textEl.textContent = n + ' call' + (n !== 1 ? 's' : '') + ' left';
+        textEl.removeAttribute('data-unlimited');
         if (n === 0) {
-            textEl.innerHTML = 'AI calls left: <span style="color:#ef4444;font-weight:700">0</span>';
+            textEl.setAttribute('data-zero', '');
         } else {
-            textEl.innerHTML = 'AI calls left: <strong>' + n + '</strong>';
+            textEl.removeAttribute('data-zero');
         }
     }
-}
-
-function positionPopover(popover, btn) {
-    const rect = btn.getBoundingClientRect();
-    popover.style.position = 'fixed';
-    popover.style.top = (rect.bottom + 8) + 'px';
-    popover.style.left = (rect.left + rect.width / 2) + 'px';
-    popover.style.transform = 'translateX(-50%) translateY(-4px)';
-    popover.style.bottom = 'auto';
-}
-
-function hidePopover(popover, btn) {
-    popover.classList.remove('is-visible');
-    popover.setAttribute('aria-hidden', 'true');
-    btn.classList.remove('is-active');
-    popoverVisible = false;
-}
-
-function showPopover(popover, btn, textEl) {
-    positionPopover(popover, btn);
-    renderPopoverContent(cachedData, textEl);
-    popover.classList.add('is-visible');
-    popover.setAttribute('aria-hidden', 'false');
-    btn.classList.add('is-active');
-    popoverVisible = true;
 }
 
 async function preload(creditsUrl) {
@@ -73,10 +54,9 @@ async function preload(creditsUrl) {
 
 /**
  * Call this after each AI chat completes to refresh the credits count.
- * Pass the provider used for the chat, or omit to detect from the page.
  */
 export async function refreshCredits() {
-    const btn = document.getElementById('credits-dots-btn');
+    const btn = document.getElementById('ai-calls-left-btn');
     if (!btn) return;
     const creditsUrl = btn.dataset.creditsUrl;
     if (!creditsUrl) return;
@@ -85,65 +65,38 @@ export async function refreshCredits() {
     const url = creditsUrl + '?provider=' + encodeURIComponent(provider);
     cachedData = await fetchCredits(url);
 
-    // If popover is visible, update it live
-    if (popoverVisible) {
-        const textEl = document.getElementById('credits-popover-text');
-        if (textEl) renderPopoverContent(cachedData, textEl);
-    }
+    const textEl = document.getElementById('ai-calls-left-text');
+    if (textEl) renderText(cachedData, textEl);
 }
 
 export function initCreditsIndicator() {
-    const btn = document.getElementById('credits-dots-btn');
-    const popover = document.getElementById('credits-popover');
-    const textEl = document.getElementById('credits-popover-text');
+    const btn = document.getElementById('ai-calls-left-btn');
+    const textEl = document.getElementById('ai-calls-left-text');
 
-    if (!btn || !popover || !textEl) return;
-
-    // Move popover to body to avoid overflow clipping
-    document.body.appendChild(popover);
+    if (!btn || !textEl) return;
 
     const creditsUrl = btn.dataset.creditsUrl;
     if (!creditsUrl) return;
 
-    // Preload immediately so data is ready on first click
-    preload(creditsUrl);
-
-    btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (popoverVisible) {
-            hidePopover(popover, btn);
-        } else {
-            showPopover(popover, btn, textEl);
-        }
+    // Preload immediately so data is ready on render
+    preload(creditsUrl).then(() => {
+        renderText(cachedData, textEl);
     });
 
-    // Reposition on scroll/resize
-    window.addEventListener('scroll', () => {
-        if (popoverVisible) positionPopover(popover, btn);
-    }, { passive: true });
-    window.addEventListener('resize', () => {
-        if (popoverVisible) positionPopover(popover, btn);
-    }, { passive: true });
-
-    // Dismiss on outside click
-    document.addEventListener('click', (e) => {
-        if (popoverVisible && !btn.contains(e.target) && !popover.contains(e.target)) {
-            hidePopover(popover, btn);
-        }
-    });
-
-    // Dismiss on Escape
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && popoverVisible) {
-            hidePopover(popover, btn);
-        }
+    // Click opens Settings → API Keys
+    btn.addEventListener('click', () => {
+        document.dispatchEvent(new CustomEvent('auditor:open-settings', {
+            detail: { tab: 'api-keys' },
+        }));
     });
 
     // Refresh after provider switch
     const providerSelect = document.getElementById('chat-provider-select');
     if (providerSelect) {
         providerSelect.addEventListener('change', () => {
-            preload(creditsUrl);
+            preload(creditsUrl).then(() => {
+                renderText(cachedData, textEl);
+            });
         });
     }
 }

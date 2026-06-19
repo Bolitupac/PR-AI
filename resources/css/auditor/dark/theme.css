@@ -653,3 +653,17 @@ html[data-theme="dark"] .credits-popover {
 html[data-theme="dark"] .credits-popover::after {
     border-bottom-color: rgba(197, 185, 218, 0.2);
 }
+
+/* ── AI Calls Left dark tweaks ── */
+
+html[data-theme="dark"] .ai-calls-left-btn {
+    background: #14172a;
+    border-color: rgba(197, 185, 218, 0.18);
+    color: #b9c2d9;
+}
+
+html[data-theme="dark"] .ai-calls-left-btn:hover {
+    border-color: var(--brand, #0085ff);
+    color: var(--brand, #0085ff);
+    background: rgba(0, 133, 255, 0.08);
+}

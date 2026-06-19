@@ -146,6 +146,11 @@
                                 </a>
                             </h3>
                             <div class="panel-actions">
+                                <button class="ai-calls-left-btn" id="ai-calls-left-btn" type="button"
+                                    aria-label="AI calls remaining — open settings" title="AI calls remaining — open settings"
+                                    data-credits-url="{{ route('profile.ai-key.credits') }}">
+                                    <span class="ai-calls-left-text" id="ai-calls-left-text">—</span>
+                                </button>
                                 <div class="import-hover" id="import-trigger-wrap">
                                     <button class="repo-upload-btn" id="import-trigger" type="button">Import</button>
                                     @include('partials.import-hover-menu')
@@ -187,20 +192,6 @@
                                         @endforeach
                                     </select>
                                     <span class="tiny-action-hint" role="tooltip">Select AI model</span>
-                                </div>
-                                <div class="credits-indicator-wrap" id="credits-indicator-wrap">
-                                    <button class="credits-dots-btn" id="credits-dots-btn" type="button"
-                                        aria-label="AI calls remaining" title="AI calls remaining"
-                                        data-credits-url="{{ route('profile.ai-key.credits') }}">
-                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
-                                            <circle cx="5" cy="12" r="2"/>
-                                            <circle cx="12" cy="12" r="2"/>
-                                            <circle cx="19" cy="12" r="2"/>
-                                        </svg>
-                                    </button>
-                                    <div class="credits-popover" id="credits-popover" aria-hidden="true">
-                                        <span class="credits-popover-text" id="credits-popover-text">—</span>
-                                    </div>
                                 </div>
                             </div>
                         </header>

@@ -219,7 +219,7 @@
                             <div>
                                 <div class="docs-kicker">Imports</div>
                                 <h2>Importing code</h2>
-                                <p class="docs-section-intro">Import from repos, diffs, pasted code, or manual snippets. Branch audits are still allowed even when the branch has already been merged, and the page should stay usable if there is no diff to render.</p>
+                                <p class="docs-section-intro">Import from repos, diffs, pasted code, or manual snippets. Branch audits work best on active branches — merged branches may still be auditable if a merge commit exists in the recent history (see Audit modes for details).</p>
                             </div>
                         </div>
                         <table class="docs-table">
@@ -248,23 +248,78 @@
                             <div>
                                 <div class="docs-kicker">Audit modes</div>
                                 <h2>How audits work</h2>
-                                <p class="docs-section-intro">Each mode frames the report differently, but the goal is the same: make the change easier to understand and safer to ship.</p>
+                                <p class="docs-section-intro">PR ai runs AI-powered security reviews against diffs fetched from your VCS provider. Each audit mode frames the report differently, but the core engine is the same: it evaluates every change against the OWASP Top 10 and VAPT methodology.</p>
+                            </div>
+                        </div>
+                        <table class="docs-table">
+                            <thead><tr><th>Mode</th><th>What it compares</th><th>Best for</th></tr></thead>
+                            <tbody>
+                                <tr><td>Pull request</td><td>PR diff with metadata and review comments</td><td>Pre-merge review</td></tr>
+                                <tr><td>Branch</td><td>Entire branch against its base branch</td><td>Feature review, integration readiness</td></tr>
+                                <tr><td>Commit</td><td>Single commit diff</td><td>Targeted historical review</td></tr>
+                                <tr><td>Merge conflict</td><td>Active conflict markers</td><td>Safe conflict resolution</td></tr>
+                                <tr><td>Manual</td><td>Pasted or uploaded diff</td><td>Quick ad hoc review</td></tr>
+                            </tbody>
+                        </table>
+                    </section>
+                    <section class="docs-section" style="--docs-order:1">
+                        <div class="docs-section-head">
+                            <div>
+                                <div class="docs-kicker">Branch audits</div>
+                                <h2>How branch audits work</h2>
+                                <p class="docs-section-intro">A branch audit compares your entire feature branch against a base branch (usually <code>main</code>) and produces a comprehensive security report focused on integration readiness and attack surface analysis.</p>
                             </div>
                         </div>
                         <div class="docs-section-grid">
-                            <div class="docs-note"><h4>Pull request</h4><p>Best for pre-merge review with PR metadata and comments.</p></div>
-                            <div class="docs-note"><h4>Branch</h4><p>Compare a branch against the base branch, even if it has already been merged.</p></div>
-                            <div class="docs-note"><h4>Commit</h4><p>Review one commit at a time when you want a small change set.</p></div>
-                            <div class="docs-note"><h4>Manual</h4><p>Use pasted or uploaded code when there is no provider context.</p></div>
+                            <div class="docs-note"><h4>Diff fetching</h4><p>The app calls your VCS provider's compare API — e.g. GitHubʼs <code>/compare/:base...:head</code> endpoint with <code>Accept: application/vnd.github.v3.diff</code>. This returns a raw unified diff of every change on the branch relative to its base.</p></div>
+                            <div class="docs-note"><h4>Empty diff fallback</h4><p>If the comparison returns empty (usually because the branch was already merged), the app scans the 50 most recent commits on the base branch for a merge commit whose message contains the branch name. If found, the merge commitʼs diff is used instead.</p></div>
+                            <div class="docs-note"><h4>Prompt composition</h4><p>The diff is parsed into changed lines, truncated at 200&thinsp;KB if needed (1400-line budget), and assembled into a structured prompt with the branch name, base branch, repo, and any available PR context.</p></div>
+                            <div class="docs-note"><h4>AI analysis</h4><p>The model produces a full report: Branch Overview → Executive Summary → OWASP Top 10 Coverage → VAPT Findings → Impact Map → Logic Flow → Detailed Walkthrough → Remediation Roadmap. Special attention goes to A01 (access control) and A05 (security misconfiguration).</p></div>
                         </div>
                     </section>
-                    <section class="docs-section" style="--docs-order:1">
-                        <div class="docs-section-head"><div><div class="docs-kicker">Branch audits</div><h2>Branch reviews after merge</h2></div></div>
+                    <section class="docs-section" style="--docs-order:2">
+                        <div class="docs-section-head"><div><div class="docs-kicker">Comparison</div><h2>Branch audit vs. PR audit</h2></div></div>
+                        <table class="docs-table">
+                            <thead><tr><th>Dimension</th><th>Branch audit</th><th>PR audit</th></tr></thead>
+                            <tbody>
+                                <tr><td>Diff budget</td><td>200&thinsp;KB</td><td>120&thinsp;KB</td></tr>
+                                <tr><td>Changed-line limit</td><td>1&hairsp;400 lines</td><td>700 lines</td></tr>
+                                <tr><td>Audit status</td><td><code>active</code></td><td><code>open</code> / <code>draft</code> / <code>merged</code></td></tr>
+                                <tr><td>Report structure</td><td>Adds a Branch Overview section before the Executive Summary</td><td>Standard sections</td></tr>
+                                <tr><td>OWASP emphasis</td><td>A01 (access control), A05 (security misconfiguration)</td><td>A03 (injection), A01, A07 (auth failures)</td></tr>
+                                <tr><td>AI focus</td><td>Branch readiness, missing checks, attack-surface delta, integration risk</td><td>Merge readiness, correctness, security risk</td></tr>
+                                <tr><td>Suggestion labels</td><td>Ready for merge / Revise before merge / Review before merge</td><td>Merge / Donʼt merge / Review then merge</td></tr>
+                            </tbody>
+                        </table>
+                    </section>
+                    <section class="docs-section" style="--docs-order:3">
+                        <div class="docs-section-head"><div><div class="docs-kicker">Merged branches</div><h2>Can I audit a branch that has already been merged?</h2></div></div>
+                        <p class="docs-section-intro">It depends on <em>how</em> the branch was merged.</p>
                         <div class="docs-faq">
-                            <div class="docs-faq-item"><strong>Merged branch</strong><p>The branch can still be audited if the compare source exists or the diff can be reconstructed.</p></div>
-                            <div class="docs-faq-item"><strong>Empty diff</strong><p>Show the audit shell and explain that no diff was available instead of failing the page.</p></div>
-                            <div class="docs-faq-item"><strong>Different base branch</strong><p>Compare against a non-default base when the workflow needs it.</p></div>
+                            <div class="docs-faq-item"><strong>Merge commit (standard merge)</strong><p>✅ Yes. The branch comparison returns empty because all changes are already in the base branch, but the fallback finds the merge commit — a commit with two or more parents — and audits its diff. This works as long as the merge commit is among the 50 most recent commits on the base branch.</p></div>
+                            <div class="docs-faq-item"><strong>Squash merge</strong><p>❌ No. Squash merges combine all branch commits into a single commit with only <em>one</em> parent. There is no merge commit with two parents to find, so the fallback returns empty and the audit is silently skipped.</p></div>
+                            <div class="docs-faq-item"><strong>Rebase + fast-forward</strong><p>❌ No. Rebase replays commits onto the base branch and fast-forward merges produce no merge commit at all. Without a merge commit the fallback has nothing to latch onto.</p></div>
+                            <div class="docs-faq-item"><strong>Old merge (more than 50 commits ago)</strong><p>❌ No. The fallback only scans the 50 most recent commits on the base branch to keep the API call fast. If the merge commit has aged out of that window it will not be found.</p></div>
+                            <div class="docs-faq-item"><strong>Deleted branch</strong><p>⚠️ Probably not. If the branch reference was deleted, some providers (GitHub) may still return a diff from the compare API since the commits still exist. But if both the branch and its commits are gone, the API returns <code>404</code>.</p></div>
                         </div>
+                    </section>
+                    <section class="docs-section" style="--docs-order:4">
+                        <div class="docs-section-head"><div><div class="docs-kicker">Errors</div><h2>When branch audits fail</h2></div></div>
+                        <table class="docs-table">
+                            <thead><tr><th>Error</th><th>Cause</th><th>What happens</th></tr></thead>
+                            <tbody>
+                                <tr><td>No VCS connection</td><td>Session expired or provider never connected</td><td>HTTP 401 — "Connect the provider to load branch diffs."</td></tr>
+                                <tr><td>Invalid repo</td><td>Empty or malformed repo name</td><td>HTTP 422 — "Invalid repo"</td></tr>
+                                <tr><td>Missing branches</td><td><code>base</code> or <code>head</code> not provided</td><td>HTTP 422 — "Base and head branches are required"</td></tr>
+                                <tr><td>API HTTP error</td><td>Provider returns 4xx or 5xx</td><td>User-friendly message explaining the status code</td></tr>
+                                <tr><td>Diff too large</td><td>Raw diff exceeds 200&thinsp;KB</td><td>Diff is truncated at a line boundary; the AI acknowledges the truncation</td></tr>
+                                <tr><td>Branch not found</td><td>Head branch deleted or never existed</td><td>Provider returns 404; error message shown</td></tr>
+                                <tr><td>Empty diff (no fallback)</td><td>Squash merge, rebase, or old merge with no merge commit found</td><td>Returns empty string silently; audit does not run</td></tr>
+                                <tr><td>AI provider error</td><td>Model API fails during streaming</td><td>SSE <code>error</code> event sent to client with the error message</td></tr>
+                                <tr><td>CSRF expiry</td><td>Session token expired</td><td>HTTP 419 — "Session expired" prompt to refresh</td></tr>
+                                <tr><td>Payload too large</td><td>Diff exceeds the 10&thinsp;MB request limit</td><td>HTTP 413 — suggestion to audit individual PRs instead</td></tr>
+                            </tbody>
+                        </table>
                     </section>
                     @break
                 @case('results')
@@ -452,7 +507,7 @@
                         <div class="docs-section-grid">
                             <div class="docs-note"><h4>Coming soon</h4><p>Inline comments, richer reports, and more workflow automation.</p></div>
                             <div class="docs-note"><h4>Known issues</h4><p>Large diffs, noisy transcripts, and provider quirks are still being improved.</p></div>
-                            <div class="docs-note"><h4>Branch audits</h4><p>Keep the workflow resilient even when the branch was already merged.</p></div>
+                            <div class="docs-note"><h4>Branch audits</h4><p>Support for squash-merged and rebased branches without a merge-commit fallback.</p></div>
                             <div class="docs-note"><h4>Performance</h4><p>Better loading and rendering under heavier repos is part of the plan.</p></div>
                         </div>
                     </section>
@@ -538,8 +593,8 @@
                             </div>
                         </div>
                         <div class="docs-faq">
-                            <div class="docs-faq-item"><strong>Can I audit a merged branch?</strong><p>Yes. The branch page should still work even if the diff is empty or the branch has been merged.</p></div>
-                            <div class="docs-faq-item"><strong>What if the diff is missing?</strong><p>Do not block the page. Show the audit shell and explain what could not be rendered.</p></div>
+                            <div class="docs-faq-item"><strong>Can I audit a merged branch?</strong><p>It depends on how the branch was merged. Merge commits (standard merges) work — the app finds the merge commit and audits its diff. Squash merges and rebase-based merges do not produce a merge commit, so the audit cannot reconstruct the diff. See the Audit modes page for the full breakdown.</p></div>
+                            <div class="docs-faq-item"><strong>What if the diff is empty?</strong><p>The audit is silently skipped — no error is shown, but no report is generated. This most often happens with squash-merged or rebased branches. Use a PR audit or upload the diff manually instead.</p></div>
                             <div class="docs-faq-item"><strong>Do I need a key?</strong><p>No. You can start with the shared developer key and upgrade later if you want.</p></div>
                         </div>
                     </section>
